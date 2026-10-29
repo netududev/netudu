@@ -1,34 +1,12 @@
-// Çalışma ortamından bağımsız ortam değişkenleri ve bağlamalar.
+// Çalışma ortamından bağımsız ortam değişkenleri ve bağlamalar — Vercel / Node.js sürümü.
 //
-// - Cloudflare Workers (vinext + @cloudflare/vite-plugin): `cloudflare:workers` modülü vardır;
-//   D1 (`DB`), R2 (`BUCKET`) bağlamaları ve gizli anahtarlar oradan okunur.
-// - Vercel / Node.js (`next build`): bu modül yoktur. Değerler `process.env`'den okunur;
-//   DB/BUCKET bağlamaları olmadığı için veritabanı ve depolama Supabase üzerinden çalışır
-//   (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY ortam değişkenleri gerekir).
+// `next build` (Vercel) bu dosyayı kullanır: `cloudflare:workers` modülü yoktur, değerler
+// `process.env`'den okunur. D1 (`DB`) ve R2 (`BUCKET`) bağlamaları olmadığı için veritabanı ve
+// depolama Supabase üzerinden çalışır (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY gerekir).
 //
-// `cloudflare:workers` statik olarak içe aktarılmaz: Next.js/Turbopack bu şemayı çözemez ve
-// derleme "Module not found" hatasıyla durur. Bunun yerine çalışma anında, paketleyicilerin
-// dokunmadığı dinamik bir içe aktarma denenir; Node.js'te bu içe aktarma hata verir ve
-// sessizce process.env'e düşülür.
-const CLOUDFLARE_MODULE = ["cloudflare", "workers"].join(":");
-
-async function loadCloudflareEnv(): Promise<Record<string, unknown> | null> {
-  try {
-    const mod = (await import(
-      /* webpackIgnore: true */ /* turbopackIgnore: true */ /* @vite-ignore */ CLOUDFLARE_MODULE
-    )) as { env?: Record<string, unknown> };
-    return mod?.env ?? null;
-  } catch {
-    return null;
-  }
-}
-
-const cloudflareEnv = await loadCloudflareEnv();
-
-/** Cloudflare'de bağlamalar, Vercel/Node'da process.env. */
+// Cloudflare derlemesi (vinext + @cloudflare/vite-plugin) bu dosya yerine, vite.config.ts'deki
+// takma adla `platform-env.cloudflare.ts`'yi kullanır; orada `cloudflare:workers` önceki gibi
+// statik olarak içe aktarılır.
 export function platformEnv(): Record<string, unknown> {
-  if (cloudflareEnv) return cloudflareEnv;
   return (typeof process !== "undefined" && process.env ? process.env : {}) as Record<string, unknown>;
 }
-
-export const isCloudflareRuntime = () => cloudflareEnv !== null;

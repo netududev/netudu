@@ -7,6 +7,8 @@ if (!["dev", "build"].includes(command)) throw new Error("Expected dev or build.
 const managedLinux = readExecutionProfile() === "managed-linux";
 
 // Vercel derlemesi Next.js çıktısı (.next) bekler; vinext/Cloudflare derlemesi kullanılmaz.
+// Asıl yol vercel.json → `npm run build:vercel`; bu dal, Vercel panelinde derleme komutu
+// `npm run build` olarak bırakılırsa devreye giren yedektir.
 if (process.env.VERCEL && command === "build") {
   const result = spawnSync(process.execPath, [
     fileURLToPath(new URL("../node_modules/next/dist/bin/next", import.meta.url)), "build", ...args,

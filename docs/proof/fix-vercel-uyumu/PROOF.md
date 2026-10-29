@@ -46,10 +46,29 @@ lib/platform-env.ts:9:// `cloudflare:workers` statik olarak içe aktarılmaz: ..
 - **Vercel'de veritabanı Supabase ile çalışır.** D1/R2 bağlamaları Vercel'de yok; `SUPABASE_URL` ve `SUPABASE_SERVICE_ROLE_KEY` Vercel ortam değişkenlerine girilmezse API'ler 503 döner (sunucu günlüğünde `database_unavailable`). Supabase tabloları `supabase/schema.sql` ile kurulmalıdır.
 - Ayarlar ekranından girilen OpenAI/Supabase anahtarları yalnızca yerel D1'de (`sys_config`) kalıcıdır; Vercel'de yalnızca o sunucu örneğinin belleğinde tutulur ve soğuk başlangıçta kaybolur. Vercel'de `OPENAI_API_KEY` vb. ortam değişkeni olarak girilmelidir.
 - Tip denetimi derlemeden çıkarıldı; proje daha önce hiç tip denetiminden geçmedi. Yerelde `npx tsc --noEmit` ile ayrıca bakılmalı.
-- Cloudflare yolunda `cloudflare:workers` artık çalışma anında dinamik içe aktarılıyor; vinext/workerd'de bu ortamda test edilemedi.
+- Cloudflare yolu (Tur 2'den itibaren `vite.config.ts` takma adı + statik `cloudflare:workers`) vinext/workerd'de bu ortamda test edilemedi.
 - AI çözüm isteği 110 sn zaman aşımı kullanır; Vercel Fluid Compute kapalıysa Hobby planda fonksiyon süresi sınırı (60 sn) daha kısadır.
 
 ## Yeniden üretme
 1. Bu turun commit'ini checkout et (PR head'i).
 2. `npm install && npm run build:vercel` (veya `VERCEL=1 npm run build`).
 3. Vercel'de: ortam değişkenlerini gir, yeniden deploy et, Build Logs'ta `next build` çıktısını ve `netudu.vercel.app` açılışını kontrol et.
+
+## Tur 2
+
+İnceleme 1 (SKOR 4, ENGELLEYİCİ yok) bulgularına yanıt:
+
+### İddia
+- [x] ÖNEMLİ-1 (Cloudflare'de top-level await + sessiz catch): dinamik içe aktarma ve top-level await tamamen kaldırıldı. `lib/platform-env.ts` yalnızca `process.env` döndürür (Next/Vercel). Cloudflare derlemesi `vite.config.ts` `resolve.alias` ile `lib/platform-env.cloudflare.ts`'yi kullanır; burada `import { env } from "cloudflare:workers"` önceki koddaki gibi statiktir.
+- [x] ÖNEMLİ-2 (D1 yedeği yokken Supabase hatalarının yutulması): `first`/`all`/`run` yedeksiz modda boş/başarısız Supabase yanıtında `supabase_query_failed` günlüğü yazar. Davranış (dönüş değerleri) değiştirilmedi; yeni bir sert hata yolu açmamak için atma yapılmadı. Vercel günlüklerinde sorun artık görünür.
+- [ ] ÖNEMLİ-3 (gerçek `next build` / Vercel günlüğü kanıtı): bu ortamda hâlâ yapılamıyor (npm 403). Son kanıt Vercel derleme günlüğü olacak.
+- [x] KÜÇÜK: `isCloudflareRuntime` kaldırıldı; `run-framework.mjs` VERCEL dalının yedek olduğu yorumla yazıldı; `typecheck` betiği (`tsc --noEmit`) eklendi.
+- Uygulanmadı: `maxDuration=120` — Fluid Compute kapalı Hobby projede 60 sn üstü değer yayını reddettirebilir; varsayılan (Fluid açık: 300 sn) bırakıldı.
+
+### Test / Ölçüm
+| Komut | Beklenen | Gerçek | Çıkış kodu | Sonuç |
+|---|---|---|---|---|
+| `transpileModule` (platform-env, platform-env.cloudflare, server, supabase, db/index, vite.config, next.config) | Sözdizimi hatası yok | 7/7 ok | 0 | PASS |
+| Derlenmiş `platform-env` Node 22'de | `platformEnv()===process.env`, SUPABASE_URL okunur, DB undefined, `await import` yok | aynen (0 eşleşme) | 0 | PASS |
+| Vite takma ad regex'i | `./platform-env`, `../lib/platform-env` eşleşir; `@/lib/platform-env`, `./platform-env.cloudflare` eşleşmez | aynen | 0 | PASS |
+| `next build` / `vinext build` | Başarılı | Çalıştırılamadı (npm 403) | — | YAPILAMADI |
