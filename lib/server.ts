@@ -1,4 +1,4 @@
-import {env} from 'cloudflare:workers';
+import {platformEnv} from './platform-env';
 import {getSupabaseConfig,setRuntimeSupabaseConfig,createSupabaseD1,createSupabaseBucket,supabaseAuthGetUser,ensureUserTenant} from './supabase';
 export class AppError extends Error{constructor(message:string,public status=400){super(message)}}
 export type Bindings={DB:D1Database;BUCKET:R2Bucket;OPENAI_API_KEY?:string;OPENAI_MODEL?:string;YOUTUBE_API_KEY?:string;RESEND_API_KEY?:string;GOOGLE_CLIENT_ID?:string;GOOGLE_CLIENT_SECRET?:string;APP_URL?:string;ADMIN_EMAILS?:string;AI_LIMIT_SOLVE?:string;AI_LIMIT_NOTE?:string;AI_LIMIT_REPORT?:string;AI_LIMIT_VIDEO?:string;AI_LIMIT_QUOTE?:string;REGISTRATION_OPEN?:string;SUPABASE_URL?:string;SUPABASE_SERVICE_ROLE_KEY?:string;SUPABASE_ANON_KEY?:string;SUPABASE_KEY?:string};
@@ -18,7 +18,7 @@ export function setRuntimeAiConfig(cfg:{openaiKey?:string;openaiModel?:string;yo
 }
 export function getRuntimeAiConfig(){return runtimeAiConfig}
 
-export const rawBindings=()=>env as unknown as Bindings;
+export const rawBindings=()=>platformEnv() as unknown as Bindings;
 export const localDb=()=>rawBindings().DB||null;
 export const activeSupabaseConfig=()=>getSupabaseConfig(rawBindings() as unknown as Record<string,unknown>);
 export function bindings():Bindings{
@@ -34,7 +34,7 @@ export function bindings():Bindings{
  if(!supa)return merged;
  return {...merged,DB:createSupabaseD1(supa,raw.DB||null),BUCKET:createSupabaseBucket(supa,raw.BUCKET||null)};
 }
-export function db(){const v=bindings().DB;if(!v)throw new AppError('Arşiv bağlantısı henüz hazır değil. Biraz sonra tekrar dene.',503);return v}
+export function db(){const v=bindings().DB;if(!v){console.error('database_unavailable: Cloudflare D1 (DB) bağlaması yok ve SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY tanımlı değil.');throw new AppError('Arşiv bağlantısı henüz hazır değil. Biraz sonra tekrar dene.',503)}return v}
 export const supabaseReady=()=>!!activeSupabaseConfig();
 // Şema güvencesi: yeni sütun ve tablolar yoksa çalışma anında ekler (drizzle göçü uygulanmamış yerel
 // önizlemeler için). Üretimde drizzle/0001 göçü önce koştuğu için burada hiçbir şey yapılmaz.
