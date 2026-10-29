@@ -67,7 +67,7 @@ export default defineConfig(async () => {
       // (lib/platform-env.cloudflare.ts). Next.js/Vercel derlemesi lib/platform-env.ts'yi kullanır.
       alias: [
         {
-          find: /^(?:\.\.?\/)+(?:lib\/)?platform-env$/,
+          find: /^(?:@\/|(?:\.\.?\/)+)(?:lib\/)?platform-env(?:\.[cm]?[jt]s)?$/,
           replacement: fileURLToPath(new URL("./lib/platform-env.cloudflare.ts", import.meta.url)),
         },
       ],

@@ -72,3 +72,9 @@ lib/platform-env.ts:9:// `cloudflare:workers` statik olarak içe aktarılmaz: ..
 | Derlenmiş `platform-env` Node 22'de | `platformEnv()===process.env`, SUPABASE_URL okunur, DB undefined, `await import` yok | aynen (0 eşleşme) | 0 | PASS |
 | Vite takma ad regex'i | `./platform-env`, `../lib/platform-env` eşleşir; `@/lib/platform-env`, `./platform-env.cloudflare` eşleşmez | aynen | 0 | PASS |
 | `next build` / `vinext build` | Başarılı | Çalıştırılamadı (npm 403) | — | YAPILAMADI |
+
+## Tur 3 (inceleme 2: SKOR 5, KÜÇÜK notlar)
+- Vite takma adı `@/lib/platform-env` ve uzantılı yazımları da yakalar: `/^(?:@\/|(?:\.\.?\/)+)(?:lib\/)?platform-env(?:\.[cm]?[jt]s)?$/`.
+- `typecheck` betiği `--incremental false` ile çalışır (tsbuildinfo üretmez).
+- Tur 1 "İddia 1" düzeltmesi: Tur 2'den itibaren statik `cloudflare:workers` yalnız `lib/platform-env.cloudflare.ts`'de bilerek bulunur ve hiçbir Next modülünden içe aktarılmaz; `isCloudflareRuntime` kaldırıldı.
+- Takip (kapsam dışı): yedeksiz modda `run()` ağ hatasında da başarı döndürür; şimdilik yalnız günlüğe yazılıyor.
