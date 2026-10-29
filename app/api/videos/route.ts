@@ -1,3 +1,4 @@
+export const maxDuration=300;
 import {z} from 'zod';
 import {subjects,examTypes} from '@/lib/study';
 import {requireUser,db,failure,json,AppError,unpack,mine,aiReady} from '@/lib/server';

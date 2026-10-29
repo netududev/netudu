@@ -33,6 +33,10 @@ Betik sırasıyla: Cloudflare girişi → D1 veritabanı → R2 fotoğraf deposu
 
 Google ile giriş için Google Cloud Console'da OAuth istemcisi oluştur ve yönlendirme adresi olarak `<adres>/api/auth/google/callback` ekle; `GOOGLE_CLIENT_ID` ve `GOOGLE_CLIENT_SECRET` değerlerini `.env`'e yazıp betiği yeniden çalıştır.
 
+## Vercel'e yayınlama
+
+Depoyu Vercel'e içe aktar; `vercel.json` derlemeyi `next build` yapar. Vercel'de D1/R2 yoktur, bu yüzden **Supabase zorunludur**: Project Settings > Environment Variables bölümüne `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (ve isteğe bağlı `SUPABASE_ANON_KEY`), `OPENAI_API_KEY`, `APP_URL` ve diğer `.env.example` değişkenlerini gir. Tabloları `supabase/schema.sql` ile oluştur. Google girişi için yönlendirme adresi `<APP_URL>/api/auth/google/callback` olmalıdır.
+
 ## Ortam değişkenleri
 
 | Değişken | Açıklama |

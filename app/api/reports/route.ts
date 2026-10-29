@@ -1,3 +1,4 @@
+export const maxDuration=300;
 import {z} from 'zod';
 import {owner,requireUser,db,respond,failure,AppError,json,unpack,stripFence} from '@/lib/server';
 import {consume,refund} from '@/lib/limits';

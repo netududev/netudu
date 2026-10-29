@@ -1,3 +1,4 @@
+export const maxDuration=300;
 import {z} from 'zod';
 import {subjects,topicTree,normalizeTopic,topicHistory,type Question,type Video} from '@/lib/study';
 import {requireUser,mine,db,bindings,respond,AppError,failure,unpack,stripFence,type SessionUser} from '@/lib/server';
