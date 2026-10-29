@@ -680,6 +680,11 @@ async function executeOnSupabase(cfg:SupabaseConfig,rawSql:string,params:unknown
  return null;
 }
 
+// Yerel D1 yedeği yoksa (Vercel) Supabase hataları maskelenmez; sunucu günlüğüne yazılır.
+function logSupabaseMiss(kind:string,sql:string,err?:unknown){
+ console.error('supabase_query_failed',kind,sql.replace(/\s+/g,' ').slice(0,120),err instanceof Error?err.message:'(boş yanıt veya çevrilemeyen SQL)');
+}
+
 class SupabasePreparedStatement{
  private params:unknown[]=[];
  constructor(private cfg:SupabaseConfig,private fallback:D1Database|null,private sql:string){}
@@ -693,9 +698,10 @@ class SupabasePreparedStatement{
    const res=await executeOnSupabase(this.cfg,this.sql,this.params,'first');
    if(res){
     if(res.results[0])return res.results[0] as T;
-   }
+   }else if(!this.fallback)logSupabaseMiss('first',this.sql);
   }catch(e){
    if(/UNIQUE/i.test(String((e as Error)?.message)))throw e;
+   if(!this.fallback)logSupabaseMiss('first',this.sql,e);
   }
   if(this.fallback){
    return (await this.fallback.prepare(this.sql).bind(...this.params).first()) as T|null;
@@ -707,8 +713,10 @@ class SupabasePreparedStatement{
    const res=await executeOnSupabase(this.cfg,this.sql,this.params,'all');
    if(res&&res.results.length>0)return {results:res.results as T[],success:true,meta:res.meta};
    if(res&&!this.fallback)return {results:res.results as T[],success:true,meta:res.meta};
+   if(!res&&!this.fallback)logSupabaseMiss('all',this.sql);
   }catch(e){
    if(/UNIQUE/i.test(String((e as Error)?.message)))throw e;
+   if(!this.fallback)logSupabaseMiss('all',this.sql,e);
   }
   if(this.fallback){
    const r=await this.fallback.prepare(this.sql).bind(...this.params).all();
@@ -725,6 +733,7 @@ class SupabasePreparedStatement{
    supaErr=e as Error;
   }
   if(supaErr&&/UNIQUE/i.test(supaErr.message))throw supaErr;
+  if(!this.fallback&&!supaRes)logSupabaseMiss('run',this.sql,supaErr);
   // Yerel D1'e de yaz (çift yönlü yerel yedek)
   if(this.fallback){
    try{

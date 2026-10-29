@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import vinext from "vinext";
 import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
@@ -61,6 +62,16 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    resolve: {
+      // Cloudflare derlemesinde ortam erişimi `cloudflare:workers` üzerinden yapılır
+      // (lib/platform-env.cloudflare.ts). Next.js/Vercel derlemesi lib/platform-env.ts'yi kullanır.
+      alias: [
+        {
+          find: /^(?:@\/|(?:\.\.?\/)+)(?:lib\/)?platform-env(?:\.[cm]?[jt]s)?$/,
+          replacement: fileURLToPath(new URL("./lib/platform-env.cloudflare.ts", import.meta.url)),
+        },
+      ],
+    },
     server: {
       ...(managedLinux ? { host: "0.0.0.0", allowedHosts: ["terminal.local"] } : {}),
       ...(isCodexSeatbeltSandbox ? { watch: { useFsEvents: false, usePolling: true } } : {}),
