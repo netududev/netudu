@@ -6,6 +6,14 @@ const [command, ...args] = process.argv.slice(2);
 if (!["dev", "build"].includes(command)) throw new Error("Expected dev or build.");
 const managedLinux = readExecutionProfile() === "managed-linux";
 
+// Vercel standart Next.js derlemesi ister (.next çıktısı); vinext/Cloudflare yolu burada kullanılmaz.
+if (process.env.VERCEL && command === "build") {
+  const next = fileURLToPath(new URL("../node_modules/next/dist/bin/next", import.meta.url));
+  const result = spawnSync(process.execPath, [next, "build", ...args], { stdio: "inherit" });
+  if (result.error) throw result.error;
+  process.exit(result.status ?? 1);
+}
+
 if (managedLinux && command === "build") {
   const result = spawnSync("bash", [
     fileURLToPath(new URL("./build-verified.sh", import.meta.url)), ...args,
