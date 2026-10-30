@@ -85,7 +85,15 @@ export const throttleClear=(key:string)=>db().prepare('DELETE FROM auth_attempts
 export const clientIp=(r:Request)=>r.headers.get('cf-connecting-ip')||r.headers.get('x-real-ip')||r.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||'local';
 
 export const registrationOpen=()=>bindings().REGISTRATION_OPEN!=='false';
-export const appOrigin=(req:Request)=>(bindings().APP_URL||new URL(req.url).origin).replace(/\/$/,'');
+export const appOrigin=(req:Request)=>{
+ if(bindings().APP_URL)return bindings().APP_URL!.replace(/\/$/,'');
+ const u=new URL(req.url);
+ const fwdHost=(req.headers.get('x-forwarded-host')||'').split(',')[0]?.trim();
+ const host=fwdHost||u.host;
+ const isLocal=/^(localhost|127\.0\.0\.1|192\.168\.|10\.)/i.test(host);
+ const proto=isLocal?u.protocol.replace(':',''):'https';
+ return `${proto}://${host}`;
+};
 export const googleReady=()=>!!(bindings().GOOGLE_CLIENT_ID&&bindings().GOOGLE_CLIENT_SECRET)||!!activeSupabaseConfig();
 
 const ownedTables=['questions','reports','exams','video_cache','study_notes','profiles','study_plans'];
