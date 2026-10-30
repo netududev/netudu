@@ -12,13 +12,16 @@ export async function POST(req:Request){try{
   password:z.string().max(200),
   grade:z.enum(['9','10','11','12','Mezun']).default('12'),
   tenantName:z.string().trim().max(80).optional().default(''),
-  accept:z.literal(true)
+  accept:z.literal(true),
+  remember:z.boolean().optional().default(true)
  }).safeParse(await json(req));
  if(!p.success)throw new AppError('Ad (en az 2 karakter), e-posta, şifre ve sınıf alanlarını kontrol et; kullanım koşullarını onaylaman gerekiyor.');
  const email=normalizeEmail(p.data.email);
  if(!validEmail(email))throw new AppError('Geçerli bir e-posta adresi yaz.');
  checkPassword(p.data.password);
  await throttleHit(ipKey,60);
+ const remember=p.data.remember!==false;
+ const tokenOut={token:''};
  const u=await createUser({
   email,
   name:p.data.name,
@@ -29,12 +32,15 @@ export async function POST(req:Request){try{
  const cookie=await createSession(req,u.id,{
   tenantId:u.tenantId,
   sbAccessToken:u.sbAccessToken,
-  sbRefreshToken:u.sbRefreshToken
+  sbRefreshToken:u.sbRefreshToken,
+  remember,
+  tokenOut
  });
  return Response.json({
   ok:true,
   claimed:u.first,
   tenantId:u.tenantId,
+  sessionToken:remember?tokenOut.token:undefined,
   authProvider:activeSupabaseConfig()?'supabase':'local'
  },{status:201,headers:{'Set-Cookie':cookie}});
 }catch(e){return failure(e)}}

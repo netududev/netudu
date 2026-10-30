@@ -34,7 +34,26 @@ export default function StudyApp(){
  const [upload,setUpload]=useState(false),[uploadFiles,setUploadFiles]=useState<File[]>([]),[selected,setSelected]=useState<Question|null>(null),[lessonVideo,setLessonVideo]=useState<Lesson|null>(null),[solving,setSolving]=useState<Set<string>>(new Set()),[busy]=useState(false);
  const [subject,setSubject]=useState('Tüm dersler'),[month,setMonth]=useState(today().slice(0,7)),[notes,setNotes]=useState(''),[goals,setGoals]=useState<Goal[]>([]),[printOnly,setPrintOnly]=useState<Question|null>(null),[profile,setProfile]=useState<Profile>(defaultProfile),[notesPreset,setNotesPreset]=useState<{subject:string;topic:string;examType?:string}|null>(null);
  const filteredRef=useRef<Question[]>([]);
- const load=useCallback(async()=>{setLoading(true);try{const d=await api('/api/questions');setRows(d.questions);setExams(d.exams||[]);if(d.profile)setProfile(d.profile);setAi(d.aiReady);setYoutube(!!d.youtubeReady);setSupabase(!!d.supabaseReady);setUser(d.user);setUsage(d.usage||null);setProfileSet(d.profileSet!==false);setPlan(d.plan||null);setAuthed(true);setError('')}catch(e){if(e instanceof ApiError&&e.status===401){setAuthed(false);setRows([]);setExams([])}else{setAuthed(true);setError((e as Error).message)}}finally{setLoading(false)}},[]);
+ const load=useCallback(async()=>{setLoading(true);try{const d=await api('/api/questions');setRows(d.questions);setExams(d.exams||[]);
+  let activeProf=d.profile;
+  let isProfSet=d.profileSet!==false;
+  if(d.user?.email&&d.profile){
+   const profKey='profile:'+d.user.email.toLowerCase();
+   const cachedRaw=readSetting(profKey,'');
+   let cachedProf:Profile|null=null;
+   if(cachedRaw){try{cachedProf=JSON.parse(cachedRaw) as Profile}catch{cachedProf=null}}
+   const serverIsDefault=!d.profile.target&&!d.profile.school&&!d.profile.motto&&!d.profile.dailyGoal;
+   const cachedHasCustom=!!cachedProf&&(!!cachedProf.target||!!cachedProf.school||!!cachedProf.motto||!!cachedProf.dailyGoal||cachedProf.grade!==d.profile.grade);
+   if(cachedProf&&cachedProf.name&&(serverIsDefault&&cachedHasCustom||!isProfSet)){
+    activeProf=cachedProf;
+    isProfSet=true;
+    void postJson('/api/profile',{...cachedProf,examYear:Number(cachedProf.examYear),dailyGoal:Number(cachedProf.dailyGoal)||0},'PUT').catch(()=>{});
+   }else{
+    writeSetting(profKey,JSON.stringify(d.profile));
+   }
+  }
+  if(activeProf)setProfile(activeProf);
+  setAi(d.aiReady);setYoutube(!!d.youtubeReady);setSupabase(!!d.supabaseReady);setUser(d.user);setUsage(d.usage||null);setProfileSet(isProfSet);setPlan(d.plan||null);setAuthed(true);setError('')}catch(e){if(e instanceof ApiError&&e.status===401){setAuthed(false);setRows([]);setExams([])}else{setAuthed(true);setError((e as Error).message)}}finally{setLoading(false)}},[]);
  useEffect(()=>{void load()},[load]);
  // Google dönüşü, hata ya da ?kayit ile gelenler tanıtım sayfasını atlayıp doğrudan giriş ekranını görür
  useEffect(()=>{const q=new URLSearchParams(location.search);if(q.get('auth_error')||location.hash.includes('access_token='))setAuthMode('login');else if(q.get('kayit')!==null)setAuthMode('register')},[]);
@@ -44,7 +63,7 @@ export default function StudyApp(){
  useEffect(()=>{const clearPrint=()=>setPrintOnly(null);window.addEventListener('afterprint',clearPrint);return()=>window.removeEventListener('afterprint',clearPrint)},[]);
  const upsert=useCallback((q:Question)=>{setRows(old=>[q,...old.filter(r=>r.id!==q.id)].sort((a,b)=>b.date.localeCompare(a.date)||b.created_at.localeCompare(a.created_at)))},[]);
  const bumpUsage=useCallback((k:AiKind)=>setUsage(u=>u?{...u,[k]:{...u,[k]:{...u[k],used:u[k].used+1}}}[k]?{...u,[k]:{...u[k],used:u[k].used+1}}:u:u),[]);
- const logout=useCallback(async()=>{try{await api('/api/auth/logout',{method:'POST'})}catch{}setSelected(null);setLessonVideo(null);setView('home');setAuthed(false);setRows([]);setExams([]);setPlan(null);setProfile(defaultProfile)},[]);
+ const logout=useCallback(async()=>{try{await api('/api/auth/logout',{method:'POST'})}catch{}writeSetting('session-token','');setSelected(null);setLessonVideo(null);setView('home');setAuthed(false);setRows([]);setExams([]);setPlan(null);setProfile(defaultProfile)},[]);
  const planOp=useCallback(async(body:Record<string,unknown>,success?:string)=>{try{const d=await postJson('/api/plan/progress',body);setPlan(d.plan);if(success)toast.success(success)}catch(e){toast.error((e as Error).message)}},[]);
  const solve=useCallback(async(q:Question)=>{setSolving(s=>new Set(s).add(q.id));try{const d=await api(`/api/questions/${q.id}/solve`,{method:'POST'});upsert(d.question);bumpUsage('solve');toast.success(d.question.analysis?.readable?`Çözüm hazır: ${d.question.subject} · ${d.question.topic}`:'Fotoğrafın bazı kısımları okunamadı.')}catch(e){toast.error((e as Error).message)}finally{setSolving(s=>{const n=new Set(s);n.delete(q.id);return n})}},[upsert,bumpUsage]);
  const openUpload=useCallback((files?:File[],preset?:UploadPreset)=>{setUploadFiles(files||[]);setUploadPreset(preset||null);setUpload(true)},[]);

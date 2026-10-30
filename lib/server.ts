@@ -107,7 +107,7 @@ export const accountDDL=[
  'CREATE TABLE IF NOT EXISTS study_plans (user_id text PRIMARY KEY NOT NULL,config text NOT NULL,done text DEFAULT \'{}\' NOT NULL,off_days text DEFAULT \'{}\' NOT NULL,created_at text NOT NULL,updated_at text NOT NULL)'
 ];
 export const SESSION_COOKIE='nd_session';
-export const SESSION_DAYS=30;
+export const SESSION_DAYS=90;
 export type SessionUser={
  id:string;
  email:string;
@@ -123,12 +123,13 @@ export type SessionUser={
  sbAccessToken?:string;
 };
 export function readCookie(request:Request,name:string){const raw=request.headers.get('cookie')||'';for(const part of raw.split(';')){const i=part.indexOf('=');if(i<0)continue;if(part.slice(0,i).trim()===name){try{return decodeURIComponent(part.slice(i+1).trim())}catch{return ''}}}return ''}
+export function readSessionToken(request:Request){return readCookie(request,SESSION_COOKIE)||(request.headers.get('x-session-token')||'').trim()}
 export async function sha256(text:string){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('')}
 // Yönetici: netududev@gmail.com her zaman geliştirici ve yöneticidir; ayrıca ADMIN_EMAILS listesindekiler.
 export function isAdmin(email:string,first:boolean){if(isDeveloper(email))return true;const list=(bindings().ADMIN_EMAILS||'').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean);return list.length?list.includes(email.toLowerCase()):first}
-// Oturum çerezinden kullanıcıyı ve aktif Tenant bilgisini bulur; Supabase Auth aktifse JWT oturumunu da doğrular.
+// Oturum çerezinden veya x-session-token başlığından (Beni hatırla) kullanıcıyı ve aktif Tenant bilgisini bulur; Supabase Auth aktifse JWT oturumunu da doğrular.
 export async function sessionUser(request:Request):Promise<SessionUser|null>{
- const token=readCookie(request,SESSION_COOKIE);
+ const token=readSessionToken(request);
  if(!token||token.length<20||token.length>200)return null;
  await ensureSchema();
  const sid=await sha256(token);

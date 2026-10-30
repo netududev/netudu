@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {db,activeSupabaseConfig,failure,json,AppError,requireUser,readCookie,sha256,SESSION_COOKIE} from '@/lib/server';
+import {db,activeSupabaseConfig,failure,json,AppError,requireUser,readSessionToken,sha256} from '@/lib/server';
 import {supabaseAuthUpdatePassword,supabaseAuthSignIn} from '@/lib/supabase';
 import {hashPassword,verifyPassword,checkPassword,throttleCheck,throttleHit} from '@/lib/auth';
 // Şifre değiştir (veya Google hesabına şifre ekle). Supabase Auth aktifse /auth/v1/user üzerinden de günceller.
@@ -23,7 +23,7 @@ export async function POST(req:Request){try{
   await supabaseAuthUpdatePassword(supa,u.id,u.sbAccessToken,p.data.next);
  }
  const h=await hashPassword(p.data.next);
- const keep=await sha256(readCookie(req,SESSION_COOKIE));
+ const keep=await sha256(readSessionToken(req));
  await db().batch([
   db().prepare('UPDATE users SET password_hash=?,password_salt=? WHERE id=?').bind(h.hash,h.salt,u.id),
   db().prepare('DELETE FROM sessions WHERE user_id=? AND id<>?').bind(u.id,keep)

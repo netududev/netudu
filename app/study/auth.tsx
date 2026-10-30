@@ -4,7 +4,7 @@ import {LogIn,UserPlus,Eye,EyeOff,LoaderCircle,Sparkles,RotateCcw,ChartNoAxesCom
 import {toast} from 'sonner';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {defaultExamYear,estimatedExamDate,type Profile} from '@/lib/study';
-import {postJson,Choice} from './shared';
+import {postJson,Choice,readSetting,writeSetting} from './shared';
 import {Logo} from './logo';
 
 const DEV_EMAIL='netududev@gmail.com';
@@ -18,12 +18,17 @@ function GoogleIcon(){return <svg width="18" height="18" viewBox="0 0 48 48" ari
 // Giriş yapılmamışken gösterilen tanıtım + Supabase Auth / Multi-Tenant / Developer giriş ekranı
 export function AuthScreen({onDone,onBack,initialMode='login'}:{onDone:()=>void;onBack?:()=>void;initialMode?:'login'|'register'}){
  const [mode,setMode]=useState<'login'|'register'|'forgot'>(initialMode),[busy,setBusy]=useState(false),[show,setShow]=useState(false),[google,setGoogle]=useState(false),[open,setOpen]=useState(true),[authProvider,setAuthProvider]=useState<'supabase'|'local'>('local'),[error,setError]=useState('');
- const [f,setF]=useState({name:'',email:'',password:'',grade:'12',tenantName:'',accept:false});
+ const [f,setF]=useState({name:'',email:'',password:'',grade:'12',tenantName:'',accept:false,remember:true});
  const [resetStep,setResetStep]=useState<'email'|'code'>('email'),[resetCode,setResetCode]=useState(''),[resetPassword,setResetPassword]=useState(''),[resetInfo,setResetInfo]=useState<{message:string;previewCode?:string}|null>(null);
  const cleanEmail=f.email.trim().toLowerCase();
  const isDevEmail=mode==='login'&&cleanEmail===DEV_EMAIL;
  const isAnyDevEmail=DEV_EMAILS.includes(cleanEmail);
  useEffect(()=>{
+  const savedEmail=readSetting('remembered-email','');
+  const savedRemember=readSetting('remember-me','1')!=='0';
+  if(savedEmail||!savedRemember){
+   setF(prev=>({...prev,email:savedEmail||prev.email,remember:savedRemember}));
+  }
   fetch('/api/auth/me').then(r=>r.json() as Promise<{googleReady?:boolean;registrationOpen?:boolean;authProvider?:'supabase'|'local'}>).then(d=>{
    setGoogle(!!d.googleReady);
    setOpen(d.registrationOpen!==false);
@@ -52,7 +57,16 @@ export function AuthScreen({onDone,onBack,initialMode='login'}:{onDone:()=>void;
  async function loginAsDeveloper(){
   setError('');setBusy(true);
   try{
-   await postJson('/api/auth/login',{email:DEV_EMAIL,password:''});
+   const d=await postJson('/api/auth/login',{email:DEV_EMAIL,password:'',remember:f.remember}) as unknown as {sessionToken?:string};
+   if(f.remember){
+    writeSetting('remember-me','1');
+    writeSetting('remembered-email',DEV_EMAIL);
+    if(d.sessionToken)writeSetting('session-token',d.sessionToken);
+   }else{
+    writeSetting('remember-me','0');
+    writeSetting('remembered-email','');
+    writeSetting('session-token','');
+   }
    toast.success('netudu Geliştirici (Developer) hesabıyla giriş yapıldı! Ayarlar bölümünden OpenAI ve Supabase API bağlantılarını yönetebilirsin.');
    onDone();
   }catch(err){
@@ -90,7 +104,16 @@ export function AuthScreen({onDone,onBack,initialMode='login'}:{onDone:()=>void;
     return;
    }
    if(mode==='login'){
-    await postJson('/api/auth/login',{email:f.email,password:isDevEmail?'':f.password});
+    const d=await postJson('/api/auth/login',{email:f.email,password:isDevEmail?'':f.password,remember:f.remember}) as unknown as {sessionToken?:string};
+    if(f.remember){
+     writeSetting('remember-me','1');
+     writeSetting('remembered-email',cleanEmail);
+     if(d.sessionToken)writeSetting('session-token',d.sessionToken);
+    }else{
+     writeSetting('remember-me','0');
+     writeSetting('remembered-email','');
+     writeSetting('session-token','');
+    }
     if(isAnyDevEmail){
      toast.success('Geliştirici (Developer) modu aktif! Ayarlar bölümünden kullanıcıları, OpenAI ve Supabase bağlantılarını yönetebilirsin.');
     }
@@ -101,8 +124,21 @@ export function AuthScreen({onDone,onBack,initialMode='login'}:{onDone:()=>void;
      password:f.password,
      grade:f.grade,
      tenantName:f.tenantName,
-     accept:f.accept
-    }) as unknown as {claimed?:boolean};
+     accept:f.accept,
+     remember:f.remember
+    }) as unknown as {claimed?:boolean;sessionToken?:string};
+    const y=defaultExamYear(f.grade);
+    const initialProf:Profile={name:f.name.trim(),grade:f.grade as Profile['grade'],target:'',examYear:y,examDate:estimatedExamDate(y),motto:'',dailyGoal:0,school:''};
+    writeSetting('profile:'+cleanEmail,JSON.stringify(initialProf));
+    if(f.remember){
+     writeSetting('remember-me','1');
+     writeSetting('remembered-email',cleanEmail);
+     if(d.sessionToken)writeSetting('session-token',d.sessionToken);
+    }else{
+     writeSetting('remember-me','0');
+     writeSetting('remembered-email','');
+     writeSetting('session-token','');
+    }
     toast.success(isAnyDevEmail?'Geliştirici (Developer) hesabın oluşturuldu! Hoş geldin.':d.claimed?'Hesabın ve çalışma alanın oluşturuldu; önceki defterin bu hesaba bağlandı.':'Hesabın ve çalışma alanın (Tenant) oluşturuldu. Hoş geldin!');
    }
    onDone();
@@ -139,12 +175,13 @@ export function AuthScreen({onDone,onBack,initialMode='login'}:{onDone:()=>void;
     ):(
      <div>
       <label className="field-label">Şifre<span className="pw-field"><input required type={show?'text':'password'} autoComplete={mode==='login'?'current-password':'new-password'} minLength={mode==='register'?8:1} maxLength={200} value={f.password} onChange={e=>setF({...f,password:e.target.value})} placeholder={mode==='register'?'En az 8 karakter, harf ve rakam':'Şifren'}/><button type="button" className="icon-button" aria-label={show?'Şifreyi gizle':'Şifreyi göster'} onClick={()=>setShow(!show)}>{show?<EyeOff size={17}/>:<Eye size={17}/>}</button></span></label>
-      {mode==='login'&&<div style={{display:'flex',justifyContent:'flex-end',marginTop:6}}><button type="button" className="text-button" style={{fontSize:13}} onClick={()=>{setMode('forgot');setResetStep('email');setResetInfo(null);setError('')}}><KeyRound size={14}/> Şifremi unuttum</button></div>}
+      {mode==='login'&&<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:8,gap:8}}><label className="check-line" style={{margin:0}}><input type="checkbox" checked={f.remember} onChange={e=>setF({...f,remember:e.target.checked})}/><span>Beni hatırla</span></label><button type="button" className="text-button" style={{fontSize:13}} onClick={()=>{setMode('forgot');setResetStep('email');setResetInfo(null);setError('')}}><KeyRound size={14}/> Şifremi unuttum</button></div>}
      </div>
     )}
     {mode==='register'&&<>
      <label className="field-label">Sınıfın<Choice label="Sınıf" value={f.grade} onChange={v=>setF({...f,grade:v})} values={grades}/><small className="hint">Hedef sınavın: YKS {year} (tahmini {new Date(estimatedExamDate(year)+'T12:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'long'})}). Sonra değiştirebilirsin.</small></label>
      <label className="field-label"><span style={{display:'inline-flex',alignItems:'center',gap:5}}><Building2 size={14}/> Çalışma Alanı / Kurum (Tenant) Adı <small className="muted">(isteğe bağlı)</small></span><input maxLength={80} value={f.tenantName} onChange={e=>setF({...f,tenantName:e.target.value})} placeholder={f.name?`${f.name} Çalışma Alanı`:'Örn. Kişisel Defterim veya Fen Lisesi Kampı'}/></label>
+     <label className="check-line"><input type="checkbox" checked={f.remember} onChange={e=>setF({...f,remember:e.target.checked})}/><span>Beni hatırla (oturumumu ve sınıf/profil bilgilerimi bu cihazda açık tut)</span></label>
      <label className="check-line"><input type="checkbox" checked={f.accept} onChange={e=>setF({...f,accept:e.target.checked})} required/><span>Sorularımın ve fotoğraflarımın çözüm üretmek için yapay zekâ hizmetine (OpenAI) gönderileceğini ve <a href="#gizlilik" onClick={e=>{e.preventDefault();toast.message('Gizlilik',{description:'Verilerin yalnızca senin hesabına ve çalışma alanına (Tenant) bağlıdır, kimseyle paylaşılmaz ve reklam için kullanılmaz. Fotoğraflar yalnızca çözüm hazırlanırken OpenAI\'a gönderilir ve orada saklanmaz. Hesabını Ayarlar\'dan istediğin zaman tüm verileriyle silebilirsin.'})}}>gizlilik ilkelerini</a> kabul ediyorum.</span></label>
     </>}
     {error&&<div className="error-banner" role="alert">{error}</div>}
@@ -162,7 +199,7 @@ export function Onboarding({open,profile,onSave}:{open:boolean;profile:Profile;o
  const [f,setF]=useState<Profile>(profile);const [busy,setBusy]=useState(false);
  useEffect(()=>{if(open)setF(profile)},[open,profile]);
  function setGrade(g:string){const y=defaultExamYear(g);setF(p=>({...p,grade:g as Profile['grade'],examYear:y,examDate:estimatedExamDate(y)}))}
- async function save(e:React.FormEvent){e.preventDefault();setBusy(true);try{const d=await postJson('/api/profile',{...f,dailyGoal:Number(f.dailyGoal)||0},'PUT');onSave(d.profile);toast.success('Defterin hazır. İlk yanlışını ekleyerek başla!')}catch(err){toast.error((err as Error).message)}finally{setBusy(false)}}
+ async function save(e:React.FormEvent){e.preventDefault();setBusy(true);try{const d=await postJson('/api/profile',{...f,dailyGoal:Number(f.dailyGoal)||0},'PUT');const email=readSetting('remembered-email','');if(email&&d.profile)writeSetting('profile:'+email,JSON.stringify(d.profile));onSave(d.profile);toast.success('Defterin hazır. İlk yanlışını ekleyerek başla!')}catch(err){toast.error((err as Error).message)}finally{setBusy(false)}}
  return <Dialog open={open} onOpenChange={()=>{}}><DialogContent className="upload-dialog onboarding" showCloseButton={false}><DialogHeader><DialogTitle>netudu defterini kişiselleştirelim</DialogTitle><DialogDescription>Bu bilgiler geri sayım, konu menüsünde sınıfının öne alınması ve yapay zekâ notları için kullanılır.</DialogDescription></DialogHeader>
   <form onSubmit={save}><div className="form-grid"><label>Ad Soyad<input required minLength={2} maxLength={60} value={f.name} onChange={e=>setF({...f,name:e.target.value})}/></label><label>Sınıf<Choice label="Sınıf" value={f.grade} onChange={setGrade} values={grades}/></label><label>Hedef YKS yılı<input type="number" min={2026} max={2035} value={f.examYear} onChange={e=>{const y=Number(e.target.value)||f.examYear;setF({...f,examYear:y,examDate:estimatedExamDate(y)})}}/></label><label>Hedef bölüm <small>isteğe bağlı</small><input maxLength={80} placeholder="Örn. Tıp" value={f.target} onChange={e=>setF({...f,target:e.target.value})}/></label></div>
   <p className="inline-note">Sınav tarihi tahmini olarak {new Date(f.examDate+'T12:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})} alındı; ÖSYM açıklayınca Ayarlar'dan güncelleyebilirsin. ({gradeLabel(f.grade)})</p>

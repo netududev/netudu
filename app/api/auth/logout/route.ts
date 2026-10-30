@@ -1,9 +1,9 @@
-import {db,activeSupabaseConfig,failure,sameOrigin,readCookie,sha256,SESSION_COOKIE} from '@/lib/server';
+import {db,activeSupabaseConfig,failure,sameOrigin,readSessionToken,sha256} from '@/lib/server';
 import {supabaseAuthLogout} from '@/lib/supabase';
 import {clearSessionCookie} from '@/lib/auth';
 export async function POST(req:Request){try{
  sameOrigin(req);
- const token=readCookie(req,SESSION_COOKIE);
+ const token=readSessionToken(req);
  if(token){
   const sid=await sha256(token);
   const supa=activeSupabaseConfig();

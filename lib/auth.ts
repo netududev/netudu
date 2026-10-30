@@ -17,15 +17,19 @@ export const normalizeEmail=(e:string)=>e.trim().toLowerCase();
 export const validEmail=(e:string)=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)&&e.length<=200;
 export function checkPassword(p:string){if(p.length<8)throw new AppError('Şifre en az 8 karakter olmalı.');if(p.length>200)throw new AppError('Şifre çok uzun.');if(!/[A-Za-zÇĞİÖŞÜçğıöşü]/.test(p)||!/\d/.test(p))throw new AppError('Şifrede en az bir harf ve bir rakam olmalı.')}
 
-// Oturum: rastgele belirteç çerezde, özeti + aktif tenant_id + Supabase Auth JWT belirteçleri veritabanında. 30 gün geçerli.
+// Oturum: rastgele belirteç çerezde, özeti + aktif tenant_id + Supabase Auth JWT belirteçleri veritabanında.
+// Beni hatırla açıkken (varsayılan) 90 gün kalıcı çerez; kapalıyken tarayıcı oturumu çerezi (1 gün).
 export async function createSession(
  request:Request,
  userId:string,
- opts?:{tenantId?:string|null;sbAccessToken?:string|null;sbRefreshToken?:string|null}
+ opts?:{tenantId?:string|null;sbAccessToken?:string|null;sbRefreshToken?:string|null;remember?:boolean;tokenOut?:{token:string}}
 ){
+ const remember=opts?.remember!==false;
+ const days=remember?SESSION_DAYS:1;
  const token=randomToken();
+ if(opts?.tokenOut)opts.tokenOut.token=token;
  const now=new Date();
- const expires=new Date(now.getTime()+SESSION_DAYS*86400000);
+ const expires=new Date(now.getTime()+days*86400000);
  const uRow=await db().prepare('SELECT tenant_id,name,email FROM users WHERE id=?').bind(userId).first();
  const tInfo=await ensureUserTenant(db(),{
   userId,
@@ -47,10 +51,10 @@ export async function createSession(
   db().prepare('UPDATE users SET last_login_at=?,tenant_id=? WHERE id=?').bind(now.toISOString(),tenantId,userId),
   db().prepare('DELETE FROM sessions WHERE user_id=? AND expires_at<?').bind(userId,now.toISOString())
  ]);
- return sessionCookie(request,token,SESSION_DAYS*86400);
+ return sessionCookie(request,token,remember?SESSION_DAYS*86400:undefined);
 }
 
-export function sessionCookie(request:Request,token:string,maxAge:number){const secure=new URL(request.url).protocol==='https:'?'; Secure':'';return `${SESSION_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure}`}
+export function sessionCookie(request:Request,token:string,maxAge?:number){const secure=new URL(request.url).protocol==='https:'?'; Secure':'';const agePart=typeof maxAge==='number'?`; Max-Age=${maxAge}`:'';return `${SESSION_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax${agePart}${secure}`}
 export const clearSessionCookie=(request:Request)=>sessionCookie(request,'',0);
 
 // Kaba kuvvet koruması: anahtar başına pencere içinde en fazla N deneme.
@@ -76,12 +80,14 @@ export async function createUser(input:{
  existingId?:string;
  sbAccessToken?:string|null;
  sbRefreshToken?:string|null;
+ profileMeta?:Record<string,unknown>;
 }){
  await ensureSchema();
  const supa=activeSupabaseConfig();
  let id=input.existingId||crypto.randomUUID();
  let sbAccessToken:string|null=input.sbAccessToken||null;
  let sbRefreshToken:string|null=input.sbRefreshToken||null;
+ let sbMeta:Record<string,unknown>=input.profileMeta||{};
 
  // Supabase aktifse ve şifreli kayıt yapılıyorsa önce Supabase Auth (/auth/v1) üzerinde kullanıcıyı oluştur
  if(supa&&input.password&&!input.existingId){
@@ -98,6 +104,7 @@ export async function createUser(input:{
     id=sbLogin.user.id;
     sbAccessToken=sbLogin.user.accessToken;
     sbRefreshToken=sbLogin.user.refreshToken;
+    if(sbLogin.user.metadata)sbMeta={...sbMeta,...sbLogin.user.metadata};
    }else{
     throw new AppError('Bu e-posta adresiyle zaten bir hesap var. Giriş yapmayı dene.',409);
    }
@@ -105,6 +112,7 @@ export async function createUser(input:{
    id=sbRes.user.id;
    sbAccessToken=sbRes.user.accessToken;
    sbRefreshToken=sbRes.user.refreshToken;
+   if(sbRes.user.metadata)sbMeta={...sbMeta,...sbRes.user.metadata};
   }
  }
 
@@ -117,16 +125,17 @@ export async function createUser(input:{
  }
  const first=Number((await db().prepare('SELECT COUNT(*) AS n FROM users').first())?.n||0)===0;
  try{
-  const existingByEmail=await db().prepare('SELECT id,password_hash FROM users WHERE email=?').bind(input.email).first();
-  if(existingByEmail&&String(existingByEmail.id)!==id&&existingByEmail.password_hash){
+  const existingByEmail=await db().prepare('SELECT id,name,password_hash FROM users WHERE email=?').bind(input.email).first();
+  if(existingByEmail&&String(existingByEmail.id)!==id&&existingByEmail.password_hash&&!input.existingId){
    throw new AppError('Bu e-posta adresiyle zaten bir hesap var. Giriş yapmayı dene.',409);
   }
   if(existingByEmail){
    id=String(existingByEmail.id);
+   const effectiveName=input.grade?input.name:String(existingByEmail.name||input.name);
    await db().prepare('UPDATE users SET name=?,password_hash=?,password_salt=?,tenant_id=? WHERE id=?')
-    .bind(input.name,hash,salt,id,id).run();
+    .bind(effectiveName,hash,salt,id,id).run();
   }else{
-   await db().prepare('INSERT INTO users (id,email,name,password_hash,password_salt,google_sub,tenant_id,created_at) VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET name=excluded.name,password_hash=excluded.password_hash,password_salt=excluded.password_salt')
+   await db().prepare('INSERT INTO users (id,email,name,password_hash,password_salt,google_sub,tenant_id,created_at) VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET password_hash=excluded.password_hash,password_salt=excluded.password_salt')
     .bind(id,input.email,input.name,hash,salt,input.googleSub||null,id,now).run();
   }
  }catch(e){
@@ -144,8 +153,34 @@ export async function createUser(input:{
  });
 
  if(first)await db().batch(ownedTables.map(t=>db().prepare(`UPDATE OR IGNORE ${t} SET user_id=? WHERE user_id NOT IN (SELECT id FROM users)`).bind(tInfo.tenantId)));
- const p=profileFor(input.name,input.grade||'12');
- await db().prepare('INSERT INTO profiles (user_id,name,grade,target,exam_year,exam_date,motto,daily_goal,school,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO NOTHING')
-  .bind(tInfo.tenantId,p.name,p.grade,p.target,p.examYear,p.examDate,p.motto,p.dailyGoal,p.school,input.googleSub&&!input.grade?'':now).run();
+
+ // Mevcut profili kontrol et: Kullanıcının daha önce kaydettiği sınıf / hedef / okul bilgisi varsa ASLA sıfırlama!
+ const existingProf=(await db().prepare('SELECT * FROM profiles WHERE user_id=?').bind(tInfo.tenantId).first())||(tInfo.tenantId!==id?await db().prepare('SELECT * FROM profiles WHERE user_id=?').bind(id).first():null);
+ const rawMetaGrade=typeof sbMeta.grade==='string'&&['9','10','11','12','Mezun'].includes(sbMeta.grade)?(sbMeta.grade as Profile['grade']):undefined;
+ const chosenGrade=input.grade||rawMetaGrade||'12';
+ const baseProf=profileFor(typeof sbMeta.name==='string'&&sbMeta.name.trim()?sbMeta.name.trim():input.name,chosenGrade);
+ const mergedProf:Profile={
+  name:baseProf.name,
+  grade:baseProf.grade,
+  target:typeof sbMeta.target==='string'?sbMeta.target:baseProf.target,
+  examYear:typeof sbMeta.examYear==='number'&&sbMeta.examYear>=2026&&sbMeta.examYear<=2035?sbMeta.examYear:baseProf.examYear,
+  examDate:typeof sbMeta.examDate==='string'&&/^20\d{2}-\d{2}-\d{2}$/.test(sbMeta.examDate)?sbMeta.examDate:baseProf.examDate,
+  motto:typeof sbMeta.motto==='string'?sbMeta.motto:baseProf.motto,
+  dailyGoal:typeof sbMeta.dailyGoal==='number'?sbMeta.dailyGoal:baseProf.dailyGoal,
+  school:typeof sbMeta.school==='string'?sbMeta.school:baseProf.school
+ };
+
+ if(!existingProf){
+  await db().prepare('INSERT INTO profiles (user_id,name,grade,target,exam_year,exam_date,motto,daily_goal,school,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO NOTHING')
+   .bind(tInfo.tenantId,mergedProf.name,mergedProf.grade,mergedProf.target,mergedProf.examYear,mergedProf.examDate,mergedProf.motto,mergedProf.dailyGoal,mergedProf.school,input.googleSub&&!input.grade&&!rawMetaGrade?'':now).run();
+ }else if(input.grade&&!existingProf.target&&!existingProf.school){
+  // Yeni kayıt sırasında PostgreSQL trigger varsayılan satır açtıysa, kullanıcının kayıt ekranında seçtiği sınıfı uygula
+  await db().prepare('UPDATE profiles SET name=?,grade=?,exam_year=?,exam_date=?,updated_at=? WHERE user_id=?')
+   .bind(mergedProf.name,mergedProf.grade,mergedProf.examYear,mergedProf.examDate,now,tInfo.tenantId).run();
+ }else if(String(existingProf.user_id)!==tInfo.tenantId){
+  // Profil user.id altında kayıtlıysa aktif tenantId altına da kopyala
+  await db().prepare('INSERT INTO profiles (user_id,name,grade,target,exam_year,exam_date,motto,daily_goal,school,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO NOTHING')
+   .bind(tInfo.tenantId,String(existingProf.name||mergedProf.name),String(existingProf.grade||mergedProf.grade),String(existingProf.target||''),Number(existingProf.exam_year||mergedProf.examYear),String(existingProf.exam_date||mergedProf.examDate),String(existingProf.motto||''),Number(existingProf.daily_goal||0),String(existingProf.school||''),String(existingProf.updated_at||now)).run();
+ }
  return {id,tenantId:tInfo.tenantId,first,sbAccessToken,sbRefreshToken};
 }

@@ -126,6 +126,7 @@ export type SupabaseAuthUser={
  accessToken:string|null;
  refreshToken:string|null;
  tenantId?:string;
+ metadata?:Record<string,unknown>;
 };
 
 // Supabase Auth üzerinde yeni kullanıcı kaydeder (/auth/v1/admin/users veya /auth/v1/signup) ve oturum belirteci üretir.
@@ -160,7 +161,8 @@ export async function supabaseAuthSignUp(
      email:created.email||input.email,
      name:input.name,
      accessToken:loginRes.user?.accessToken||null,
-     refreshToken:loginRes.user?.refreshToken||null
+     refreshToken:loginRes.user?.refreshToken||null,
+     metadata:created.user_metadata||metadata
     }
    };
   }
@@ -196,7 +198,8 @@ export async function supabaseAuthSignUp(
     email:String(u.email||input.email),
     name:String(u.user_metadata?.name||input.name),
     accessToken:data.access_token?String(data.access_token):null,
-    refreshToken:data.refresh_token?String(data.refresh_token):null
+    refreshToken:data.refresh_token?String(data.refresh_token):null,
+    metadata:u.user_metadata||metadata
    }
   };
  }catch(e){
@@ -230,7 +233,8 @@ export async function supabaseAuthSignIn(
     name:String(u.user_metadata?.name||u.email?.split('@')[0]||'Öğrenci'),
     accessToken:data.access_token?String(data.access_token):null,
     refreshToken:data.refresh_token?String(data.refresh_token):null,
-    tenantId:u.user_metadata?.tenant_id?String(u.user_metadata.tenant_id):undefined
+    tenantId:u.user_metadata?.tenant_id?String(u.user_metadata.tenant_id):undefined,
+    metadata:u.user_metadata||{}
    }
   };
  }catch(e){
@@ -258,7 +262,8 @@ export async function supabaseAuthGetUser(
       name:String(u.user_metadata?.name||u.email?.split('@')[0]||'Öğrenci'),
       accessToken,
       refreshToken:refreshToken||null,
-      tenantId:u.user_metadata?.tenant_id?String(u.user_metadata.tenant_id):undefined
+      tenantId:u.user_metadata?.tenant_id?String(u.user_metadata.tenant_id):undefined,
+      metadata:u.user_metadata||{}
      }
     };
    }
@@ -281,7 +286,8 @@ export async function supabaseAuthGetUser(
        name:String(u.user_metadata?.name||u.email?.split('@')[0]||'Öğrenci'),
        accessToken:String(d.access_token),
        refreshToken:d.refresh_token?String(d.refresh_token):refreshToken,
-       tenantId:u.user_metadata?.tenant_id?String(u.user_metadata.tenant_id):undefined
+       tenantId:u.user_metadata?.tenant_id?String(u.user_metadata.tenant_id):undefined,
+       metadata:u.user_metadata||{}
       }
      };
     }
@@ -290,6 +296,33 @@ export async function supabaseAuthGetUser(
   return {user:null};
  }catch{
   return {user:null};
+ }
+}
+
+// Supabase Auth üzerinde kullanıcı profil / sınıf (user_metadata) bilgilerini günceller
+export async function supabaseAuthUpdateProfile(
+ cfg:SupabaseConfig,
+ userId:string,
+ accessToken:string|null|undefined,
+ profileData:Record<string,unknown>
+):Promise<boolean>{
+ try{
+  if(accessToken){
+   const r=await fetch(`${cfg.url}/auth/v1/user`,{
+    method:'PUT',
+    headers:{apikey:cfg.key,Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},
+    body:JSON.stringify({data:profileData})
+   });
+   if(r.ok)return true;
+  }
+  const ar=await fetch(`${cfg.url}/auth/v1/admin/users/${encodeURIComponent(userId)}`,{
+   method:'PUT',
+   headers:headers(cfg),
+   body:JSON.stringify({user_metadata:profileData})
+  });
+  return ar.ok;
+ }catch{
+  return false;
  }
 }
 
