@@ -20,10 +20,59 @@ export type Account={
  tenantRole?:'owner'|'admin'|'member';
  authProvider?:'supabase'|'local';
 };
-export type ApiResponse={error?:string;questions:Question[];question:Question;exams:Exam[];exam:Exam;aiReady:boolean;youtubeReady:boolean;supabaseReady?:boolean;user:Account|null;usage:Usage;profileSet:boolean;plan:PlanState|null;report:Report|null;previous:Report|null;videos:Video[];notice:string;added:number;received:number;notes:StudyNote[];note:StudyNote|null;profile:Profile};
+export type ApiResponse={error?:string;sessionToken?:string;questions:Question[];question:Question;exams:Exam[];exam:Exam;aiReady:boolean;youtubeReady:boolean;supabaseReady?:boolean;user:Account|null;usage:Usage;profileSet:boolean;plan:PlanState|null;report:Report|null;previous:Report|null;videos:Video[];notice:string;added:number;received:number;notes:StudyNote[];note:StudyNote|null;profile:Profile};
 export type UploadPreset={subject?:string;topic?:string;examType?:string;exam?:string;question?:string};
 export class ApiError extends Error{constructor(message:string,public status:number){super(message)}}
-export async function api(url:string,init?:RequestInit){const sTok=readSetting('session-token','');const mergedInit:RequestInit=sTok?{...init,headers:{'x-session-token':sTok,...((init?.headers as Record<string,string>)||{})}}:init||{};const r=await fetch(url,mergedInit);let data:ApiResponse;try{data=await r.json() as ApiResponse}catch{throw new ApiError('Sunucudan beklenmeyen yanıt geldi.',r.status)}if(!r.ok)throw new ApiError(data.error||'İşlem tamamlanamadı.',r.status);return data}
+export function authHeaders(extra?:Record<string,string>):Record<string,string>{
+ const sTok=readSetting('session-token','');
+ return {
+  'x-requested-with':'netudu',
+  ...(sTok?{'x-session-token':sTok}:{}),
+  ...(extra||{})
+ };
+}
+export async function api(url:string,init?:RequestInit){
+ const maxTries=2;
+ let lastErr:unknown=null;
+ for(let attempt=0;attempt<=maxTries;attempt++){
+  try{
+   const mergedInit:RequestInit={
+    credentials:'include',
+    ...init,
+    headers:authHeaders((init?.headers as Record<string,string>)||{})
+   };
+   const r=await fetch(url,mergedInit);
+   if((r.status===502||r.status===503||r.status===504)&&attempt<maxTries){
+    await new Promise(res=>setTimeout(res,350*(attempt+1)));
+    continue;
+   }
+   let data:ApiResponse;
+   try{
+    data=await r.json() as ApiResponse;
+   }catch{
+    if(attempt<maxTries){
+     await new Promise(res=>setTimeout(res,350*(attempt+1)));
+     continue;
+    }
+    throw new ApiError('Sunucudan beklenmeyen yanıt geldi.',r.status);
+   }
+   if(!r.ok)throw new ApiError(data.error||'İşlem tamamlanamadı.',r.status);
+   if(data.sessionToken&&readSetting('remember-me','1')!=='0'){
+    writeSetting('session-token',data.sessionToken);
+   }
+   return data;
+  }catch(e){
+   lastErr=e;
+   if(e instanceof ApiError)throw e;
+   if(attempt<maxTries){
+    await new Promise(res=>setTimeout(res,400*(attempt+1)));
+    continue;
+   }
+  }
+ }
+ if(lastErr instanceof ApiError)throw lastErr;
+ throw new ApiError('Sunucuya bağlanılamadı. Mobil veri veya Wi-Fi bağlantını kontrol edip tekrar dene.',0);
+}
 export const postJson=(url:string,body:unknown,method='POST')=>api(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
 export const dates=(d:string)=>new Date(d+'T12:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'short',year:'numeric'});
 export const monthLabel=(m:string)=>new Date(m+'-01T12:00:00').toLocaleDateString('tr-TR',{month:'long',year:'numeric'});

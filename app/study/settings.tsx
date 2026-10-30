@@ -5,7 +5,7 @@ import {ThemeSwitch} from './theme';
 import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel} from '@/components/ui/alert-dialog';
 import {toast} from 'sonner';
 import {daysUntil,defaultExamYear,estimatedExamDate,initials,type Profile} from '@/lib/study';
-import {useStudy,api,postJson,Choice,kindLabel,writeSetting,type AiKind} from './shared';
+import {useStudy,api,postJson,Choice,kindLabel,writeSetting,authHeaders,type AiKind} from './shared';
 import {planStats,TEMPO_OPTIONS,SPORT_PROGRAMS} from '@/lib/plan/scheduler';
 import {testAlarm,askNotificationPermission} from './plan/alarm';
 import {localToday,shortDate} from './plan/ui';
@@ -53,7 +53,7 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
  useEffect(()=>{setForm(s.profile)},[s.profile]);
  useEffect(()=>{
   if(isDev){
-   fetch('/api/supabase').then(r=>r.json() as Promise<SupaState>).then(d=>{
+   fetch('/api/supabase',{credentials:'include',headers:authHeaders()}).then(r=>r.json() as Promise<SupaState>).then(d=>{
     setSupa(d);
     if(d.url)setSupaForm(f=>({...f,url:d.url}));
     if(d.ai?.model)setAiForm(f=>({...f,openaiModel:d.ai!.model}));
@@ -65,12 +65,12 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
     }
    }).catch(()=>{});
   }
-  fetch('/api/tenant').then(r=>r.json() as Promise<TenantPayload>).then(d=>{if(d?.active)setTState(d)}).catch(()=>{});
+  fetch('/api/tenant',{credentials:'include',headers:authHeaders()}).then(r=>r.json() as Promise<TenantPayload>).then(d=>{if(d?.active)setTState(d)}).catch(()=>{});
  },[isDev]);
  async function saveOpenAi(e:React.FormEvent){
   e.preventDefault();setAiBusy(true);setAiNotice(null);
   try{
-   const r=await fetch('/api/supabase',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'save_openai',...aiForm})});
+   const r=await fetch('/api/supabase',{method:'POST',credentials:'include',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify({action:'save_openai',...aiForm})});
    const d=await r.json() as {ai?:AiStatus;message?:string;error?:string};
    if(!r.ok)throw new Error(d.error||'OpenAI API bağlanamadı.');
    setSupa(prev=>prev?{...prev,ai:d.ai}:{connected:false,url:'',source:'none',tablesReady:false,message:'',ai:d.ai});
@@ -89,7 +89,7 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
   if(!confirm('OpenAI API bağlantısı kaldırılsın mı?'))return;
   setAiBusy(true);setAiNotice(null);
   try{
-   const r=await fetch('/api/supabase',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'disconnect_openai'})});
+   const r=await fetch('/api/supabase',{method:'POST',credentials:'include',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify({action:'disconnect_openai'})});
    const d=await r.json() as {ai?:AiStatus;message?:string;error?:string};
    if(!r.ok)throw new Error(d.error||'İşlem tamamlanamadı.');
    setSupa(prev=>prev?{...prev,ai:d.ai}:prev);
@@ -105,7 +105,7 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
  async function saveSupabase(e:React.FormEvent){
   e.preventDefault();setSupaBusy(true);setSupaNotice(null);
   try{
-   const r=await fetch('/api/supabase',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(supaForm)});
+   const r=await fetch('/api/supabase',{method:'POST',credentials:'include',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify(supaForm)});
    const d=await r.json() as SupaState&{error?:string};
    if(!r.ok)throw new Error(d.error||'Supabase bağlanamadı.');
    setSupa(d);
@@ -114,7 +114,7 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
    setSupaNotice({type:'good',text:msg});
    toast.success(msg);
    await s.reload();
-   const td=await fetch('/api/tenant').then(x=>x.json() as Promise<TenantPayload>).catch(()=>null);
+   const td=await fetch('/api/tenant',{credentials:'include',headers:authHeaders()}).then(x=>x.json() as Promise<TenantPayload>).catch(()=>null);
    if(td?.active)setTState(td);
   }catch(err){
    const msg=(err as Error).message;
@@ -125,13 +125,13 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
  async function syncSupabase(){
   setSupaBusy(true);
   try{
-   const r=await fetch('/api/supabase',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'sync'})});
+   const r=await fetch('/api/supabase',{method:'POST',credentials:'include',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify({action:'sync'})});
    const d=await r.json() as {message?:string;error?:string};
    if(!r.ok)throw new Error(d.error||'Senkronizasyon başarısız.');
    const msg=d.message||'Veriler Supabase ile senkronize edildi.';
    setSupaNotice({type:'good',text:msg});
    toast.success(msg);
-   const st=await fetch('/api/supabase').then(x=>x.json() as Promise<SupaState>);
+   const st=await fetch('/api/supabase',{credentials:'include',headers:authHeaders()}).then(x=>x.json() as Promise<SupaState>);
    setSupa(st);
   }catch(err){
    const msg=(err as Error).message;
@@ -143,7 +143,7 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
   if(!confirm('Supabase bağlantısı kaldırılıp yerel D1 veritabanına dönülsün mü?'))return;
   setSupaBusy(true);
   try{
-   const r=await fetch('/api/supabase',{method:'DELETE'});
+   const r=await fetch('/api/supabase',{method:'DELETE',credentials:'include',headers:authHeaders()});
    const d=await r.json() as SupaState;
    setSupa(d);
    setSupaForm({url:'',key:''});
@@ -159,7 +159,7 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
  async function runTenantOp(body:Record<string,unknown>,reloadAll=false){
   setTBusy(true);
   try{
-   const r=await fetch('/api/tenant',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+   const r=await fetch('/api/tenant',{method:'POST',credentials:'include',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify(body)});
    const d=await r.json() as TenantPayload;
    if(!r.ok)throw new Error(d.error||'İşlem tamamlanamadı.');
    setTState(d);
@@ -180,7 +180,7 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
  async function refreshUsers(){
   setUsersBusy(true);
   try{
-   const r=await fetch('/api/supabase',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'list_users'})});
+   const r=await fetch('/api/supabase',{method:'POST',credentials:'include',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify({action:'list_users'})});
    const d=await r.json() as {users?:RegisteredUser[];error?:string};
    if(!r.ok)throw new Error(d.error||'Kullanıcı listesi alınamadı.');
    setSupa(prev=>prev?{...prev,users:d.users||[]}:null);

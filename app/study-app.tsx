@@ -53,8 +53,26 @@ export default function StudyApp(){
    }
   }
   if(activeProf)setProfile(activeProf);
-  setAi(d.aiReady);setYoutube(!!d.youtubeReady);setSupabase(!!d.supabaseReady);setUser(d.user);setUsage(d.usage||null);setProfileSet(isProfSet);setPlan(d.plan||null);setAuthed(true);setError('')}catch(e){if(e instanceof ApiError&&e.status===401){setAuthed(false);setRows([]);setExams([])}else{setAuthed(true);setError((e as Error).message)}}finally{setLoading(false)}},[]);
+  if(d.sessionToken&&readSetting('remember-me','1')!=='0'){
+   writeSetting('session-token',d.sessionToken);
+  }
+  setAi(d.aiReady);setYoutube(!!d.youtubeReady);setSupabase(!!d.supabaseReady);setUser(d.user);setUsage(d.usage||null);setProfileSet(isProfSet);setPlan(d.plan||null);setAuthed(true);setError('')}catch(e){
+  if(e instanceof ApiError&&e.status===401){
+   writeSetting('session-token','');
+   setAuthed(false);setRows([]);setExams([]);
+  }else{
+   const hasSavedSession=!!readSetting('session-token','');
+   if(hasSavedSession){
+    setAuthed(true);
+    setError((e as Error).message);
+   }else{
+    setAuthed(false);
+    setRows([]);setExams([]);
+   }
+  }
+ }finally{setLoading(false)}},[]);
  useEffect(()=>{void load()},[load]);
+ useEffect(()=>{const onOnline=()=>{if(error||authed===false)void load()};window.addEventListener('online',onOnline);return()=>window.removeEventListener('online',onOnline)},[error,authed,load]);
  // Google dönüşü, hata ya da ?kayit ile gelenler tanıtım sayfasını atlayıp doğrudan giriş ekranını görür
  useEffect(()=>{const q=new URLSearchParams(location.search);if(q.get('auth_error')||location.hash.includes('access_token='))setAuthMode('login');else if(q.get('kayit')!==null)setAuthMode('register')},[]);
  // Yeni hesap: programı yoksa kurulum sihirbazını bir kez kendiliğinden aç

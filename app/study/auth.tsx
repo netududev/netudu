@@ -4,7 +4,7 @@ import {LogIn,UserPlus,Eye,EyeOff,LoaderCircle,Sparkles,RotateCcw,ChartNoAxesCom
 import {toast} from 'sonner';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {defaultExamYear,estimatedExamDate,type Profile} from '@/lib/study';
-import {postJson,Choice,readSetting,writeSetting} from './shared';
+import {postJson,Choice,readSetting,writeSetting,authHeaders} from './shared';
 import {Logo} from './logo';
 
 const DEV_EMAIL='netududev@gmail.com';
@@ -29,10 +29,11 @@ export function AuthScreen({onDone,onBack,initialMode='login'}:{onDone:()=>void;
   if(savedEmail||!savedRemember){
    setF(prev=>({...prev,email:savedEmail||prev.email,remember:savedRemember}));
   }
-  fetch('/api/auth/me').then(r=>r.json() as Promise<{googleReady?:boolean;registrationOpen?:boolean;authProvider?:'supabase'|'local'}>).then(d=>{
+  fetch('/api/auth/me',{credentials:'include',headers:authHeaders()}).then(r=>r.json() as Promise<{googleReady?:boolean;registrationOpen?:boolean;authProvider?:'supabase'|'local';sessionToken?:string}>).then(d=>{
    setGoogle(!!d.googleReady);
    setOpen(d.registrationOpen!==false);
    if(d.authProvider)setAuthProvider(d.authProvider);
+   if(d.sessionToken&&readSetting('remember-me','1')!=='0')writeSetting('session-token',d.sessionToken);
   }).catch(()=>{});
   if(location.hash&&location.hash.includes('access_token=')){
    const hp=new URLSearchParams(location.hash.replace(/^#/,''));
@@ -41,7 +42,8 @@ export function AuthScreen({onDone,onBack,initialMode='login'}:{onDone:()=>void;
    if(accessToken){
     history.replaceState(null,'','/');
     setBusy(true);
-    postJson('/api/auth/me',{accessToken,refreshToken}).then(()=>{
+    postJson('/api/auth/me',{accessToken,refreshToken}).then((d:any)=>{
+     if(d?.sessionToken)writeSetting('session-token',d.sessionToken);
      toast.success('Supabase Google hesabınla giriş yapıldı!');
      onDone();
     }).catch(err=>{
@@ -82,7 +84,8 @@ export function AuthScreen({onDone,onBack,initialMode='login'}:{onDone:()=>void;
     if(resetStep==='email'){
      const r=await fetch('/api/auth/forgot-password',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      headers:authHeaders({'Content-Type':'application/json'}),
       body:JSON.stringify({action:'request',email:f.email})
      });
      const d=await r.json() as {ok?:boolean;message?:string;previewCode?:string;error?:string};
@@ -94,11 +97,13 @@ export function AuthScreen({onDone,onBack,initialMode='login'}:{onDone:()=>void;
     }
     const r=await fetch('/api/auth/forgot-password',{
      method:'POST',
-     headers:{'Content-Type':'application/json'},
+     credentials:'include',
+     headers:authHeaders({'Content-Type':'application/json'}),
      body:JSON.stringify({action:'verify',email:f.email,code:resetCode,password:resetPassword})
     });
-    const d=await r.json() as {ok?:boolean;message?:string;error?:string};
+    const d=await r.json() as {ok?:boolean;message?:string;sessionToken?:string;error?:string};
     if(!r.ok)throw new Error(d.error||'Şifre sıfırlanamadı.');
+    if(d.sessionToken&&f.remember)writeSetting('session-token',d.sessionToken);
     toast.success(d.message||'Şifren başarıyla sıfırlandı ve giriş yapıldı!');
     onDone();
     return;

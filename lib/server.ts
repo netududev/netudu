@@ -127,7 +127,7 @@ export function readSessionToken(request:Request){return readCookie(request,SESS
 export async function sha256(text:string){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('')}
 // Yönetici: netududev@gmail.com her zaman geliştirici ve yöneticidir; ayrıca ADMIN_EMAILS listesindekiler.
 export function isAdmin(email:string,first:boolean){if(isDeveloper(email))return true;const list=(bindings().ADMIN_EMAILS||'').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean);return list.length?list.includes(email.toLowerCase()):first}
-// Oturum çerezinden veya x-session-token başlığından (Beni hatırla) kullanıcıyı ve aktif Tenant bilgisini bulur; Supabase Auth aktifse JWT oturumunu da doğrular.
+// Oturum çerezinden veya x-session-token başlığından (Beni hatırla) kullanıcıyı ve aktif Tenant bilgisini bulur.
 export async function sessionUser(request:Request):Promise<SessionUser|null>{
  const token=readSessionToken(request);
  if(!token||token.length<20||token.length>200)return null;
@@ -139,30 +139,27 @@ export async function sessionUser(request:Request):Promise<SessionUser|null>{
  const email=String(row.email);
  const name=String(row.name);
  const supa=activeSupabaseConfig();
- let sbAccessToken=row.sb_access_token?String(row.sb_access_token):undefined;
- const sbRefreshToken=row.sb_refresh_token?String(row.sb_refresh_token):undefined;
+ const sbAccessToken=row.sb_access_token?String(row.sb_access_token):undefined;
 
- // Supabase bağlıysa ve oturumda Supabase Auth JWT varsa, Supabase Auth (/auth/v1/user) üzerinden doğrula / yenile
- if(supa&&sbAccessToken){
-  const verified=await supabaseAuthGetUser(supa,sbAccessToken,sbRefreshToken);
-  if(verified.user){
-   if(verified.refreshed&&verified.user.accessToken){
-    sbAccessToken=verified.user.accessToken;
-    await db().prepare('UPDATE sessions SET sb_access_token=?,sb_refresh_token=? WHERE id=?').bind(verified.user.accessToken,verified.user.refreshToken||sbRefreshToken||null,sid).run().catch(()=>{});
-   }
-  }
- }
+ let effectiveTenantId=String(row.session_tenant_id||row.tenant_id||userId);
+ let tenantName=`${name||'Öğrenci'} Çalışma Alanı`;
+ let tenantRole:('owner'|'admin'|'member')='owner';
 
- const tInfo=await ensureUserTenant(db(),{userId,name,email});
- const effectiveTenantId=row.session_tenant_id?String(row.session_tenant_id):tInfo.tenantId;
- let tenantName=tInfo.tenantName;
- let tenantRole=tInfo.tenantRole;
- if(effectiveTenantId!==tInfo.tenantId){
-  const mRow=await db().prepare('SELECT role FROM tenant_members WHERE tenant_id=? AND user_id=?').bind(effectiveTenantId,userId).first();
-  const tRow=await db().prepare('SELECT name FROM tenants WHERE id=?').bind(effectiveTenantId).first();
+ if(!row.tenant_id&&!row.session_tenant_id){
+  const tInfo=await ensureUserTenant(db(),{userId,name,email});
+  effectiveTenantId=tInfo.tenantId;
+  tenantName=tInfo.tenantName;
+  tenantRole=tInfo.tenantRole;
+ }else if(effectiveTenantId!==userId){
+  const [mRow,tRow]=await Promise.all([
+   db().prepare('SELECT role FROM tenant_members WHERE tenant_id=? AND user_id=?').bind(effectiveTenantId,userId).first(),
+   db().prepare('SELECT name FROM tenants WHERE id=?').bind(effectiveTenantId).first()
+  ]);
   if(mRow&&tRow){
    tenantName=String(tRow.name);
    tenantRole=(String(mRow.role||'member') as 'owner'|'admin'|'member');
+  }else{
+   effectiveTenantId=userId;
   }
  }
  const dev=isDeveloper(email);
@@ -181,7 +178,26 @@ export async function sessionUser(request:Request):Promise<SessionUser|null>{
   sbAccessToken
  };
 }
-export function sameOrigin(request:Request){if(['GET','HEAD'].includes(request.method))return;const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)throw new AppError('Bu istek kabul edilmedi.',403)}
+export function sameOrigin(request:Request){
+ if(['GET','HEAD','OPTIONS'].includes(request.method))return;
+ if(request.headers.get('x-requested-with')||request.headers.get('x-session-token'))return;
+ const sfs=(request.headers.get('sec-fetch-site')||'').toLowerCase();
+ if(sfs==='same-origin'||sfs==='same-site'||sfs==='none')return;
+ const origin=request.headers.get('origin');
+ if(!origin||origin==='null')return;
+ try{
+  const norm=(h:string)=>h.trim().toLowerCase().replace(/^www\./,'').split(':')[0];
+  const originHost=norm(new URL(origin).hostname);
+  const reqHost=norm(new URL(request.url).hostname);
+  const fwdHost=norm((request.headers.get('x-forwarded-host')||'').split(',')[0]||'');
+  const hdrHost=norm((request.headers.get('host')||'').split(',')[0]||'');
+  const appHost=bindings().APP_URL?norm(new URL(bindings().APP_URL!).hostname):'';
+  if(originHost===reqHost||originHost===fwdHost||originHost===hdrHost||(appHost&&originHost===appHost))return;
+ }catch{
+  return;
+ }
+ throw new AppError('Bu istek kabul edilmedi.',403);
+}
 export async function requireUser(request:Request):Promise<SessionUser>{sameOrigin(request);const u=await sessionUser(request);if(!u)throw new AppError('Oturumun kapalı. Devam etmek için giriş yap.',401);return u}
 // Tüm çalışma verileri (sorular, denemeler, raporlar, ders notları, çalışma planı) kullanıcının aktif Tenant'ı (tenantId) kapsamında izole edilir.
 export async function owner(request:Request){const u=await requireUser(request);return u.tenantId||u.id}

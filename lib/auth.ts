@@ -30,13 +30,20 @@ export async function createSession(
  if(opts?.tokenOut)opts.tokenOut.token=token;
  const now=new Date();
  const expires=new Date(now.getTime()+days*86400000);
- const uRow=await db().prepare('SELECT tenant_id,name,email FROM users WHERE id=?').bind(userId).first();
- const tInfo=await ensureUserTenant(db(),{
-  userId,
-  name:String(uRow?.name||'Öğrenci'),
-  email:uRow?.email?String(uRow.email):undefined
- });
- const tenantId=opts?.tenantId||tInfo.tenantId||userId;
+ let tenantId=opts?.tenantId||'';
+ if(!tenantId){
+  const uRow=await db().prepare('SELECT tenant_id,name,email FROM users WHERE id=?').bind(userId).first();
+  if(uRow?.tenant_id){
+   tenantId=String(uRow.tenant_id);
+  }else{
+   const tInfo=await ensureUserTenant(db(),{
+    userId,
+    name:String(uRow?.name||'Öğrenci'),
+    email:uRow?.email?String(uRow.email):undefined
+   });
+   tenantId=tInfo.tenantId||userId;
+  }
+ }
  await db().batch([
   db().prepare('INSERT INTO sessions (id,user_id,tenant_id,sb_access_token,sb_refresh_token,created_at,expires_at,user_agent) VALUES (?,?,?,?,?,?,?,?)').bind(
    await sha256(token),
@@ -54,14 +61,28 @@ export async function createSession(
  return sessionCookie(request,token,remember?SESSION_DAYS*86400:undefined);
 }
 
-export function sessionCookie(request:Request,token:string,maxAge?:number){const secure=new URL(request.url).protocol==='https:'?'; Secure':'';const agePart=typeof maxAge==='number'?`; Max-Age=${maxAge}`:'';return `${SESSION_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax${agePart}${secure}`}
+export function sessionCookie(request:Request,token:string,maxAge?:number){
+ const isHttps=new URL(request.url).protocol==='https:'||(request.headers.get('x-forwarded-proto')||'').toLowerCase().includes('https');
+ const secure=isHttps?'; Secure':'';
+ const agePart=typeof maxAge==='number'?`; Max-Age=${maxAge}; Expires=${new Date(Date.now()+maxAge*1000).toUTCString()}`:'';
+ return `${SESSION_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax${agePart}${secure}`;
+}
 export const clearSessionCookie=(request:Request)=>sessionCookie(request,'',0);
 
-// Kaba kuvvet koruması: anahtar başına pencere içinde en fazla N deneme.
-export async function throttleCheck(key:string,max:number){const row=await db().prepare('SELECT count,reset_at FROM auth_attempts WHERE key=?').bind(key).first();if(row&&String(row.reset_at)>new Date().toISOString()&&Number(row.count)>=max)throw new AppError('Çok fazla deneme yapıldı. 15 dakika sonra tekrar dene.',429)}
-export async function throttleHit(key:string,minutes=15){const now=new Date();const reset=new Date(now.getTime()+minutes*60000).toISOString();await db().prepare('INSERT INTO auth_attempts (key,count,reset_at) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN auth_attempts.reset_at<? THEN 1 ELSE auth_attempts.count+1 END, reset_at=CASE WHEN auth_attempts.reset_at<? THEN excluded.reset_at ELSE auth_attempts.reset_at END').bind(key,reset,now.toISOString(),now.toISOString()).run()}
-export const throttleClear=(key:string)=>db().prepare('DELETE FROM auth_attempts WHERE key=?').bind(key).run();
-export const clientIp=(r:Request)=>r.headers.get('cf-connecting-ip')||r.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||'local';
+// Kaba kuvvet koruması: anahtar başına pencere içinde en fazla N deneme (mobil operatör CGNAT ortak IP'leri için esnek sınır).
+export async function throttleCheck(key:string,max:number){
+ if(key.endsWith(':local'))return;
+ const effectiveMax=(key.includes('-ip:')||key.startsWith('register:'))?Math.max(max*5,100):max;
+ const row=await db().prepare('SELECT count,reset_at FROM auth_attempts WHERE key=?').bind(key).first();
+ if(row&&String(row.reset_at)>new Date().toISOString()&&Number(row.count)>=effectiveMax)throw new AppError('Çok fazla deneme yapıldı. 15 dakika sonra tekrar dene.',429);
+}
+export async function throttleHit(key:string,minutes=15){
+ if(key.endsWith(':local'))return;
+ const now=new Date();const reset=new Date(now.getTime()+minutes*60000).toISOString();
+ await db().prepare('INSERT INTO auth_attempts (key,count,reset_at) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN auth_attempts.reset_at<? THEN 1 ELSE auth_attempts.count+1 END, reset_at=CASE WHEN auth_attempts.reset_at<? THEN excluded.reset_at ELSE auth_attempts.reset_at END').bind(key,reset,now.toISOString(),now.toISOString()).run().catch(()=>{});
+}
+export const throttleClear=(key:string)=>db().prepare('DELETE FROM auth_attempts WHERE key=?').bind(key).run().catch(()=>{});
+export const clientIp=(r:Request)=>r.headers.get('cf-connecting-ip')||r.headers.get('x-real-ip')||r.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||'local';
 
 export const registrationOpen=()=>bindings().REGISTRATION_OPEN!=='false';
 export const appOrigin=(req:Request)=>(bindings().APP_URL||new URL(req.url).origin).replace(/\/$/,'');

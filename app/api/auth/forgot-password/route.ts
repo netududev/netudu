@@ -193,12 +193,15 @@ export async function POST(req:Request){
    const tInfo=await ensureUserTenant(db(),{userId,name:String(uRow.name||'Öğrenci'),email});
    await throttleClear('login:'+email);
    await throttleClear('pwreset-req:'+email);
+   const tokenOut={token:''};
    const cookie=await createSession(req,userId,{
     tenantId:tInfo.tenantId,
-    sbAccessToken:sbToken&&sbToken!=='verified'?sbToken:null
+    sbAccessToken:sbToken&&sbToken!=='verified'?sbToken:null,
+    tokenOut
    });
    return Response.json({
     ok:true,
+    sessionToken:tokenOut.token,
     message:'Şifren başarıyla sıfırlandı ve hesabına giriş yapıldı!'
    },{headers:{'Set-Cookie':cookie}});
   }

@@ -96,6 +96,7 @@ function headers(cfg:SupabaseConfig,extra?:Record<string,string>):Record<string,
 async function restFetch(cfg:SupabaseConfig,path:string,init?:RequestInit){
  return fetch(`${cfg.url}/rest/v1/${path}`,{
   ...init,
+  signal:init?.signal||AbortSignal.timeout(8000),
   headers:{...headers(cfg),...((init?.headers as Record<string,string>)||{})}
  });
 }
@@ -407,35 +408,55 @@ export async function ensureUserTenant(
  input:{userId:string;name:string;email?:string;tenantName?:string}
 ):Promise<{tenantId:string;tenantName:string;tenantRole:'owner'|'admin'|'member'}>{
  const now=new Date().toISOString();
- const uRow=await database.prepare('SELECT id,tenant_id,name FROM users WHERE id=?').bind(input.userId).first();
+ const defaultName=(input.tenantName||`${input.name||'Öğrenci'} Çalışma Alanı`).trim().slice(0,80);
+ const [uRow,ownTenant,ownMem]=await Promise.all([
+  database.prepare('SELECT id,tenant_id,name FROM users WHERE id=?').bind(input.userId).first(),
+  database.prepare('SELECT id,name,slug FROM tenants WHERE id=?').bind(input.userId).first(),
+  database.prepare('SELECT role FROM tenant_members WHERE tenant_id=? AND user_id=?').bind(input.userId,input.userId).first()
+ ]);
  let activeTenantId=uRow?.tenant_id?String(uRow.tenant_id):input.userId;
 
- // Kullanıcının kendi varsayılan tenant'ı (id = userId) yoksa oluştur
- const ownTenant=await database.prepare('SELECT id,name,slug FROM tenants WHERE id=?').bind(input.userId).first();
- const defaultName=(input.tenantName||`${input.name||'Öğrenci'} Çalışma Alanı`).trim().slice(0,80);
+ // Hızlı yol: kendi tenant'ı ve üyeliği zaten varsa ve aktif tenant kendi tenant'ıysa ek sorgu yapmadan dön
+ if(ownTenant&&ownMem&&activeTenantId===input.userId&&String(uRow?.tenant_id||'')===input.userId){
+  return {
+   tenantId:input.userId,
+   tenantName:String(ownTenant.name||defaultName),
+   tenantRole:(String(ownMem.role||'owner') as 'owner'|'admin'|'member')
+  };
+ }
+
+ const writes:Promise<unknown>[]=[];
  if(!ownTenant){
   const slug=`${slugifyTenant(defaultName)}-${input.userId.slice(0,6).toLowerCase()}`;
-  await database.prepare('INSERT INTO tenants (id,name,slug,owner_id,plan,created_at) VALUES (?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING')
-   .bind(input.userId,defaultName,slug,input.userId,'free',now).run();
+  writes.push(database.prepare('INSERT INTO tenants (id,name,slug,owner_id,plan,created_at) VALUES (?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING')
+   .bind(input.userId,defaultName,slug,input.userId,'free',now).run());
  }
- await database.prepare('INSERT INTO tenant_members (tenant_id,user_id,role,created_at) VALUES (?,?,?,?) ON CONFLICT(tenant_id,user_id) DO NOTHING')
-  .bind(input.userId,input.userId,'owner',now).run();
+ if(!ownMem){
+  writes.push(database.prepare('INSERT INTO tenant_members (tenant_id,user_id,role,created_at) VALUES (?,?,?,?) ON CONFLICT(tenant_id,user_id) DO NOTHING')
+   .bind(input.userId,input.userId,'owner',now).run());
+ }
+ if(writes.length)await Promise.all(writes);
 
- // Aktif tenant'ta üyeliği var mı kontrol et; yoksa kendi tenant'ına dön
- const mem=await database.prepare('SELECT role FROM tenant_members WHERE tenant_id=? AND user_id=?').bind(activeTenantId,input.userId).first();
  let role:('owner'|'admin'|'member')='owner';
- if(!mem){
-  activeTenantId=input.userId;
- }else{
-  role=(String(mem.role||'member') as 'owner'|'admin'|'member');
+ let tenantName=String(ownTenant?.name||defaultName);
+ if(activeTenantId!==input.userId){
+  const [mem,tRow]=await Promise.all([
+   database.prepare('SELECT role FROM tenant_members WHERE tenant_id=? AND user_id=?').bind(activeTenantId,input.userId).first(),
+   database.prepare('SELECT name FROM tenants WHERE id=?').bind(activeTenantId).first()
+  ]);
+  if(!mem){
+   activeTenantId=input.userId;
+  }else{
+   role=(String(mem.role||'member') as 'owner'|'admin'|'member');
+   if(tRow?.name)tenantName=String(tRow.name);
+  }
  }
  if(!uRow?.tenant_id||String(uRow.tenant_id)!==activeTenantId){
   await database.prepare('UPDATE users SET tenant_id=? WHERE id=?').bind(activeTenantId,input.userId).run();
  }
- const tRow=await database.prepare('SELECT name FROM tenants WHERE id=?').bind(activeTenantId).first();
  return {
   tenantId:activeTenantId,
-  tenantName:String(tRow?.name||defaultName),
+  tenantName,
   tenantRole:role
  };
 }
@@ -810,19 +831,16 @@ export function createSupabaseD1(cfg:SupabaseConfig,fallback:D1Database|null):D1
    return new SupabasePreparedStatement(cfg,fallback,sql) as unknown as D1PreparedStatement;
   },
   async batch<T=unknown>(statements:D1PreparedStatement[]){
-   const out:D1Result<T>[]=[];
-   for(const st of statements){
+   return Promise.all(statements.map(async st=>{
     const s=st as unknown as SupabasePreparedStatement;
     const isSelect=/^\s*SELECT\b/i.test((s as any).sql||'');
     if(isSelect){
      const r=await s.all<T>();
-     out.push({results:r.results,success:true,meta:r.meta as any});
-    }else{
-     const r=await s.run();
-     out.push({results:[],success:true,meta:r.meta as any});
+     return {results:r.results,success:true,meta:r.meta as any} as D1Result<T>;
     }
-   }
-   return out;
+    const r=await s.run();
+    return {results:[],success:true,meta:r.meta as any} as D1Result<T>;
+   }));
   },
   async exec(sql:string){
    if(fallback)return fallback.exec(sql);
