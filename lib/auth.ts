@@ -1,7 +1,7 @@
 // Hesap ve Multi-Tenant sistemi: Supabase Auth (/auth/v1) + yerel PBKDF2-SHA256 yedekli kimlik doğrulama,
 // otomatik Tenant (çalışma alanı / kurum) oluşturma, oturum çerezi ve deneme sınırı.
 import {db,bindings,activeSupabaseConfig,AppError,sha256,SESSION_COOKIE,SESSION_DAYS,ensureSchema} from './server';
-import {supabaseAuthSignUp,ensureUserTenant} from './supabase';
+import {supabaseAuthSignUp,supabaseAuthSignIn,ensureUserTenant} from './supabase';
 import {profileFor,type Profile} from './study';
 
 const ITERATIONS=100000;
@@ -93,9 +93,15 @@ export async function createUser(input:{
    tenantName:input.tenantName
   });
   if(sbRes.duplicate){
-   throw new AppError('Bu e-posta adresiyle zaten bir hesap var. Giriş yapmayı dene.',409);
-  }
-  if(sbRes.user?.id){
+   const sbLogin=await supabaseAuthSignIn(supa,{email:input.email,password:input.password});
+   if(sbLogin.user?.id){
+    id=sbLogin.user.id;
+    sbAccessToken=sbLogin.user.accessToken;
+    sbRefreshToken=sbLogin.user.refreshToken;
+   }else{
+    throw new AppError('Bu e-posta adresiyle zaten bir hesap var. Giriş yapmayı dene.',409);
+   }
+  }else if(sbRes.user?.id){
    id=sbRes.user.id;
    sbAccessToken=sbRes.user.accessToken;
    sbRefreshToken=sbRes.user.refreshToken;
@@ -111,17 +117,16 @@ export async function createUser(input:{
  }
  const first=Number((await db().prepare('SELECT COUNT(*) AS n FROM users').first())?.n||0)===0;
  try{
-  // Supabase trigger (on_auth_user_created) kullanıcıyı zaten public.users içine eklemiş olabilir;
-  // bu nedenle ON CONFLICT(id) ile güvenli şekilde yazarız veya güncelleriz.
-  const existingByEmail=await db().prepare('SELECT id FROM users WHERE email=?').bind(input.email).first();
-  if(existingByEmail&&String(existingByEmail.id)!==id){
+  const existingByEmail=await db().prepare('SELECT id,password_hash FROM users WHERE email=?').bind(input.email).first();
+  if(existingByEmail&&String(existingByEmail.id)!==id&&existingByEmail.password_hash){
    throw new AppError('Bu e-posta adresiyle zaten bir hesap var. Giriş yapmayı dene.',409);
   }
-  if(existingByEmail&&String(existingByEmail.id)===id){
+  if(existingByEmail){
+   id=String(existingByEmail.id);
    await db().prepare('UPDATE users SET name=?,password_hash=?,password_salt=?,tenant_id=? WHERE id=?')
     .bind(input.name,hash,salt,id,id).run();
   }else{
-   await db().prepare('INSERT INTO users (id,email,name,password_hash,password_salt,google_sub,tenant_id,created_at) VALUES (?,?,?,?,?,?,?,?)')
+   await db().prepare('INSERT INTO users (id,email,name,password_hash,password_salt,google_sub,tenant_id,created_at) VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET name=excluded.name,password_hash=excluded.password_hash,password_salt=excluded.password_salt')
     .bind(id,input.email,input.name,hash,salt,input.googleSub||null,id,now).run();
   }
  }catch(e){

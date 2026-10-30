@@ -46,7 +46,7 @@ try{
  const url=(d.out.match(/https:\/\/[a-z0-9.-]+\.workers\.dev/i)||[])[0];if(url){state.url=url;save()}
 
  step('7/7 Gizli anahtarlar');
- const e=readEnv();const secrets={};for(const k of ['OPENAI_API_KEY','OPENAI_MODEL','YOUTUBE_API_KEY','GOOGLE_CLIENT_ID','GOOGLE_CLIENT_SECRET','ADMIN_EMAILS','APP_URL','AI_LIMIT_SOLVE','AI_LIMIT_NOTE','AI_LIMIT_REPORT','AI_LIMIT_VIDEO','AI_LIMIT_QUOTE','REGISTRATION_OPEN'])if(e[k])secrets[k]=e[k];
+ const e=readEnv();const secrets={};for(const k of ['OPENAI_API_KEY','OPENAI_MODEL','YOUTUBE_API_KEY','RESEND_API_KEY','SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','SUPABASE_ANON_KEY','SUPABASE_KEY','GOOGLE_CLIENT_ID','GOOGLE_CLIENT_SECRET','ADMIN_EMAILS','APP_URL','AI_LIMIT_SOLVE','AI_LIMIT_NOTE','AI_LIMIT_REPORT','AI_LIMIT_VIDEO','AI_LIMIT_QUOTE','REGISTRATION_OPEN'])if(e[k])secrets[k]=e[k];
  if(!secrets.APP_URL&&state.url)secrets.APP_URL=state.url;
  if(Object.keys(secrets).length){const dir=mkdtempSync(path.join(tmpdir(),'nd-'));const file=path.join(dir,'s.json');try{writeFileSync(file,JSON.stringify(secrets));wrangler(['secret','bulk',file,'--config',cfg],{capture:true})}finally{rmSync(dir,{recursive:true,force:true})}console.log('Yüklenen anahtar adları: '+Object.keys(secrets).join(', '))}else console.log('.env içinde anahtar bulunamadı; yapay zekâ kapalı yayınlandı.');
 

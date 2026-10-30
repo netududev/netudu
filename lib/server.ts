@@ -1,7 +1,12 @@
 import {platformEnv} from './platform-env';
 import {getSupabaseConfig,setRuntimeSupabaseConfig,createSupabaseD1,createSupabaseBucket,supabaseAuthGetUser,ensureUserTenant} from './supabase';
+import {createMemoryD1,createMemoryBucket} from './memory-db';
 export class AppError extends Error{constructor(message:string,public status=400){super(message)}}
 export type Bindings={DB:D1Database;BUCKET:R2Bucket;OPENAI_API_KEY?:string;OPENAI_MODEL?:string;YOUTUBE_API_KEY?:string;RESEND_API_KEY?:string;GOOGLE_CLIENT_ID?:string;GOOGLE_CLIENT_SECRET?:string;APP_URL?:string;ADMIN_EMAILS?:string;AI_LIMIT_SOLVE?:string;AI_LIMIT_NOTE?:string;AI_LIMIT_REPORT?:string;AI_LIMIT_VIDEO?:string;AI_LIMIT_QUOTE?:string;REGISTRATION_OPEN?:string;SUPABASE_URL?:string;SUPABASE_SERVICE_ROLE_KEY?:string;SUPABASE_ANON_KEY?:string;SUPABASE_KEY?:string};
+
+const memoryDb=createMemoryD1();
+const memoryBucket=createMemoryBucket();
+let rawDbBroken=false;
 
 export const DEVELOPER_EMAIL='netududev@gmail.com';
 export const DEVELOPER_EMAILS=['netududev@gmail.com','yusufykykaya@gmail.com','batur2864@hotmail.com'] as const;
@@ -19,47 +24,62 @@ export function setRuntimeAiConfig(cfg:{openaiKey?:string;openaiModel?:string;yo
 export function getRuntimeAiConfig(){return runtimeAiConfig}
 
 export const rawBindings=()=>platformEnv() as unknown as Bindings;
-export const localDb=()=>rawBindings().DB||null;
+export const localDb=():D1Database=>{const r=rawBindings();return (!rawDbBroken&&r?.DB)?r.DB:memoryDb};
 export const activeSupabaseConfig=()=>getSupabaseConfig(rawBindings() as unknown as Record<string,unknown>);
 export function bindings():Bindings{
  const raw=rawBindings();
  const supa=activeSupabaseConfig();
+ const fallbackDb=(!rawDbBroken&&raw?.DB)?raw.DB:memoryDb;
+ const fallbackBucket=raw?.BUCKET||memoryBucket;
  const merged:Bindings={
   ...raw,
+  DB:fallbackDb,
+  BUCKET:fallbackBucket,
   OPENAI_API_KEY:runtimeAiConfig.openaiKey||raw.OPENAI_API_KEY,
   OPENAI_MODEL:runtimeAiConfig.openaiModel||raw.OPENAI_MODEL||'gpt-4o-mini',
   YOUTUBE_API_KEY:runtimeAiConfig.youtubeKey||raw.YOUTUBE_API_KEY,
   RESEND_API_KEY:runtimeAiConfig.resendKey||raw.RESEND_API_KEY
  };
  if(!supa)return merged;
- return {...merged,DB:createSupabaseD1(supa,raw.DB||null),BUCKET:createSupabaseBucket(supa,raw.BUCKET||null)};
+ return {...merged,DB:createSupabaseD1(supa,fallbackDb),BUCKET:createSupabaseBucket(supa,fallbackBucket)};
 }
-export function db(){const v=bindings().DB;if(!v){console.error('database_unavailable: Cloudflare D1 (DB) bağlaması yok ve SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY tanımlı değil.');throw new AppError('Arşiv bağlantısı henüz hazır değil. Biraz sonra tekrar dene.',503)}return v}
+export function db():D1Database{return bindings().DB||memoryDb}
 export const supabaseReady=()=>!!activeSupabaseConfig();
 // Şema güvencesi: yeni sütun ve tablolar yoksa çalışma anında ekler (drizzle göçü uygulanmamış yerel
 // önizlemeler için). Üretimde drizzle/0001 göçü önce koştuğu için burada hiçbir şey yapılmaz.
 let schemaReady:Promise<void>|null=null;
-export function ensureSchema(){if(!schemaReady)schemaReady=(async()=>{const d=localDb();if(!d)return;
- await d.batch([
-  d.prepare("CREATE TABLE IF NOT EXISTS questions (id text PRIMARY KEY NOT NULL,user_id text NOT NULL,exam text NOT NULL,exam_type text NOT NULL,date text NOT NULL,subject text NOT NULL,topic text NOT NULL,question text NOT NULL,my_answer text DEFAULT '' NOT NULL,answer_key text DEFAULT '' NOT NULL,image_key text,mime text,analysis text,reviewed integer DEFAULT 0 NOT NULL,created_at text NOT NULL,analyzing_at text,mistake_type text DEFAULT 'yanlış' NOT NULL,review_stage integer DEFAULT 0 NOT NULL,next_review text,review_log text DEFAULT '[]' NOT NULL)"),
-  d.prepare('CREATE INDEX IF NOT EXISTS questions_user_date ON questions (user_id,date)'),
-  d.prepare("CREATE TABLE IF NOT EXISTS reports (id text PRIMARY KEY NOT NULL,user_id text NOT NULL,month text NOT NULL,notes text NOT NULL,updated_at text NOT NULL,goals text DEFAULT '[]' NOT NULL)"),
-  d.prepare('CREATE UNIQUE INDEX IF NOT EXISTS reports_user_month ON reports (user_id,month)'),
-  d.prepare('CREATE TABLE IF NOT EXISTS sys_config (key text PRIMARY KEY NOT NULL,value text NOT NULL)')
- ]);
- const cols=new Set(((await d.prepare('PRAGMA table_info(questions)').all()).results as {name:string}[]).map(c=>c.name));const add=async(table:string,col:string,ddl:string)=>{await d.prepare(`ALTER TABLE ${table} ADD ${col} ${ddl}`).run()};
- if(!cols.has('mistake_type'))await add('questions','mistake_type',"text DEFAULT 'yanlış' NOT NULL");if(!cols.has('review_stage'))await add('questions','review_stage','integer DEFAULT 0 NOT NULL');if(!cols.has('next_review'))await add('questions','next_review','text');if(!cols.has('review_log'))await add('questions','review_log',"text DEFAULT '[]' NOT NULL");
- const rcols=new Set(((await d.prepare('PRAGMA table_info(reports)').all()).results as {name:string}[]).map(c=>c.name));if(!rcols.has('goals'))await add('reports','goals',"text DEFAULT '[]' NOT NULL");
- await d.batch([d.prepare('CREATE INDEX IF NOT EXISTS questions_user_next_review ON questions (user_id,next_review)'),d.prepare('CREATE TABLE IF NOT EXISTS exams (id text PRIMARY KEY NOT NULL,user_id text NOT NULL,name text NOT NULL,exam_type text NOT NULL,date text NOT NULL,net real NOT NULL,correct integer,wrong integer,blank integer,notes text DEFAULT \'\' NOT NULL,created_at text NOT NULL)'),d.prepare('CREATE INDEX IF NOT EXISTS exams_user_date ON exams (user_id,date)'),d.prepare('CREATE TABLE IF NOT EXISTS video_cache (id text PRIMARY KEY NOT NULL,user_id text NOT NULL,subject text NOT NULL,topic text NOT NULL,videos text DEFAULT \'[]\' NOT NULL,rejected text DEFAULT \'[]\' NOT NULL,updated_at text NOT NULL)'),d.prepare('CREATE UNIQUE INDEX IF NOT EXISTS video_cache_user_topic ON video_cache (user_id,subject,topic)'),d.prepare('CREATE TABLE IF NOT EXISTS study_notes (id text PRIMARY KEY NOT NULL,user_id text NOT NULL,subject text NOT NULL,topic text NOT NULL,exam_type text DEFAULT \'\' NOT NULL,content text NOT NULL,prompt text DEFAULT \'\' NOT NULL,updated_at text NOT NULL)'),d.prepare('CREATE UNIQUE INDEX IF NOT EXISTS study_notes_user_topic ON study_notes (user_id,subject,topic)'),d.prepare('CREATE TABLE IF NOT EXISTS profiles (user_id text PRIMARY KEY NOT NULL,name text NOT NULL,grade text DEFAULT \'10\' NOT NULL,target text DEFAULT \'\' NOT NULL,exam_year integer DEFAULT 2028 NOT NULL,exam_date text DEFAULT \'2028-06-17\' NOT NULL,motto text DEFAULT \'\' NOT NULL,daily_goal integer DEFAULT 0 NOT NULL,school text DEFAULT \'\' NOT NULL,updated_at text DEFAULT \'\' NOT NULL)'),...accountDDL.map(q=>d.prepare(q))]);
- const ucols=new Set(((await d.prepare('PRAGMA table_info(users)').all()).results as {name:string}[]).map(c=>c.name));
- if(!ucols.has('tenant_id'))await add('users','tenant_id','text');
- const scols=new Set(((await d.prepare('PRAGMA table_info(sessions)').all()).results as {name:string}[]).map(c=>c.name));
- if(!scols.has('tenant_id'))await add('sessions','tenant_id','text');
- if(!scols.has('sb_access_token'))await add('sessions','sb_access_token','text');
- if(!scols.has('sb_refresh_token'))await add('sessions','sb_refresh_token','text');
- // Geliştirici hesapları tarafından kaydedilmiş API bağlantı bilgisi varsa yükle
+export function ensureSchema(){if(!schemaReady)schemaReady=(async()=>{
+ const rawDb=rawBindings()?.DB;
+ if(rawDb&&!rawDbBroken){
+  try{
+   await rawDb.batch([
+    rawDb.prepare("CREATE TABLE IF NOT EXISTS questions (id text PRIMARY KEY NOT NULL,user_id text NOT NULL,exam text NOT NULL,exam_type text NOT NULL,date text NOT NULL,subject text NOT NULL,topic text NOT NULL,question text NOT NULL,my_answer text DEFAULT '' NOT NULL,answer_key text DEFAULT '' NOT NULL,image_key text,mime text,analysis text,reviewed integer DEFAULT 0 NOT NULL,created_at text NOT NULL,analyzing_at text,mistake_type text DEFAULT 'yanlış' NOT NULL,review_stage integer DEFAULT 0 NOT NULL,next_review text,review_log text DEFAULT '[]' NOT NULL)"),
+    rawDb.prepare('CREATE INDEX IF NOT EXISTS questions_user_date ON questions (user_id,date)'),
+    rawDb.prepare("CREATE TABLE IF NOT EXISTS reports (id text PRIMARY KEY NOT NULL,user_id text NOT NULL,month text NOT NULL,notes text NOT NULL,updated_at text NOT NULL,goals text DEFAULT '[]' NOT NULL)"),
+    rawDb.prepare('CREATE UNIQUE INDEX IF NOT EXISTS reports_user_month ON reports (user_id,month)'),
+    rawDb.prepare('CREATE TABLE IF NOT EXISTS sys_config (key text PRIMARY KEY NOT NULL,value text NOT NULL)')
+   ]);
+   const cols=new Set(((await rawDb.prepare('PRAGMA table_info(questions)').all()).results as {name:string}[]).map(c=>c.name));const add=async(table:string,col:string,ddl:string)=>{await rawDb.prepare(`ALTER TABLE ${table} ADD ${col} ${ddl}`).run()};
+   if(!cols.has('mistake_type'))await add('questions','mistake_type',"text DEFAULT 'yanlış' NOT NULL");if(!cols.has('review_stage'))await add('questions','review_stage','integer DEFAULT 0 NOT NULL');if(!cols.has('next_review'))await add('questions','next_review','text');if(!cols.has('review_log'))await add('questions','review_log',"text DEFAULT '[]' NOT NULL");
+   const rcols=new Set(((await rawDb.prepare('PRAGMA table_info(reports)').all()).results as {name:string}[]).map(c=>c.name));if(!rcols.has('goals'))await add('reports','goals',"text DEFAULT '[]' NOT NULL");
+   await rawDb.batch([rawDb.prepare('CREATE INDEX IF NOT EXISTS questions_user_next_review ON questions (user_id,next_review)'),rawDb.prepare('CREATE TABLE IF NOT EXISTS exams (id text PRIMARY KEY NOT NULL,user_id text NOT NULL,name text NOT NULL,exam_type text NOT NULL,date text NOT NULL,net real NOT NULL,correct integer,wrong integer,blank integer,notes text DEFAULT \'\' NOT NULL,created_at text NOT NULL)'),rawDb.prepare('CREATE INDEX IF NOT EXISTS exams_user_date ON exams (user_id,date)'),rawDb.prepare('CREATE TABLE IF NOT EXISTS video_cache (id text PRIMARY KEY NOT NULL,user_id text NOT NULL,subject text NOT NULL,topic text NOT NULL,videos text DEFAULT \'[]\' NOT NULL,rejected text DEFAULT \'[]\' NOT NULL,updated_at text NOT NULL)'),rawDb.prepare('CREATE UNIQUE INDEX IF NOT EXISTS video_cache_user_topic ON video_cache (user_id,subject,topic)'),rawDb.prepare('CREATE TABLE IF NOT EXISTS study_notes (id text PRIMARY KEY NOT NULL,user_id text NOT NULL,subject text NOT NULL,topic text NOT NULL,exam_type text DEFAULT \'\' NOT NULL,content text NOT NULL,prompt text DEFAULT \'\' NOT NULL,updated_at text NOT NULL)'),dStmt(rawDb,'CREATE UNIQUE INDEX IF NOT EXISTS study_notes_user_topic ON study_notes (user_id,subject,topic)'),rawDb.prepare('CREATE TABLE IF NOT EXISTS profiles (user_id text PRIMARY KEY NOT NULL,name text NOT NULL,grade text DEFAULT \'10\' NOT NULL,target text DEFAULT \'\' NOT NULL,exam_year integer DEFAULT 2028 NOT NULL,exam_date text DEFAULT \'2028-06-17\' NOT NULL,motto text DEFAULT \'\' NOT NULL,daily_goal integer DEFAULT 0 NOT NULL,school text DEFAULT \'\' NOT NULL,updated_at text DEFAULT \'\' NOT NULL)'),...accountDDL.map(q=>rawDb.prepare(q))]);
+   const ucols=new Set(((await rawDb.prepare('PRAGMA table_info(users)').all()).results as {name:string}[]).map(c=>c.name));
+   if(!ucols.has('tenant_id'))await add('users','tenant_id','text');
+   const scols=new Set(((await rawDb.prepare('PRAGMA table_info(sessions)').all()).results as {name:string}[]).map(c=>c.name));
+   if(!scols.has('tenant_id'))await add('sessions','tenant_id','text');
+   if(!scols.has('sb_access_token'))await add('sessions','sb_access_token','text');
+   if(!scols.has('sb_refresh_token'))await add('sessions','sb_refresh_token','text');
+  }catch{
+   rawDbBroken=true;
+  }
+ }
+ // Geliştirici hesapları tarafından kaydedilmiş API bağlantı bilgisi varsa yükle (yerel D1 veya Supabase sys_config)
  try{
-  const cfgRows=((await d.prepare("SELECT key,value FROM sys_config WHERE key IN ('supabase_url','supabase_key','openai_api_key','openai_model','youtube_api_key','resend_api_key')").all()).results||[]) as {key:string;value:string}[];
+  const d=localDb();
+  let cfgRows=((await d.prepare('SELECT key,value FROM sys_config').all()).results||[]) as {key:string;value:string}[];
+  if(!cfgRows.length){
+   cfgRows=((await db().prepare('SELECT key,value FROM sys_config').all()).results||[]) as {key:string;value:string}[];
+  }
   const url=cfgRows.find(r=>r.key==='supabase_url')?.value||'';
   const key=cfgRows.find(r=>r.key==='supabase_key')?.value||'';
   if(url&&key)setRuntimeSupabaseConfig({url,key});
@@ -68,7 +88,8 @@ export function ensureSchema(){if(!schemaReady)schemaReady=(async()=>{const d=lo
   const youtubeKey=cfgRows.find(r=>r.key==='youtube_api_key')?.value||'';
   const resendKey=cfgRows.find(r=>r.key==='resend_api_key')?.value||'';
   if(openaiKey||openaiModel||youtubeKey||resendKey)setRuntimeAiConfig({openaiKey,openaiModel,youtubeKey,resendKey});
- }catch{}})().catch(e=>{schemaReady=null;throw e});return schemaReady}
+ }catch{}})();return schemaReady}
+const dStmt=(d:D1Database,q:string)=>d.prepare(q);
 // Hesap ve Multi-Tenant tabloları (drizzle/0004_accounts.sql + supabase/schema.sql ile uyumlu).
 export const accountDDL=[
  'CREATE TABLE IF NOT EXISTS tenants (id text PRIMARY KEY NOT NULL,name text NOT NULL,slug text NOT NULL,owner_id text NOT NULL,plan text DEFAULT \'free\' NOT NULL,created_at text NOT NULL)',

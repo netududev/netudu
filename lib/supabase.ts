@@ -49,19 +49,31 @@ export function maskSecretKey(key:string):string{
  return `${k.slice(0,10)}...${k.slice(-6)}`;
 }
 
+const DEFAULT_SUPABASE_URL='https://jioxqgxdsmlsmijnmqzf.supabase.co';
+const DEFAULT_SUPABASE_KEY='sb_publishable_qSLTaTAaDSdVgidXoECE_A_av5DBfZg';
+
 let runtimeConfig:{url:string;key:string}|null=null;
+let runtimeDisconnected=false;
 
 export function setRuntimeSupabaseConfig(cfg:{url:string;key:string}|null){
- runtimeConfig=cfg&&cfg.url&&cfg.key?{url:normalizeSupabaseUrl(cfg.url),key:cfg.key.trim()}:null;
+ if(cfg&&cfg.url&&cfg.key){
+  runtimeConfig={url:normalizeSupabaseUrl(cfg.url),key:cfg.key.trim()};
+  runtimeDisconnected=false;
+ }else{
+  runtimeConfig=null;
+  runtimeDisconnected=true;
+ }
 }
 
 export function getSupabaseConfig(envObj?:Record<string,unknown>):SupabaseConfig|null{
+ if(runtimeConfig?.url&&runtimeConfig?.key)return {...runtimeConfig,source:'runtime'};
+ if(runtimeDisconnected)return null;
  const p=(typeof process!=='undefined'&&process.env?process.env:{}) as Record<string,string|undefined>;
  const e=(envObj||{}) as Record<string,string|undefined>;
  const url=normalizeSupabaseUrl(e.SUPABASE_URL||e.NEXT_PUBLIC_SUPABASE_URL||p.SUPABASE_URL||p.NEXT_PUBLIC_SUPABASE_URL||'');
  const key=(e.SUPABASE_SERVICE_ROLE_KEY||e.SUPABASE_KEY||e.SUPABASE_ANON_KEY||e.NEXT_PUBLIC_SUPABASE_ANON_KEY||p.SUPABASE_SERVICE_ROLE_KEY||p.SUPABASE_KEY||p.SUPABASE_ANON_KEY||p.NEXT_PUBLIC_SUPABASE_ANON_KEY||'').trim();
  if(url&&key)return {url,key,source:'env'};
- if(runtimeConfig?.url&&runtimeConfig?.key)return {...runtimeConfig,source:'runtime'};
+ if(DEFAULT_SUPABASE_URL&&DEFAULT_SUPABASE_KEY)return {url:DEFAULT_SUPABASE_URL,key:DEFAULT_SUPABASE_KEY,source:'env'};
  return null;
 }
 
@@ -694,33 +706,45 @@ class SupabasePreparedStatement{
   return next;
  }
  async first<T=Record<string,unknown>>():Promise<T|null>{
+  let supaSucceeded=false;
   try{
    const res=await executeOnSupabase(this.cfg,this.sql,this.params,'first');
    if(res){
+    supaSucceeded=true;
     if(res.results[0])return res.results[0] as T;
    }else if(!this.fallback)logSupabaseMiss('first',this.sql);
   }catch(e){
    if(/UNIQUE/i.test(String((e as Error)?.message)))throw e;
    if(!this.fallback)logSupabaseMiss('first',this.sql,e);
   }
-  if(this.fallback){
-   return (await this.fallback.prepare(this.sql).bind(...this.params).first()) as T|null;
+  if(!supaSucceeded&&this.fallback){
+   try{
+    return (await this.fallback.prepare(this.sql).bind(...this.params).first()) as T|null;
+   }catch{
+    return null;
+   }
   }
   return null;
  }
  async all<T=Record<string,unknown>>():Promise<{results:T[];success:boolean;meta:{changes:number}}>{
+  let supaSucceeded=false;
   try{
    const res=await executeOnSupabase(this.cfg,this.sql,this.params,'all');
-   if(res&&res.results.length>0)return {results:res.results as T[],success:true,meta:res.meta};
-   if(res&&!this.fallback)return {results:res.results as T[],success:true,meta:res.meta};
-   if(!res&&!this.fallback)logSupabaseMiss('all',this.sql);
+   if(res){
+    supaSucceeded=true;
+    if(res.results.length>0||!this.fallback)return {results:res.results as T[],success:true,meta:res.meta};
+   }else if(!this.fallback)logSupabaseMiss('all',this.sql);
   }catch(e){
    if(/UNIQUE/i.test(String((e as Error)?.message)))throw e;
    if(!this.fallback)logSupabaseMiss('all',this.sql,e);
   }
-  if(this.fallback){
-   const r=await this.fallback.prepare(this.sql).bind(...this.params).all();
-   return {results:(r.results||[]) as T[],success:true,meta:{changes:Number((r.meta as any)?.changes||0)}};
+  if(!supaSucceeded&&this.fallback){
+   try{
+    const r=await this.fallback.prepare(this.sql).bind(...this.params).all();
+    return {results:(r.results||[]) as T[],success:true,meta:{changes:Number((r.meta as any)?.changes||0)}};
+   }catch{
+    return {results:[],success:true,meta:{changes:0}};
+   }
   }
   return {results:[],success:true,meta:{changes:0}};
  }

@@ -202,18 +202,21 @@ export async function POST(req:Request){
     if(e instanceof AppError)throw e;
    }
 
-   if(d){
-    const stmts=[
-     d.prepare("INSERT INTO sys_config (key,value) VALUES ('openai_api_key',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(cleanKey),
-     d.prepare("INSERT INTO sys_config (key,value) VALUES ('openai_model',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(cleanModel)
-    ];
-    if(cleanYt){
-     stmts.push(d.prepare("INSERT INTO sys_config (key,value) VALUES ('youtube_api_key',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(cleanYt));
-    }
-    if(cleanResend){
-     stmts.push(d.prepare("INSERT INTO sys_config (key,value) VALUES ('resend_api_key',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(cleanResend));
-    }
-    await d.batch(stmts);
+   for(const targetDb of [d,db()]){
+    if(!targetDb)continue;
+    try{
+     const stmts=[
+      targetDb.prepare("INSERT INTO sys_config (key,value) VALUES ('openai_api_key',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(cleanKey),
+      targetDb.prepare("INSERT INTO sys_config (key,value) VALUES ('openai_model',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(cleanModel)
+     ];
+     if(cleanYt){
+      stmts.push(targetDb.prepare("INSERT INTO sys_config (key,value) VALUES ('youtube_api_key',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(cleanYt));
+     }
+     if(cleanResend){
+      stmts.push(targetDb.prepare("INSERT INTO sys_config (key,value) VALUES ('resend_api_key',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(cleanResend));
+     }
+     await targetDb.batch(stmts);
+    }catch{}
    }
    const prev=getRuntimeAiConfig();
    setRuntimeAiConfig({
