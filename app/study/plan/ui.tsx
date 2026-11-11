@@ -1,6 +1,6 @@
 "use client";
 import {useCallback,useEffect,useState} from 'react';
-import {Check,Undo2,Umbrella,Play,PlusCircle,NotebookPen,Send,AlertTriangle,Dumbbell,School,Pin,BookOpen,Coffee,RefreshCw,ThumbsDown,ExternalLink,LoaderCircle,Sigma,Zap,FlaskConical,Dna,Globe,FileText,Flag,Target,GraduationCap} from 'lucide-react';
+import {Check,Undo2,Umbrella,Play,PlusCircle,NotebookPen,Send,AlertTriangle,Dumbbell,School,Pin,BookOpen,Coffee,RefreshCw,ThumbsDown,ExternalLink,LoaderCircle,Sigma,Zap,FlaskConical,Dna,Globe,FileText,Flag,Target,GraduationCap,CalendarClock,Wand2} from 'lucide-react';
 import {toast} from 'sonner';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {buildDay,noteSubject,dayShareText,telegramUrl,toMin,type DayPlan,type DayItem,type PlanState,type Lesson} from '@/lib/plan/scheduler';
@@ -25,14 +25,22 @@ export function Warnings({day}:{day:DayPlan}){if(!day.warnings.length)return nul
 export function LessonActions({day,compact=false}:{day:DayPlan;compact?:boolean}){const s=useStudy();const plan=s.plan!;const l=day.lesson;const isDone=!!(l&&plan.done[String(l.index)]);
  const resolveTopic=(subj:string,rawTopic:string)=>{const norm=normalizeTopic(subj,rawTopic);return norm!=='Konu belirlenmedi'?norm:''};
  const ask=()=>{if(!l)return;const sub=noteSubject(l.subj);s.openUpload([],{subject:sub,topic:resolveTopic(sub,l.topic),examType:'TYT',exam:`Program · ${l.weekNum}. hafta`,question:''})};
+ const askBtn=l&&<button className="secondary" onClick={ask}><PlusCircle size={16}/> Yanlış ekle</button>;
+ const noteBtn=l&&<button className="secondary" onClick={()=>{const sub=noteSubject(l.subj);s.openNotes({subject:sub,topic:resolveTopic(sub,l.topic),examType:'TYT'})}}><NotebookPen size={16}/> Ders notu</button>;
+ const share=<a className="text-button" href={telegramUrl(dayShareText(day))} target="_blank" rel="noreferrer"><Send size={15}/> Telegram'da paylaş</a>;
  return <div className={'lesson-actions'+(compact?' compact':'')}>
   {l&&<button className={isDone?'secondary':'primary'} onClick={()=>void s.planOp({action:isDone?'undone':'done',lesson:l.index},isDone?'Ders yeniden açıldı.':'Harika! Ders tamamlandı.')}>{isDone?<><Undo2 size={16}/> Geri al</>:<><Check size={16}/> Tamamladım</>}</button>}
   {day.isOff?<button className="secondary" onClick={()=>void s.planOp({action:'unshift',slot:day.slot},'Kaydırma geri alındı.')}><Undo2 size={16}/> Kaydırmayı geri al</button>:l&&!isDone&&<button className="secondary" onClick={()=>void s.planOp({action:'shift',slot:day.slot},'Bugünün dersi yarına kaydırıldı; program bir gün uzadı.')} title="Bugün çalışamayacaksan dersler zincirleme bir gün ileri kayar"><Umbrella size={16}/> Dışarı çıktım</button>}
   {l&&<button className="secondary" onClick={()=>s.openLessonVideo(l)}><Play size={16}/> {compact?'Video':`Konu videosu · ${l.teacher.split(/[&/]/)[0].trim()}`}</button>}
-  {l&&!compact&&<button className="secondary" onClick={ask}><PlusCircle size={16}/> Yanlış ekle</button>}
-  {l&&!compact&&<button className="secondary" onClick={()=>{const sub=noteSubject(l.subj);s.openNotes({subject:sub,topic:resolveTopic(sub,l.topic),examType:'TYT'})}}><NotebookPen size={16}/> Ders notu</button>}
-  {!compact&&<a className="text-button" href={telegramUrl(dayShareText(day))} target="_blank" rel="noreferrer"><Send size={15}/> Telegram'da paylaş</a>}
+  {!compact&&<details className="la-more"><summary>Daha fazla</summary><div>{askBtn}{noteBtn}{share}</div></details>}
  </div>}
+
+// Boş durum: programı yokken tek başlık, tek cümle, tek eylem (Bugün ve Haftalık program ortak kullanır)
+export function PlanStart(){const s=useStudy();
+ return <section className="plan-start"><span className="plan-start-ico"><CalendarClock size={24} aria-hidden="true"/></span><h2>Programını oluştur</h2><p>Okul, dershane ve spor saatlerini söyle; her günün işi boş saatlerine çakışmasız yerleşsin.</p><button className="primary" onClick={s.openWizard}><Wand2 size={18}/> Programımı oluştur</button><small>Dört kısa adım: sabit düzen, spor, tempo, başlangıç.</small></section>}
+
+// Tamamlanma işareti: çember ve onay çizgisi CSS ile çizilir (hareket azaltmada doğrudan görünür)
+export function DoneMark(){return <svg className="done-mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" pathLength="1"/><path d="M7 12.5l3.2 3.2L17 8.8" pathLength="1"/></svg>}
 
 export function LessonVideoDialog({lesson,onClose}:{lesson:Lesson|null;onClose:()=>void}){
  const [videos,setVideos]=useState<Video[]>([]);
