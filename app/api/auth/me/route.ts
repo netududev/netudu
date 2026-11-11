@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {db,activeSupabaseConfig,failure,json,AppError,sameOrigin,sessionUser,ensureSchema,readSessionToken} from '@/lib/server';
 import {supabaseAuthGetUser,ensureUserTenant} from '@/lib/supabase';
-import {createUser,createSession,normalizeEmail,googleReady,registrationOpen} from '@/lib/auth';
+import {createUser,createSession,normalizeEmail,googleReady,appleReady,registrationOpen} from '@/lib/auth';
 // Oturum durumu: giriş ekranının hangi seçenekleri göstereceğini söyler; POST ile Supabase OAuth callback token'ını oturuma dönüştürür.
 export async function GET(req:Request){try{
  const user=await sessionUser(req);
@@ -11,6 +11,7 @@ export async function GET(req:Request){try{
   user,
   sessionToken:tok||undefined,
   googleReady:googleReady(),
+  appleReady:appleReady(),
   registrationOpen:registrationOpen(),
   authProvider:supa?'supabase':'local'
  },{headers:{'Cache-Control':'private, no-store'}});

@@ -1,5 +1,6 @@
 "use client";
-import {TriangleAlert} from 'lucide-react';
+import {TriangleAlert,Check,ArrowRight} from 'lucide-react';
+import {monthlyPriceLabel,priceSummary,trialLabel,PAYMENT_NOTE} from '@/lib/pricing';
 
 // Bu dosyadaki tüm örnek ekranlar ve sayılar gösterim amaçlıdır (gerçek kullanıcı verisi değil)
 export const netSeries=[28,42,52,60,68,84,92,108];
@@ -17,11 +18,11 @@ export function NetChart(){
  </svg>
 }
 
-/* ───────── ÜÇ ADIMDA: tek satırlık adımlar ───────── */
+/* ───────── ÜÇ ADIM ───────── */
 const steps=[
- {title:'Düzenini anlat.',text:'Okul, dershane ve spor saatlerini gir, tempoyu seç.'},
- {title:'Programın kurulsun.',text:'Maarif TYT müfredatı boş saatlerine çakışmasız yerleşir.'},
- {title:'Her gün tek işe bak.',text:'Bugün ekranı sıradaki işi gösterir; tamamladıkça ilerlemen dolar.'},
+ {title:'Saatlerini gir.',text:'Okul ve dershane saatlerini yaz, temponu seç.'},
+ {title:'Programın hazır.',text:'Konular boş saatlerine çakışmadan yerleşir.'},
+ {title:'Her gün tek işe bak.',text:'Bugün ekranı sıradaki işi gösterir. Tamamladıkça ilerlemen dolar.'},
 ];
 export function Steps(){
  return <section id="nasil" className="lp-wrap lp-how" aria-labelledby="lp-how-title">
@@ -32,7 +33,7 @@ export function Steps(){
 
 /* ───────── ÜÇ FAYDA: başlık + tek cümle + tek görsel ───────── */
 function DayVisual(){
- const rows=[{t:'08:00',n:'Okul',d:'16:00’ya kadar',k:'school'},{t:'17:00',n:'Matematik · Türev',d:'Konu tekrarı, 1 saat 20 dk',k:'study'},{t:'19:30',n:'Spor · İtiş günü',d:'Sabit saatin',k:'sport'},{t:'21:00',n:'Yanlış tekrarı',d:'Sırası gelen 4 soru',k:'review'}];
+ const rows=[{t:'08:00',n:'Okul',d:'16:00’ya kadar',k:'school'},{t:'17:00',n:'Matematik · Türev',d:'Konu tekrarı, 1 saat 20 dk',k:'study'},{t:'19:30',n:'Dershane',d:'Sabit saatin',k:'fixed'},{t:'21:00',n:'Yanlış tekrarı',d:'Sırası gelen 4 soru',k:'review'}];
  return <div className="sx-day"><header><b>Bugünün akışı</b><span>Çakışma yok</span></header><ol>{rows.map(r=><li key={r.t} data-k={r.k}><time>{r.t}</time><i/><div><b>{r.n}</b><small>{r.d}</small></div></li>)}</ol></div>
 }
 function NoteVisual(){
@@ -55,15 +56,40 @@ function ExamVisual(){
  </div>
 }
 const benefits=[
- {id:'program',tag:'Program',title:'Her günün işi hazır.',text:'Okul, dershane ve sporunla çakışmayan saatlik plan; çalışamadığın günde dersler tek dokunuşla bir gün ileri kayar.',visual:<DayVisual/>},
- {id:'defter',tag:'Yanlış defteri',title:'Yanlışın çözümüyle saklansın.',text:'Soru fotoğrafını yükle; çözüm, konu ve tekrar günleri hazır gelsin.',visual:<NoteVisual/>},
- {id:'deneme',tag:'Deneme ve net takibi',title:'Netlerinin yönünü gör.',text:'Denemelerini gir; gelişimin ve en çok zorlandığın konular tek yerde toplansın.',visual:<ExamVisual/>},
+ {id:'program',tag:'Program',title:'Her günün işi hazır.',text:'Okul ve dershaneyle çakışmayan saatlik plan. Çalışamadığın günde dersler bir gün ileri kayar.',visual:<DayVisual/>},
+ {id:'defter',tag:'Yanlış defteri',title:'Yanlışın çözümüyle saklansın.',text:'Soru fotoğrafını yükle. Çözüm, Maarif Modeli ders programındaki konu ve tekrar günleri hazır gelir.',visual:<NoteVisual/>},
+ {id:'deneme',tag:'Deneme ve net',title:'Netlerinin yönünü gör.',text:'Denemelerini gir. Gelişimin ve en çok zorlandığın konular tek yerde toplanır.',visual:<ExamVisual/>},
 ];
 export function Benefits(){
- return <section id="faydalar" className="lp-wrap lp-benefits" aria-label="Neler var?">
+ return <section id="faydalar" className="lp-wrap lp-benefits" aria-label="Özellikler">
   {benefits.map(b=><article key={b.id} className="lp-benefit" data-rv>
    <div className="lp-benefit-text"><span className="lp-tag">{b.tag}</span><h2>{b.title}</h2><p>{b.text}</p></div>
    <figure className="lp-benefit-art">{b.visual}<figcaption>Örnek ekran; gösterilen veriler örnektir.</figcaption></figure>
   </article>)}
+ </section>
+}
+
+/* ───────── FİYAT: tek plan kartı; tüm değerler lib/pricing.ts'ten gelir ───────── */
+// Yalnız kodda var olan özellikler listelenir.
+const planFeatures=[
+ 'Okul ve dershane saatlerine göre günlük program',
+ 'Soru fotoğrafından çözüm ve konu, yanlış defteri',
+ 'Aralıklı tekrar: 1, 3, 7, 14, 30 ve 60. gün',
+ 'Deneme ve net takibi',
+ 'Aylık rapor ve ders notları',
+ 'Excel, PDF çıktısı ve yedek',
+];
+export function Pricing({onStart}:{onStart:()=>void}){
+ return <section id="fiyat" className="lp-wrap lp-pricing" aria-labelledby="lp-price-title">
+  <h2 id="lp-price-title" data-rv>Tek plan, tüm özellikler.</h2>
+  <article className="lp-plan" data-rv>
+   <span className="lp-plan-badge">{trialLabel()}</span>
+   <h3>netudu üyeliği</h3>
+   <p className="lp-plan-price"><b>{monthlyPriceLabel()}</b><span>/ ay</span></p>
+   <p className="lp-plan-note">{priceSummary()}</p>
+   <ul>{planFeatures.map(f=><li key={f}><Check size={16} aria-hidden="true"/>{f}</li>)}</ul>
+   <button type="button" className="lp-btn solid lg" onClick={onStart}>Ücretsiz dene <ArrowRight size={18}/></button>
+   <small>{PAYMENT_NOTE}</small>
+  </article>
  </section>
 }

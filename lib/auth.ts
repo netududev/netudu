@@ -3,6 +3,7 @@
 import {db,bindings,activeSupabaseConfig,AppError,sha256,SESSION_COOKIE,SESSION_DAYS,ensureSchema} from './server';
 import {supabaseAuthSignUp,supabaseAuthSignIn,ensureUserTenant} from './supabase';
 import {profileFor,type Profile} from './study';
+import {appleConfigured} from './apple-auth';
 
 const ITERATIONS=100000;
 const enc=new TextEncoder();
@@ -94,6 +95,7 @@ export const appOrigin=(req:Request)=>{
  const proto=isLocal?u.protocol.replace(':',''):'https';
  return `${proto}://${host}`;
 };
+export const appleReady=()=>appleConfigured(bindings());
 export const googleReady=()=>!!(bindings().GOOGLE_CLIENT_ID&&bindings().GOOGLE_CLIENT_SECRET)||!!activeSupabaseConfig();
 
 const ownedTables=['questions','reports','exams','video_cache','study_notes','profiles','study_plans'];
