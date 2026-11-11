@@ -1,13 +1,13 @@
 "use client";
 import {useEffect,useMemo,useState} from 'react';
-import {Plus,Trash2,LoaderCircle,Check,ArrowRight,ArrowLeft,School,Dumbbell,Gauge,CalendarCheck,Pin,TriangleAlert} from 'lucide-react';
+import {Plus,Trash2,LoaderCircle,Check,ArrowRight,ArrowLeft,Pin,TriangleAlert} from 'lucide-react';
 import {toast} from 'sonner';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {ALL_DAYS,DAY_FULL_NAMES,SPORT_PROGRAMS,TEMPO_OPTIONS,defaultPlanConfig,buildDay,addDays,type PlanConfig,type DayKey,type TempoKey,type PlanState} from '@/lib/plan/scheduler';
 import {useStudy,postJson,writeSetting} from '../shared';
 import {Timeline,Warnings,shortDate,localToday} from './ui';
 
-const steps=[{icon:School,label:'Sabit düzen'},{icon:Dumbbell,label:'Spor'},{icon:Gauge,label:'Tempo'},{icon:CalendarCheck,label:'Başlangıç'}];
+const steps=[{label:'Sabit düzen'},{label:'Spor'},{label:'Tempo'},{label:'Başlangıç'}];
 function DayPills({value,onChange}:{value:DayKey[];onChange:(v:DayKey[])=>void}){return <div className="day-pills">{ALL_DAYS.map(d=><button type="button" key={d} className={value.includes(d)?'on':''} onClick={()=>onChange(value.includes(d)?value.filter(x=>x!==d):[...value,d].sort((a,b)=>ALL_DAYS.indexOf(a)-ALL_DAYS.indexOf(b)))}>{d}</button>)}<button type="button" className="ghost" onClick={()=>onChange(['Pzt','Sal','Çar','Per','Cum'])}>Hafta içi</button><button type="button" className="ghost" onClick={()=>onChange(['Cmt','Paz'])}>Hafta sonu</button></div>}
 
 // 4 adımlı kişisel program kurulumu: sabit düzen → spor → tempo → başlangıç + önizleme
@@ -25,7 +25,6 @@ export function PlanWizard({open,onClose}:{open:boolean;onClose:()=>void}){const
  const set=<K extends keyof PlanConfig>(k:K,v:PlanConfig[K])=>setCfg(c=>({...c,[k]:v}));
  return <Dialog open={open} onOpenChange={v=>{if(!v&&!busy)onClose()}}><DialogContent className="question-dialog wizard"><DialogHeader><DialogTitle>{s.plan?'Programımı düzenle':'Kişisel ders çalışma programı'}</DialogTitle><DialogDescription>Okulun, sabit derslerin ve sporunla çakışmayan, seçtiğin tempoda bir Maarif TYT programı.</DialogDescription></DialogHeader>
   <div className="wz-progress"><p><b>Adım {step+1} / {steps.length}</b> · {steps[step].label}</p><div className="wz-bar" aria-hidden="true"><i style={{width:`${(step+1)/steps.length*100}%`}}/></div></div>
-  <ol className="wizard-steps">{steps.map((st,i)=>{const Icon=st.icon;return <li key={i}><button type="button" className={(i===step?'on ':'')+(i<step?'done':'')} onClick={()=>setStep(i)}><span>{i<step?<Check size={14}/>:<Icon size={14}/>}</span>{st.label}</button></li>})}</ol>
   {step===0&&<div className="wizard-body">
    <section className="wz-card"><label className="switch-line"><input type="checkbox" checked={cfg.school.enabled} onChange={e=>set('school',{...cfg.school,enabled:e.target.checked})}/><span><b>Okula gidiyorum</b><small>Mezunsan kapat; okul saatlerine hiç ders konmaz.</small></span></label>
     {cfg.school.enabled&&<><DayPills value={cfg.school.days} onChange={v=>set('school',{...cfg.school,days:v})}/><div className="form-grid three"><label>Başlangıç<input type="time" value={cfg.school.start} onChange={e=>set('school',{...cfg.school,start:e.target.value})}/></label><label>Bitiş<input type="time" value={cfg.school.end} onChange={e=>set('school',{...cfg.school,end:e.target.value})}/></label><label>Ad<input maxLength={60} value={cfg.school.title} onChange={e=>set('school',{...cfg.school,title:e.target.value})}/></label></div></>}</section>

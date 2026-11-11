@@ -29,11 +29,15 @@ export function TodayView(){const s=useStudy();const {plan,rows,loading,ai}=s;co
  const celebKey='plan-created:'+(s.user?.email||'');const [fresh,setFresh]=useState(false);
  useEffect(()=>{if(plan&&readSetting(celebKey,'')==='1'){writeSetting(celebKey,'');setFresh(true)}},[plan,celebKey]);
  // Günün ilerlemesi: ders (varsa) + bugün sırası gelen tekrarlar; gün içinde görülen en yüksek tekrar sayısı o günün toplamı sayılır
- const dueKey='due-max:'+(s.user?.email||'')+':'+date;const [dueMax,setDueMax]=useState(0);
- useEffect(()=>{if(loading)return;const m=Math.max(Number(readSetting(dueKey,'0'))||0,due.length);writeSetting(dueKey,String(m));setDueMax(m)},[loading,due.length,dueKey]);
+ const dueKey='due-max:'+(s.user?.email||'');const [dueMax,setDueMax]=useState(0);
+ // Tek anahtar {date,max}: gün değişince sıfırlanır, eski günlerin anahtarları birikmez
+ useEffect(()=>{if(loading)return;let prev=0;try{const o=JSON.parse(readSetting(dueKey,'{}')) as {date?:string;max?:number};if(o.date===date)prev=Number(o.max)||0}catch{}const m=Math.max(prev,due.length);writeSetting(dueKey,JSON.stringify({date,max:m}));setDueMax(m)},[loading,due.length,dueKey,date]);
  const dueTotal=Math.max(dueMax,due.length);const lessonDone=!!(day?.lesson&&plan?.done[String(day.lesson.index)]);
  const dayTotal=(day?.lesson?1:0)+dueTotal;const dayDone=(lessonDone?1:0)+(dueTotal-due.length);const dayPct=dayTotal?Math.round(dayDone/dayTotal*100):0;const allDone=dayTotal>0&&dayDone===dayTotal;
- const streak=plan?studyStreak(plan.done,date):0;
+ const streak=plan?studyStreak(plan.done,today()):0;
+ // Gün tamamlanma kutlaması günde bir kez oynar; sonraki gösterimlerde tamamlanmış durum animasyonsuz görünür
+ const dayCelebKey='day-celebrated:'+(s.user?.email||'');const [celebrate,setCelebrate]=useState(false);
+ useEffect(()=>{if(!allDone)return;if(readSetting(dayCelebKey,'')!==date){writeSetting(dayCelebKey,date);setCelebrate(true)}},[allDone,date,dayCelebKey]);
  const sub=plan&&day?day.isOff?'Bugün dinlenme günün; dersin yarına kaydı.':day.lesson?(lessonDone?'Bugünün işi tamam. Yarın kaldığın yerden devam edersin.':'Bugünün işi bu. Tamamlayınca ilerlemene eklenir.'):stats?.started===false?`Programın ${longDate(plan.config.startDate)} günü başlıyor.`:'Serbest tekrar günü.':'';
  const dueSection=<article className="archive-preview flush"><div className="section-heading"><div><h2>Bugünün yanlış tekrarları</h2><p className="muted">Aralıklı tekrar: 1 → 3 → 7 → 14 → 30 → 60 gün.</p></div></div>{loading?<p className="loading"><LoaderCircle className="spin" size={20}/> Yükleniyor…</p>:due.length?<DueList items={due.slice(0,6)}/>:<Empty title="Bugün tekrar edilecek yanlış yok." icon={<Check/>}>{rows.length?'Sırası gelen sorular burada listelenir.':'Denemeden sonra yanlışlarını ekle; tekrar takvimin burada oluşur.'}</Empty>}{due.length>6&&<p className="footnote">+{due.length-6} soru daha · <button className="text-button" onClick={()=>s.setView('archive')}>arşivde gör</button></p>}</article>;
  return <>
@@ -44,7 +48,7 @@ export function TodayView(){const s=useStudy();const {plan,rows,loading,ai}=s;co
    <header className="td-head"><span className="eyebrow">{longDate(date).toLocaleUpperCase('tr')}</span><h1 className="td-title">{hello}{first?`, ${first}`:''}.</h1></header>
    <PlanStart/>
   </>
-  :day&&<section className={'td-focus'+(allDone?' is-done':'')}>
+  :day&&<section className={'td-focus'+(allDone?' is-done'+(celebrate?' celebrate':''):'')}>
    <div className="td-main">
     <span className="eyebrow">{longDate(date).toLocaleUpperCase('tr')}</span><h1 className="td-title">{hello}{first?`, ${first}`:''}.</h1><p className="td-sub">{sub}</p>
     <div className="td-lesson"><LessonHead day={day}/>{lessonDone&&<p className="td-done"><DoneMark/> Bugünün dersi tamam.</p>}<LessonActions day={day}/><Warnings day={day}/></div>
@@ -54,7 +58,7 @@ export function TodayView(){const s=useStudy();const {plan,rows,loading,ai}=s;co
     <ul className="td-facts">
      {stats&&<li><Target size={16}/> Program <b>%{stats.percent}</b> · {stats.done}/{stats.total} ders</li>}
      {streak>=2&&<li><Flame size={16}/> <b>{streak}</b> gün üst üste çalıştın</li>}
-     <li><CalendarClock size={16}/> {examDays>0?<><b>{examDays}</b> gün · YKS {s.profile.examYear}</>:'Sınav tarihini güncelle'}</li>
+     <li><CalendarClock size={16}/> {examDays>0?<><b>{examDays}</b> gün · YKS {s.profile.examYear}</>:examDays===0?'Sınav günü. Başarılar.':'Sınav tarihini güncelle'}</li>
      {next&&<li><Clock size={16}/> {minutesUntil(next.start)<=60?`${minutesUntil(next.start)} dk sonra`:next.start}: {next.title.split(':')[0]}</li>}
     </ul>
    </aside>
