@@ -1,11 +1,11 @@
 "use client";
 import {useEffect,useMemo,useRef,useState} from 'react';
-import {Wand2,Clock,Map as MapIcon,Umbrella,RotateCcw,Send,ChevronLeft,ChevronRight,Check,Undo2,CalendarDays,Target,AlarmClock,Flag,TriangleAlert} from 'lucide-react';
+import {Wand2,Clock,Map as MapIcon,Umbrella,RotateCcw,Send,ChevronLeft,ChevronRight,Check,Undo2,Target,AlarmClock,Flag,TriangleAlert} from 'lucide-react';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
 import {planStats,weekDates,weekMeta,buildDay,campaignWeeks,weekShareText,telegramUrl,TEMPO_OPTIONS,MACRO_PHASES,type DayPlan} from '@/lib/plan/scheduler';
 import {useStudy,Empty} from '../shared';
-import {Timeline,Warnings,LessonActions,LessonHead,SubjectIcon,shortDate,localToday} from './ui';
+import {Timeline,Warnings,LessonActions,LessonHead,SubjectIcon,PlanStart,shortDate,localToday} from './ui';
 
 // Haftalık ders çalışma programı: hafta seçici, gün kartları, saatlik rutin, kamp haritası, kaydırılan günler
 export function ProgramView(){const s=useStudy();const plan=s.plan;const date=localToday();const stats=plan?planStats(plan,date):null;
@@ -14,7 +14,7 @@ export function ProgramView(){const s=useStudy();const plan=s.plan;const date=lo
  const days=useMemo(()=>plan?weekDates(plan,week).map(d=>buildDay(plan,d)):[],[plan,week]);
  useEffect(()=>{if(open&&plan){setOpen(buildDay(plan,open.date))}// eslint-disable-next-line react-hooks/exhaustive-deps
  },[plan]);
- if(!plan||!stats)return <section className="plan-cta"><div><span className="eyebrow">HENÜZ PROGRAMIN YOK</span><h2>Kişisel ders çalışma programını oluştur</h2><p className="muted">Okul ve sabit saatlerini, spor programını ve çalışma temponu seç; 112 Maarif TYT konusu boş saatlerine çakışmasız yerleşsin.</p><button className="primary" onClick={s.openWizard}><Wand2 size={18}/> Programımı oluştur</button></div><div className="cta-art"><CalendarDays size={48} aria-hidden="true"/></div></section>;
+ if(!plan||!stats)return <PlanStart/>;
  const meta=weekMeta(plan,week);const weekDone=days.filter(d=>d.lesson&&plan.done[String(d.lesson.index)]).length;const weekLessons=days.filter(d=>d.lesson).length;const weekOff=days.filter(d=>d.isOff).length;
  const offList=Object.entries(plan.offDays).sort((a,b)=>Number(a[0])-Number(b[0]));
  return <>

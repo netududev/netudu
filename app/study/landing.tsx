@@ -2,7 +2,7 @@
 import {useEffect,useRef,type RefObject} from 'react';
 import {ArrowRight,CalendarDays,Check,ChevronDown,CircleHelp,House,BookOpen,ChartNoAxesCombined,Search,Settings} from 'lucide-react';
 import {Logo} from './logo';
-import {NetChart,Tour,Features,How} from './landing-sections';
+import {NetChart,Steps,Benefits} from './landing-sections';
 
 export type AuthMode='login'|'register';
 
@@ -27,15 +27,14 @@ export function useScrollFx(root:RefObject<HTMLElement|null>){
   addEventListener('scroll',onScroll,{passive:true});tick();
   const links=[...el.querySelectorAll<HTMLAnchorElement>('.lp-nav nav a')];
   const spy=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting)for(const a of links)a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)},{rootMargin:'-45% 0px -50% 0px'});
-  for(const id of ['kesfet','ozellikler','nasil']){const s=document.getElementById(id);if(s)spy.observe(s)}
+  for(const id of ['nasil','faydalar']){const s=document.getElementById(id);if(s)spy.observe(s)}
   return()=>{removeEventListener('scroll',onScroll);if(raf)cancelAnimationFrame(raf);spy.disconnect()};
  },[root]);
 }
 
 // Önizlemedeki tüm değerler örnektir (gerçek kullanıcı verisi değil)
 const schedule=[{time:'09.00',subject:'Matematik',topic:'Türev – Konu tekrarı',done:3,total:5,checked:true},{time:'11.00',subject:'Türkçe',topic:'Paragraf – Soru çözümü',done:12,total:15,checked:false},{time:'14.00',subject:'Fizik',topic:'Elektrik – Konu tekrarı',done:2,total:4,checked:false}];
-const sideNav=[{icon:House,label:'Genel bakış',on:true},{icon:CalendarDays,label:'Çalışma programım'},{icon:BookOpen,label:'Yanlış defterim'},{icon:ChartNoAxesCombined,label:'Deneme takvimim'}];
-const steps=[{title:'Planını oluştur.',text:'Sana özel, gerçekçi bir çalışma programı ile her gün ne yapacağını bil.'},{title:'Yanlışlarından öğren.',text:'Tüm yanlışlarını tek bir yerde topla, konu konu analiz et, aynı hataları tekrarlama.'},{title:'Gelişimini gör.',text:'Deneme takvimiyle ilerlemeni takip et, hedefine her geçen gün daha da yaklaş.'}];
+const sideNav=[{icon:House,label:'Bugün',on:true},{icon:CalendarDays,label:'Haftalık program'},{icon:BookOpen,label:'Yanlış arşivim'},{icon:ChartNoAxesCombined,label:'Denemelerim'}];
 
 function Preview(){
  return <div className="lp-preview" role="img" aria-label="netudu panelinden örnek ekran: bugünün programı, net gelişimi ve yaklaşan deneme">
@@ -64,28 +63,30 @@ function Preview(){
  </div>
 }
 
+const CTA='Programını oluştur';
+const MICRO='Kayıttan sonra dört kısa adımda programın hazır.';
 export function Landing({onAuth}:{onAuth:(m:AuthMode)=>void}){
  const root=useRef<HTMLDivElement>(null);useReveal(root);useScrollFx(root);
+ const start=()=>onAuth('register');
  return <div className="lp" ref={root}>
   <header className="lp-nav"><span className="lp-progress" aria-hidden="true"/><div className="lp-wrap lp-nav-in">
-   <a href="#top" className="lp-logo" aria-label="netudu"><Logo size={36}/></a>
-   <nav aria-label="Sayfa bölümleri"><a href="#ozellikler">Özellikler</a><a href="#nasil">Nasıl çalışır?</a></nav>
-   <div className="lp-nav-actions"><button type="button" className="lp-link" onClick={()=>onAuth('login')}>Üye girişi</button><button type="button" className="lp-btn solid" onClick={()=>onAuth('register')}>Kayıt ol</button></div>
+   <a href="#top" className="lp-logo" aria-label="netudu"><Logo size={32}/></a>
+   <nav aria-label="Sayfa bölümleri"><a href="#nasil">Nasıl çalışır?</a><a href="#faydalar">Neler var?</a></nav>
+   <div className="lp-nav-actions"><button type="button" className="lp-link" onClick={()=>onAuth('login')}>Giriş yap</button><button type="button" className="lp-btn solid" onClick={start}>{CTA}</button></div>
   </div></header>
   <main id="top">
    <section className="lp-hero lp-wrap">
-    <div className="lp-hero-top"><p className="lp-kicker">YKS hazırlığının yeni düzeni</p>
-    <h1><span>Tek hedef.</span><span className="lp-accent">Her şey yerli yerinde.</span></h1>
-    <p className="lp-lead">Çalışma programın, yanlış defterin ve deneme takvimin.<br/>Hedefine giden yol, tek bir yerde.</p>
-    <div className="lp-cta"><button type="button" className="lp-btn solid lg" onClick={()=>onAuth('register')}>Hemen başla <ArrowRight size={18}/></button><a className="lp-btn text" href="#kesfet">Netudu&apos;yu keşfet <ArrowRight size={16}/></a></div></div>
+    <div className="lp-hero-top">
+     <h1>Her gün <span className="lp-accent">ne çalışacağını</span> bil.</h1>
+     <p className="lp-lead">YKS için çalışma programın, yanlış defterin ve deneme netlerin tek yerde.</p>
+     <div className="lp-cta"><button type="button" className="lp-btn solid lg" onClick={start}>{CTA} <ArrowRight size={18}/></button><p className="lp-micro">{MICRO}</p><button type="button" className="lp-quiet" onClick={()=>onAuth('login')}>Hesabın var mı? Giriş yap</button></div>
+    </div>
     <Preview/>
     <p className="lp-sample">Örnek ekran; gösterilen veriler örnektir.</p>
    </section>
-   <section className="lp-wrap lp-steps" aria-label="Kısaca nasıl çalışır?"><ol>{steps.map((s,i)=><li key={s.title} data-rv style={{'--d':`${i*90}ms`} as React.CSSProperties}><span className="lp-num">{String(i+1).padStart(2,'0')}</span><div><h2>{s.title}</h2><p>{s.text}</p></div></li>)}</ol></section>
-   <Tour/>
-   <Features/>
-   <How onStart={()=>onAuth('register')}/>
-   <section className="lp-wrap lp-final" data-rv><h2>Bugünkü işinle başla.</h2><p>Hesabını bir dakikada aç, programını kur.</p><button type="button" className="lp-btn solid lg" onClick={()=>onAuth('register')}>Kayıt ol <ArrowRight size={18}/></button></section>
+   <Steps/>
+   <Benefits/>
+   <section className="lp-wrap lp-close" data-rv><h2>Bugünkü işinle başla.</h2><button type="button" className="lp-btn solid lg" onClick={start}>{CTA} <ArrowRight size={18}/></button><p className="lp-micro">{MICRO}</p></section>
   </main>
   <footer className="lp-foot"><div className="lp-wrap"><Logo size={22}/><span>Created by Yusuf Kaya &amp; Kerem Batur Kanbak</span></div></footer>
  </div>
