@@ -105,7 +105,7 @@ export function normalizePlanConfig(raw:unknown,today=new Date().toISOString().s
  return {
   school:{enabled:sc.enabled===undefined?def.school.enabled:!!sc.enabled,title:String(sc.title||'Okul'),days:sc.days===undefined?def.school.days:cleanDays(sc.days),start:cleanTime(sc.start,def.school.start),end:cleanTime(sc.end,def.school.end)},
   fixedBlocks:blocks,
-  tempo:(r.tempo in TEMPO_OPTIONS?r.tempo:'balanced') as TempoKey,
+  tempo:(Object.prototype.hasOwnProperty.call(TEMPO_OPTIONS,r.tempo)?r.tempo:'balanced') as TempoKey,
   dayStart:cleanTime(r.dayStart,def.dayStart),dayEnd:cleanTime(r.dayEnd,def.dayEnd),
   startDate:typeof r.startDate==='string'&&/^20\d{2}-\d{2}-\d{2}$/.test(r.startDate)&&!Number.isNaN(Date.parse(r.startDate+'T12:00:00Z'))?r.startDate:today,
   alarm:{enabled:al.enabled===undefined?def.alarm.enabled:!!al.enabled,time:cleanTime(al.time,def.alarm.time),blockReminders:al.blockReminders===undefined?true:!!al.blockReminders}

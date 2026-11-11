@@ -20,5 +20,5 @@ export function trialDaysLeft(createdAt:string|null|undefined,now:number=Date.no
  const t=Date.parse(createdAt);
  if(!Number.isFinite(t)||t>now+86400000)return null;
  const used=Math.floor((now-t)/86400000);
- return Math.max(0,TRIAL_DAYS-used);
+ return Math.min(TRIAL_DAYS,Math.max(0,TRIAL_DAYS-Math.max(0,used)));
 }

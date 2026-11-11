@@ -67,3 +67,38 @@ Aşağıdaki test çıktıları. Görsel çıktı (before/after.png) YAPILAMADI:
 - Fiyat yalnız `lib/pricing.ts`'ten okunuyor (grep).
 - Kullanıcı metni taraması: Supabase/OpenAI ifadeleri yalnız geliştirici bölümündeki ayar işlevlerinde.
 - `next build`, tarayıcı/mobil görsel kontrol, gerçek Apple/Google girişi: YAPILAMADI.
+
+## Tur 2 (inceleme turu 1 bulgularının düzeltmesi)
+
+Orkestratör doğrulaması bu tur için boş bırakıldı; kutular işaretlenmedi.
+
+### Düzeltmeler
+1. **Maarif iddiası:** `lib/plan/curriculum.ts` not metinleri sadeleştirildi ("yeni nesil mantık soruları", "sınav soru dili", "ÖSYM'nin vazgeçmediği klasik soru modelleri", "TYT programını tamamladın."); kenar çubuğu "YKS {yıl}"; `PRODUCT.md` "Maarif TYT müfredatına göre kurulur" → "YKS konu listesine göre kurulur".
+2. **Apple eşleme:** karar saf fonksiyona ayrıldı (`decideAppleAccount`, `lib/apple-auth.ts`). Şifreli (password_hash dolu) mevcut hesapta oturum açılmaz, `?auth_error=apple_email_exists` ile giriş ekranına yönlenir (`app/study/auth.tsx` authErrors: "Bu e-postayla şifreli bir hesap var. Şifrenle giriş yap."). Şifresiz hesapta eşleme serbest, hesap yoksa (kayıt açıksa) oluşturulur. Apple `user` adı `cleanAppleName` ile kontrol/bidi karakterlerinden arındırılır. Şema değişmedi. Kolon adı `password_hash`: `lib/server.ts` şeması ve `lib/auth.ts` (createUser) kullanıyor; Supabase bağdaştırıcısı (`lib/supabase.ts`, genel SELECT çevirisi satır ~632) seçilen sütunları olduğu gibi PostgREST `select=` listesine geçirir, oturum sorgusu da `password_hash` döndürür. Google callback'ine dokunulmadı (canlı davranış; orada e-posta eşleşen hesaba şifreye bakmadan `google_sub` yazılıyor, ayrı bir değerlendirme konusu).
+3. **Çalışma alanı çıkışı:** `/api/tenant` herkes için çekilir. Yönetici olmayan kullanıcıda yalnız birden fazla alanı varsa ya da aktif alan kişisel alan (id = kullanıcı id) değilse "Çalışma alanı" kartı görünür: alan seçici + "Kişisel alanıma dön" (mevcut `runTenantOp` switch çağrısı). Tek alanlı kullanıcıda kart yok. Yönetim paneli `isDev` altında kaldı.
+4. `trialDaysLeft` en çok 7 döner (gelecekteki createdAt → 7). 5. `normalizePlanConfig` tempo denetimi `Object.prototype.hasOwnProperty.call` (tsconfig hedefi ES2018, `Object.hasOwn` yok). 6. `.pw-field .icon-button:active` eklendi. 7. Mobil `min-height:44px` kuralı kendi düğme sınıflarıyla sınırlandı (`.text-button,.icon-button,.danger-button:not(.inline),.topic-button,.camera-button,[role=tab],summary,.choice,` sekme/segment düğmeleri); sonner, react-day-picker, switch/checkbox ve satır içi `.danger-button.inline` etkilenmez; `.primary/.secondary/.social-button` zaten 48px. 8. `.social-button` ölü ilk tanımı (`#f3f4f6`) silindi. 9. `/api/auth/me` yapay zekâ durumunu vermiyor (yeni uç eklenmedi) → madde "Yanlışlarını fotoğrafla, konuya göre sakla" oldu.
+
+### Maarif geçen kullanıcı metinleri ve kararlar
+| Yer | Bağlam | Karar |
+|---|---|---|
+| curriculum.ts 240/280/296/300 notları, study-app.tsx kenar çubuğu | program/kamp içeriği | düzeltildi |
+| PRODUCT.md:23 | program Maarif müfredatına göre | düzeltildi |
+| app/layout.tsx meta, landing.tsx:81, auth.tsx:157 | "Konu listeleri ... Maarif" | kaldı (meb-topics) |
+| landing-sections.tsx:60, upload-dialog.tsx:26,32, notes.tsx:19 | konu seçimi/eşleme, ders notu | kaldı (meb-topics) |
+| api/notes/route.ts:12 (yapay zekâ istemi) | ders notu | kaldı |
+| lib/videos.ts:17,22,27 | video sıralama/arama | kaldı (aranan terim) |
+| README.md:3,11; NET-DEFTERIM-REHBER.md; lib/topics.ts, meb-topics.ts, scheduler.ts:145, curriculum.ts:2 (yorum) | konu listesi/dokümantasyon | kaldı |
+| public/ | Maarif geçmiyor | - |
+
+### Gerçek komut çıktıları (scratchpad = /tmp/claude-0/-home-claude/ceb4c31e-2408-5fe2-8036-41d47bb14baf/scratchpad)
+```
+streak:            streak: 9/9 PASS                       (çıkış 0)
+scheduler+pricing: scheduler+pricing: 26 test geçti       (çıkış 0)  [+ trial 7 gün, tempo 'constructor' testleri]
+apple:             apple: 15 test geçti                   (çıkış 0)  [+ decideAppleAccount, cleanAppleName]
+check-css.py:      süslü parantez farkı = 0; parantez farkı = 0; TANIMSIZ: ['--d','--sp','--sy','--v'] (taban; satır içi atanan değişkenler)
+ts-check.js:       çıktı yok, çıkış 0
+names-check.js:    TEMİZ: tanımsız ad / kullanılmayan değişken-import yok
+class-check.py:    TANIMSIZ SINIF SAYISI: 0
+cascade-audit.py:  toplam 0
+palette-check.py:  çıktı yok, çıkış 0
+```

@@ -162,8 +162,6 @@ body:has(.auth-page){background:var(--bg)}
 .auth-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:30px 28px;box-shadow:0 30px 80px -40px rgba(0,0,0,.8);display:flex;flex-direction:column;gap:10px}
 .auth-card h2{font-size:1.45rem;margin-top:14px}
 .auth-tabs{display:flex;width:100%}.auth-tabs button{flex:1;justify-content:center;padding:10px}
-.social-button{display:flex;align-items:center;justify-content:center;gap:10px;min-height:46px;border-radius:9px;background:#fff;color:#232323;font-weight:600;font-size:.92rem;text-decoration:none;margin-top:10px;border:1px solid #d6d6d6}
-.social-button:hover{background:#f3f4f6}
 .auth-or{display:flex;align-items:center;gap:12px;color:var(--fg3);font-size:.78rem;margin:6px 0}.auth-or:before,.auth-or:after{content:"";flex:1;height:1px;background:var(--line)}
 .auth-form{display:flex;flex-direction:column;gap:14px;margin-top:6px}
 .auth-form .field-label input,.auth-form .choice{width:100%;margin-top:7px}
@@ -762,6 +760,7 @@ html{scroll-padding-top:88px}
 /* basış geri bildirimi */
 .secondary,.text-button,.icon-button,.primary{transition:transform var(--tick) var(--ease),background-color var(--tick) ease,border-color var(--tick) ease,color var(--tick) ease,box-shadow var(--tick) ease}
 .primary:active,.secondary:active,.icon-button:active{transform:scale(.97)}
+.pw-field .icon-button:active{transform:translateY(-50%) scale(.97)}
 .text-button:active{transform:scale(.98)}
 
 /* her genişlikte taşmayan ızgaralar */
@@ -776,7 +775,7 @@ html{scroll-padding-top:88px}
  .workspace{overflow-x:clip}
  .actions{flex-wrap:wrap}
  .actions>.primary{flex:1 1 100%}
- button,[role=tab],summary,.choice,.day-pills button,.week-chips button,.routine-tabs button,.segmented button{min-height:44px}
+ .text-button,.icon-button,.danger-button:not(.inline),.topic-button,.camera-button,[role=tab],summary,.choice,.day-pills button,.week-chips button,.routine-tabs button,.segmented button,.detail-tabs button{min-height:44px}
  .page-heading .actions .primary{display:none}
  .wizard-nav{position:sticky;bottom:0;z-index:2;display:flex;gap:var(--s3);margin-top:var(--s4);padding:var(--s3) 0 calc(var(--s3) + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line)}
  .wizard-nav>*{flex:1}

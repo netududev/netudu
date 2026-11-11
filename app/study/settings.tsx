@@ -66,7 +66,7 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
     }
    }).catch(()=>{});
   }
-  if(isDev)fetch('/api/tenant',{credentials:'include',headers:authHeaders()}).then(r=>r.json() as Promise<TenantPayload>).then(d=>{if(d?.active)setTState(d)}).catch(()=>{});
+  fetch('/api/tenant',{credentials:'include',headers:authHeaders()}).then(r=>r.json() as Promise<TenantPayload>).then(d=>{if(d?.active)setTState(d)}).catch(()=>{});
  },[isDev]);
  async function saveOpenAi(e:React.FormEvent){
   e.preventDefault();setAiBusy(true);setAiNotice(null);
@@ -303,6 +303,18 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
     </form>
    </article>
   </>}
+
+  {!isDev&&tState&&user&&(tState.tenants.length>1||tState.active.id!==user.id)&&<article className="panel profile-panel"><span className="settings-icon"><Building2/></span><h2>Çalışma alanı</h2>
+   <p className="description">Verilerin seçtiğin çalışma alanında tutulur. Buradan başka bir alana geçebilir ya da kişisel alanına dönebilirsin.</p>
+   <div className="form-grid">
+    <label>Aktif alan
+     <select className="choice-native" disabled={tBusy} value={tState.active.id} onChange={e=>void runTenantOp({action:'switch',tenantId:e.target.value},true)}>
+      {tState.tenants.map(t=><option key={t.id} value={t.id}>{t.id===user.id?'Kişisel alanım':t.name}</option>)}
+     </select>
+    </label>
+   </div>
+   {tState.active.id!==user.id&&<div className="actions wrap"><button type="button" className="secondary" disabled={tBusy} onClick={()=>void runTenantOp({action:'switch',tenantId:user.id},true)}>Kişisel alanıma dön</button></div>}
+  </article>}
 
   {isDev&&<article className="panel profile-panel"><span className="settings-icon"><Building2/></span><h2>Çalışma alanı yönetimi (yönetici)</h2>
    <span className="status good">{tState?.active?.name||user?.tenantName||'Kişisel Çalışma Alanı'} · {roleLabel[tState?.active?.role||user?.tenantRole||'owner']}</span>

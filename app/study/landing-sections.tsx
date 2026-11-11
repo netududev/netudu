@@ -73,7 +73,7 @@ export function Benefits(){
 // Yalnız kodda var olan özellikler listelenir.
 const planFeatures=[
  'Okul ve dershane saatlerine göre günlük program',
- 'Soru fotoğrafından çözüm ve konu, yanlış defteri',
+ 'Yanlışlarını fotoğrafla, konuya göre sakla',
  'Aralıklı tekrar: 1, 3, 7, 14, 30 ve 60. gün',
  'Deneme ve net takibi',
  'Aylık rapor ve ders notları',

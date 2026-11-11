@@ -37,3 +37,13 @@ export async function verifyIdToken(token:string,opts:{clientId:string;nonce:str
   return c}catch{return null}}
 // Apple e-posta doğrulamasını bazen "true" dizgesi olarak yollar
 export const emailVerified=(c:AppleClaims)=>c.email_verified===true||c.email_verified==='true';
+
+// Hesap eşleme kararı (saf): e-postası eşleşen kullanıcıda şifre varsa otomatik bağlama yapılmaz (hesap ele geçirme riski);
+// şifresiz (sosyal girişle açılmış) hesapta eşleme serbest; hesap yoksa kayıt açıksa oluşturulur.
+export type AppleDecision={action:'link';id:string}|{action:'password_exists'}|{action:'create'}|{action:'closed'};
+export function decideAppleAccount(row:{id:unknown;password_hash?:unknown}|null|undefined,registrationOpen:boolean):AppleDecision{
+ if(row)return row.password_hash?{action:'password_exists'}:{action:'link',id:String(row.id)};
+ return registrationOpen?{action:'create'}:{action:'closed'}}
+
+// Apple "user" form alanındaki adı kontrol karakterlerinden arındırır (boşluklar sadeleşir, en çok 60 karakter).
+export function cleanAppleName(raw:string){return raw.replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2066-\u2069\ufeff]/g,' ').replace(/\s+/g,' ').trim().slice(0,60)}

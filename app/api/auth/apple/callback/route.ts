@@ -1,8 +1,8 @@
 import {db,bindings,readCookie,ensureSchema} from '@/lib/server';
 import {createSession,createUser,normalizeEmail,appleReady,registrationOpen,appOrigin} from '@/lib/auth';
-import {makeClientSecret,verifyIdToken,emailVerified,APPLE_JWKS_URL,type Jwk,type AppleEnv} from '@/lib/apple-auth';
+import {makeClientSecret,verifyIdToken,emailVerified,decideAppleAccount,cleanAppleName,APPLE_JWKS_URL,type Jwk,type AppleEnv} from '@/lib/apple-auth';
 // Apple dönüşü (form_post): kodu belirteçle değiştirir, id_token'ı Apple anahtarlarıyla doğrular,
-// doğrulanmış e-postayla hesabı bulur/oluşturur ve oturum açar (Google dönüşüyle aynı eşleme mantığı).
+// doğrulanmış e-postayla hesabı bulur/oluşturur ve oturum açar (şifreli hesaba otomatik bağlanmaz).
 const CLEAR='nd_apple=; Path=/api/auth/apple; HttpOnly; SameSite=None; Max-Age=0; Secure';
 export async function POST(req:Request){const origin=appOrigin(req);
  const fail=(code:string)=>new Response(null,{status:303,headers:{Location:`${origin}/?auth_error=${code}`,'Set-Cookie':CLEAR}});
@@ -20,11 +20,15 @@ export async function POST(req:Request){const origin=appOrigin(req);
   if(!claims)return fail('apple_token');
   if(!claims.email||!emailVerified(claims))return fail('apple_email');
   await ensureSchema();const email=normalizeEmail(claims.email);
-  const row=await db().prepare('SELECT id FROM users WHERE email=?').bind(email).first();
-  let id=row?String(row.id):'';
-  if(!id){if(!registrationOpen())return fail('closed');
+  const row=await db().prepare('SELECT id,password_hash FROM users WHERE email=?').bind(email).first();
+  const dec=decideAppleAccount(row,registrationOpen());
+  if(dec.action==='password_exists')return fail('apple_email_exists');
+  if(dec.action==='closed')return fail('closed');
+  let id='';
+  if(dec.action==='link')id=dec.id;
+  else{
    // Apple adı yalnız ilk girişte, "user" form alanında JSON olarak gelir
-   let name='';try{const u=JSON.parse(String(form.get('user')||'{}')) as {name?:{firstName?:string;lastName?:string}};name=[u.name?.firstName,u.name?.lastName].filter(Boolean).join(' ')}catch{}
-   id=(await createUser({email,name:(name||email.split('@')[0]).slice(0,60)})).id}
+   let name='';try{const u=JSON.parse(String(form.get('user')||'{}')) as {name?:{firstName?:string;lastName?:string}};name=cleanAppleName([u.name?.firstName,u.name?.lastName].filter(x=>typeof x==='string'&&x).join(' '))}catch{}
+   id=(await createUser({email,name:name||cleanAppleName(email.split('@')[0])||'Öğrenci'})).id}
   const cookie=await createSession(req,id);const h=new Headers({Location:origin+'/'});h.append('Set-Cookie',cookie);h.append('Set-Cookie',CLEAR);return new Response(null,{status:303,headers:h})}
  catch{return fail('apple_error')}}
