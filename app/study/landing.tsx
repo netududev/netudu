@@ -33,7 +33,7 @@ export function useScrollFx(root:RefObject<HTMLElement|null>){
 }
 
 // Önizlemedeki tüm değerler örnektir (gerçek kullanıcı verisi değil)
-const schedule=[{time:'09.00',subject:'Matematik',topic:'Türev – Konu tekrarı',done:3,total:5,checked:true,hue:'brand'},{time:'11.00',subject:'Türkçe',topic:'Paragraf – Soru çözümü',done:12,total:15,checked:false,hue:'mint'},{time:'14.00',subject:'Fizik',topic:'Elektrik – Konu tekrarı',done:2,total:4,checked:false,hue:'coral'}];
+const schedule=[{time:'09.00',subject:'Matematik',topic:'Türev – Konu tekrarı',done:3,total:5,checked:true},{time:'11.00',subject:'Türkçe',topic:'Paragraf – Soru çözümü',done:12,total:15,checked:false},{time:'14.00',subject:'Fizik',topic:'Elektrik – Konu tekrarı',done:2,total:4,checked:false}];
 const sideNav=[{icon:House,label:'Genel bakış',on:true},{icon:CalendarDays,label:'Çalışma programım'},{icon:BookOpen,label:'Yanlış defterim'},{icon:ChartNoAxesCombined,label:'Deneme takvimim'}];
 const steps=[{title:'Planını oluştur.',text:'Sana özel, gerçekçi bir çalışma programı ile her gün ne yapacağını bil.'},{title:'Yanlışlarından öğren.',text:'Tüm yanlışlarını tek bir yerde topla, konu konu analiz et, aynı hataları tekrarlama.'},{title:'Gelişimini gör.',text:'Deneme takvimiyle ilerlemeni takip et, hedefine her geçen gün daha da yaklaş.'}];
 
@@ -50,7 +50,7 @@ function Preview(){
     <div>
      <h2>Bugün, hedefine bir adım daha.</h2>
      <section className="lp-card"><header><b>Bugünün programı</b><span>Tümünü gör <ArrowRight size={12}/></span></header>
-      <ul>{schedule.map(s=><li key={s.subject} data-hue={s.hue}><time>{s.time}</time><i className="lp-pip"/><div><b>{s.subject}</b><small>{s.topic}</small></div><div className="lp-bar"><span style={{width:`${(s.done/s.total)*100}%`}}/></div><small>{s.done}/{s.total}</small>{s.checked?<span className="lp-check on"><Check size={13}/></span>:<span className="lp-check"/>}</li>)}</ul>
+      <ul>{schedule.map(s=><li key={s.subject}><time>{s.time}</time><i className="lp-pip"/><div><b>{s.subject}</b><small>{s.topic}</small></div><div className="lp-bar"><span style={{width:`${(s.done/s.total)*100}%`}}/></div><small>{s.done}/{s.total}</small>{s.checked?<span className="lp-check on"><Check size={13}/></span>:<span className="lp-check"/>}</li>)}</ul>
      </section>
     </div>
     <div className="lp-col">

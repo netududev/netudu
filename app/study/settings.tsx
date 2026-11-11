@@ -209,10 +209,10 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
     {filteredUsers.length===0?(
      <p className="muted" style={{padding:'12px 0'}}>Aramana uygun kayıtlı kullanıcı bulunamadı.</p>
     ):(
-     <div className="table-scroll" style={{display:'block',maxHeight:420,overflowY:'auto',border:'1px solid #333a41',borderRadius:10}}>
+     <div className="table-scroll" style={{display:'block',maxHeight:420,overflowY:'auto',border:'1px solid var(--line)',borderRadius:10}}>
       <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
        <thead>
-        <tr style={{background:'#1f2428',textAlign:'left',borderBottom:'1px solid #333a41',color:'#8f9aa3'}}>
+        <tr style={{background:'var(--inner)',textAlign:'left',borderBottom:'1px solid var(--line)',color:'var(--fg3)'}}>
          <th style={{padding:'10px 12px'}}>Kullanıcı & E-posta</th>
          <th style={{padding:'10px 12px'}}>Sınıf · Hedef · Okul</th>
          <th style={{padding:'10px 12px'}}>Çalışma Alanı (Tenant)</th>
@@ -222,21 +222,21 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
        </thead>
        <tbody>
         {filteredUsers.map(u=>(
-         <tr key={u.id} style={{borderBottom:'1px solid #2c3238'}}>
+         <tr key={u.id} style={{borderBottom:'1px solid var(--line)'}}>
           <td style={{padding:'10px 12px'}}>
-           <strong style={{display:'block',color:'#e7eaed'}}>{u.name} {u.developer&&<span className="tag">Developer</span>} {u.google&&<span className="tag">Google</span>}</strong>
-           <small style={{color:'#9aa5ae'}}>{u.email}</small>
+           <strong style={{display:'block',color:'var(--fg)'}}>{u.name} {u.developer&&<span className="tag">Developer</span>} {u.google&&<span className="tag">Google</span>}</strong>
+           <small style={{color:'var(--fg2)'}}>{u.email}</small>
           </td>
-          <td style={{padding:'10px 12px',color:'#c3ccd3'}}>
+          <td style={{padding:'10px 12px',color:'var(--fg2)'}}>
            <span>{u.grade==='Mezun'?'Mezun':`${u.grade}. sınıf`} · YKS {u.examYear}</span>
-           {(u.target||u.school)&&<small style={{display:'block',color:'#9aa5ae'}}>{[u.target,u.school].filter(Boolean).join(' · ')}</small>}
+           {(u.target||u.school)&&<small style={{display:'block',color:'var(--fg2)'}}>{[u.target,u.school].filter(Boolean).join(' · ')}</small>}
           </td>
-          <td style={{padding:'10px 12px',color:'#c3ccd3'}}>{u.tenantName}</td>
-          <td style={{padding:'10px 12px',color:'#c3ccd3'}}>
+          <td style={{padding:'10px 12px',color:'var(--fg2)'}}>{u.tenantName}</td>
+          <td style={{padding:'10px 12px',color:'var(--fg2)'}}>
            <b>{u.questionCount}</b> soru · <b>{u.examCount}</b> deneme
-           <small style={{display:'block',color:u.hasPlan?'#5fd0b6':'#9aa5ae'}}>{u.hasPlan?'Programı aktif':'Program oluşturmadı'}</small>
+           <small style={{display:'block',color:u.hasPlan?'var(--champ-ink)':'var(--fg2)'}}>{u.hasPlan?'Programı aktif':'Program oluşturmadı'}</small>
           </td>
-          <td style={{padding:'10px 12px',color:'#9aa5ae',fontSize:12}}>
+          <td style={{padding:'10px 12px',color:'var(--fg2)',fontSize:12}}>
            <div>Kayıt: {u.createdAt?new Date(u.createdAt).toLocaleDateString('tr-TR',{day:'numeric',month:'short',year:'numeric'}):'—'}</div>
            <div>Son: {u.lastLoginAt?new Date(u.lastLoginAt).toLocaleString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—'}</div>
           </td>
@@ -254,7 +254,7 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
     {aiBusy&&<div className="verify good" role="status"><LoaderCircle className="spin" size={18}/><span>OpenAI API anahtarı doğrulanıyor ve sunucuya kaydediliyor...</span></div>}
     {!aiBusy&&aiNotice&&<div className={'verify '+aiNotice.type} role="alert">{aiNotice.type==='good'?<Check size={18}/>:<AlertCircle size={18}/>}<span><b>{aiNotice.type==='good'?'Bağlantı Aktif: ':'Bağlantı Hatası: '}</b>{aiNotice.text}</span></div>}
     {ai&&<ul className="kv">
-     <li><span>OpenAI Bağlantı Durumu</span><b style={{color:'#5fd0b6'}}>Bağlandı ve Aktif</b></li>
+     <li><span>OpenAI Bağlantı Durumu</span><b style={{color:'var(--champ-ink)'}}>Bağlandı ve Aktif</b></li>
      <li><span>Kayıtlı OpenAI API Anahtarı</span><b><code>{supa?.ai?.maskedKey||'Kayıtlı'}</code></b></li>
      <li><span>Aktif Yapay Zekâ Modeli</span><b><code>{supa?.ai?.model||'gpt-4o-mini'}</code></b></li>
      <li><span>YouTube Data API v3</span><b>{youtube?`Bağlı (${supa?.ai?.youtubeMaskedKey||'Kayıtlı'})`:'Varsayılan Müfredat Videoları Aktif'}</b></li>
@@ -281,7 +281,7 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
     {supaBusy&&<div className="verify good" role="status"><LoaderCircle className="spin" size={18}/><span>Supabase sunucusuna bağlanılıyor, Project URL ve API anahtarı test ediliyor...</span></div>}
     {!supaBusy&&supaNotice&&<div className={'verify '+supaNotice.type} role="alert">{supaNotice.type==='good'?<Check size={18}/>:<AlertCircle size={18}/>}<span><b>{supaNotice.type==='good'?'Supabase Bağlandı: ':'Supabase Bağlantı Uyarısı: '}</b>{supaNotice.text}</span></div>}
     {supa?.connected&&<ul className="kv">
-     <li><span>Supabase Bağlantı Durumu</span><b style={{color:'#5fd0b6'}}>Bağlandı ve Aktif</b></li>
+     <li><span>Supabase Bağlantı Durumu</span><b style={{color:'var(--champ-ink)'}}>Bağlandı ve Aktif</b></li>
      <li><span>Bağlı Project URL</span><b><code>{supa.url}</code></b></li>
      <li><span>Bağlı API Anahtarı</span><b><code>{supa.maskedKey||'Kayıtlı'}</code> {supa.keyType?`(${supa.keyType})`:''}</b></li>
      <li><span>Supabase Auth (/auth/v1)</span><b>{supa.authReady!==false?'Aktif':'Bağlı'}</b></li>
