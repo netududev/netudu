@@ -533,7 +533,7 @@ async function executeOnSupabase(cfg:SupabaseConfig,rawSql:string,params:unknown
    if(!srowsFallback.length)return {results:[],meta:{changes:0}};
    const uid=srowsFallback[0].user_id;
    const [ur,fr]=await Promise.all([
-    restFetch(cfg,`users?id=eq.${encVal(uid)}&select=id,email,name,password_hash,google_sub&limit=1`),
+    restFetch(cfg,`users?id=eq.${encVal(uid)}&select=id,email,name,password_hash,google_sub,created_at&limit=1`),
     restFetch(cfg,'users?select=id&order=created_at.asc,id.asc&limit=1')
    ]);
    if(!ur.ok)return null;
@@ -548,7 +548,7 @@ async function executeOnSupabase(cfg:SupabaseConfig,rawSql:string,params:unknown
   const sess=srows[0];
   const uid=sess.user_id;
   const [ur,fr]=await Promise.all([
-   restFetch(cfg,`users?id=eq.${encVal(uid)}&select=id,email,name,password_hash,google_sub,tenant_id&limit=1`),
+   restFetch(cfg,`users?id=eq.${encVal(uid)}&select=id,email,name,password_hash,google_sub,tenant_id,created_at&limit=1`),
    restFetch(cfg,'users?select=id&order=created_at.asc,id.asc&limit=1')
   ]);
   if(!ur.ok)return null;

@@ -20,7 +20,7 @@ netudu (kod adı Net Defterim), YKS hazırlığını tek yerde toplar: kişisel 
 
 ## Positioning
 
-Program, yanlış defteri ve deneme takvimi ayrı araçlarda değil tek hesapta; her şey öğrencinin kendi okul/dershane/spor düzenine ve Maarif TYT müfredatına göre kurulur.
+Program, yanlış defteri ve deneme takvimi ayrı araçlarda değil tek hesapta; her şey öğrencinin kendi okul/dershane/spor düzenine ve YKS konu listesine göre kurulur.
 
 ## Operating Context
 

@@ -1,4 +1,5 @@
-// Kişisel Maarif TYT kampı müfredatı: 16 hafta × 7 gün = 112 birim, 6 spor programı, 3 çalışma temposu.
+// TYT çalışma sırası: 16 hafta × 7 gün = 112 birim, 3 çalışma temposu.
+// Not: ders adları lib/meb-topics.ts'teki Maarif ders adlarıyla eşlenir (noteSubject); birimlerin konu başlıkları bu dosyanın kendi içeriğidir.
 // Kaynak: github.com/keremisthebabo/tyt (js/curriculum.js), Net Defterim'e TypeScript olarak taşındı; arayüz renk sınıfları çıkarıldı.
 export const ALL_DAYS = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'] as const;
 export type DayKey = typeof ALL_DAYS[number];
@@ -12,18 +13,6 @@ export const DAY_FULL_NAMES: Record<DayKey, string> = {
   Cmt: 'Cumartesi',
   Paz: 'Pazar'
 };
-
-export const MOTIVATION_QUOTES = [
-  "Erken başlayan ve kendi düzenini kuran öğrenci, sınav stresini değil başarının keyfini yaşar!",
-  "Kendi programına sadık kaldığın her gün seni hedefine bir adım daha yaklaştırır!",
-  "Disiplin; canın ders çalışmak istemediğinde bile masaya oturup hedefini gerçekleştirmektir.",
-  "Sporda gösterilen irade ile masada çözülen o TYT sorusu aynı disiplinin ürünüdür!",
-  "Bugün vazgeçtiğin her mazeret, yarın sınav sonuç belgende gurur tablosuna dönüşecek.",
-  "Maarif kamp yolculuğunda attığın her tik, seni hayalindeki üniversite amfisine yaklaştırıyor.",
-  "Kendi seçtiğin spor ve çalışma temposuyla hem bedenini hem zihnini zirveye taşıyorsun!",
-  "Yorulduğunda bırakma, sadece biraz nefes al ve bir sonraki soruya daha hırslı sarıl!",
-  "Her gün düzenli ayrılan odaklanmış TYT blokları, son aylardaki panik baskısını tamamen ortadan kaldırır."
-];
 
 export const DIRECT_CHANNELS: Record<string, string> = {
   mertHoca: "https://www.youtube.com/@MertHoca",
@@ -41,141 +30,45 @@ export const MACRO_PHASES = [
   { id: 3, name: "Aşama 3: Problemler, Üçgenler & Fen İskeleti", weeks: [9, 10, 11, 12] },
   { id: 4, name: "Aşama 4: PKOB, İleri Geometri, Sosyal & Denemeler", weeks: [13, 14, 15, 16] }
 ];
-
-export type SportDay = { isRest: boolean; label: string; badge: string };
-export type SportProgram = { id: string; name: string; badge: string; cycleDesc: string; dayMap: Record<DayKey, SportDay> };
-export const SPORT_PROGRAMS: SportProgram[] = [
-  {
-    id: 'ppl',
-    name: 'Push / Pull / Legs (PPL)',
-    badge: 'PPL Split',
-    cycleDesc: 'İtiş • Çekiş • Bacak • Dinlenme Döngüsü',
-    dayMap: {
-      Pzt: { isRest: false, label: 'Push (Göğüs, Omuz, Ön/Arka Kol İtiş)', badge: 'Spor: Push (İtiş)' },
-      Sal: { isRest: false, label: 'Pull (Sırt, Arka Omuz, Biceps Çekiş)', badge: 'Spor: Pull (Çekiş)' },
-      Çar: { isRest: false, label: 'Legs (Bacak, Kalça & Core)', badge: 'Spor: Legs (Bacak)' },
-      Per: { isRest: true, label: 'Dinlenme & Kas Onarımı (Off Day)', badge: 'Dinlenme (Off Day)' },
-      Cum: { isRest: false, label: 'Push (Üst Vücut İtiş Odaklı)', badge: 'Spor: Push (İtiş)' },
-      Cmt: { isRest: false, label: 'Pull (Üst Vücut Çekiş Odaklı)', badge: 'Spor: Pull (Çekiş)' },
-      Paz: { isRest: true, label: 'Dinlenme & Aktif Toparlanma (Off Day)', badge: 'Dinlenme (Off Day)' }
-    }
-  },
-  {
-    id: 'ul',
-    name: 'Upper / Lower Split',
-    badge: 'Upper/Lower',
-    cycleDesc: '2 Gün Spor (Üst/Alt Vücut) + 1 Gün Dinlenme',
-    dayMap: {
-      Pzt: { isRest: false, label: 'Upper Body (Üst Vücut Antrenmanı)', badge: 'Spor: Upper Body' },
-      Sal: { isRest: false, label: 'Lower Body (Alt Vücut & Bacak)', badge: 'Spor: Lower Body' },
-      Çar: { isRest: true, label: 'OFF Günü (Dinlenme / Rest Day)', badge: 'Dinlenme (Off Day)' },
-      Per: { isRest: false, label: 'Upper Body (Üst Vücut Antrenmanı)', badge: 'Spor: Upper Body' },
-      Cum: { isRest: false, label: 'Lower Body (Alt Vücut & Core)', badge: 'Spor: Lower Body' },
-      Cmt: { isRest: true, label: 'OFF Günü (Dinlenme / Rest Day)', badge: 'Dinlenme (Off Day)' },
-      Paz: { isRest: false, label: 'Upper Body (Yeni Döngü Başlangıcı)', badge: 'Spor: Upper Body' }
-    }
-  },
-  {
-    id: 'fb',
-    name: 'Full Body (3 Gün)',
-    badge: 'Full Body',
-    cycleDesc: 'Pazartesi • Çarşamba • Cuma Tüm Vücut Antrenmanı',
-    dayMap: {
-      Pzt: { isRest: false, label: 'Full Body A (Tüm Vücut Temel Bileşik)', badge: 'Spor: Full Body' },
-      Sal: { isRest: true, label: 'Dinlenme & Toparlanma (Off Day)', badge: 'Dinlenme (Off Day)' },
-      Çar: { isRest: false, label: 'Full Body B (Tüm Vücut Kuvvet & Hipertrofi)', badge: 'Spor: Full Body' },
-      Per: { isRest: true, label: 'Dinlenme & Toparlanma (Off Day)', badge: 'Dinlenme (Off Day)' },
-      Cum: { isRest: false, label: 'Full Body C (Tüm Vücut & Core)', badge: 'Spor: Full Body' },
-      Cmt: { isRest: true, label: 'Hafta Sonu Dinlenme (Off Day)', badge: 'Dinlenme (Off Day)' },
-      Paz: { isRest: true, label: 'Hafta Sonu Dinlenme (Off Day)', badge: 'Dinlenme (Off Day)' }
-    }
-  },
-  {
-    id: 'bro',
-    name: 'Bölgesel (Bro Split - 5 Gün)',
-    badge: 'Bölgesel Split',
-    cycleDesc: 'Hafta İçi Her Gün Tek Kas Grubu + Hafta Sonu Dinlenme',
-    dayMap: {
-      Pzt: { isRest: false, label: 'Göğüs & Ön Kol (Chest & Biceps)', badge: 'Spor: Göğüs & Biceps' },
-      Sal: { isRest: false, label: 'Sırt & Arka Kol (Back & Triceps)', badge: 'Spor: Sırt & Triceps' },
-      Çar: { isRest: false, label: 'Omuz & Karın (Shoulders & Core)', badge: 'Spor: Omuz & Core' },
-      Per: { isRest: false, label: 'Bacak & Kalf (Leg Day)', badge: 'Spor: Bacak (Legs)' },
-      Cum: { isRest: false, label: 'Kol & Eksik Bölge Tamamlama', badge: 'Spor: Kol & Tamamlama' },
-      Cmt: { isRest: true, label: 'Dinlenme Günü (Off Day)', badge: 'Dinlenme (Off Day)' },
-      Paz: { isRest: true, label: 'Dinlenme Günü (Off Day)', badge: 'Dinlenme (Off Day)' }
-    }
-  },
-  {
-    id: 'cardio',
-    name: 'Kardiyo, Kondisyon & Ev Sporu',
-    badge: 'Kardiyo & Kondisyon',
-    cycleDesc: 'Koşu, HIIT, Mobilite ve Ev Antrenmanı Döngüsü',
-    dayMap: {
-      Pzt: { isRest: false, label: 'HIIT Kardiyo & Core Antrenmanı', badge: 'Spor: HIIT & Core' },
-      Sal: { isRest: true, label: 'Aktif Dinlenme & Esneme', badge: 'Dinlenme / Esneme' },
-      Çar: { isRest: false, label: 'Tempolu Koşu & Vücut Ağırlığı Direnç', badge: 'Spor: Koşu & Direnç' },
-      Per: { isRest: true, label: 'Dinlenme Günü (Off Day)', badge: 'Dinlenme (Off Day)' },
-      Cum: { isRest: false, label: 'Kondisyon, Mobilite & Karın', badge: 'Spor: Kondisyon' },
-      Cmt: { isRest: false, label: 'Açık Hava Yürüyüş / Hafif Kardiyo', badge: 'Spor: Hafif Kardiyo' },
-      Paz: { isRest: true, label: 'Tam Dinlenme (Off Day)', badge: 'Dinlenme (Off Day)' }
-    }
-  },
-  {
-    id: 'none',
-    name: 'Spor Yapmıyorum (Sadece Ders)',
-    badge: 'Tam Odak TYT',
-    cycleDesc: 'Spor bloğu eklenmez; tüm boş saatler ders ve dinlenmeye ayrılır',
-    dayMap: {
-      Pzt: { isRest: true, label: 'Spor Bloğu Yok (Tam Odak Ders)', badge: 'Tam Odak Çalışma' },
-      Sal: { isRest: true, label: 'Spor Bloğu Yok (Tam Odak Ders)', badge: 'Tam Odak Çalışma' },
-      Çar: { isRest: true, label: 'Spor Bloğu Yok (Tam Odak Ders)', badge: 'Tam Odak Çalışma' },
-      Per: { isRest: true, label: 'Spor Bloğu Yok (Tam Odak Ders)', badge: 'Tam Odak Çalışma' },
-      Cum: { isRest: true, label: 'Spor Bloğu Yok (Tam Odak Ders)', badge: 'Tam Odak Çalışma' },
-      Cmt: { isRest: true, label: 'Spor Bloğu Yok (Tam Odak Ders)', badge: 'Tam Odak Çalışma' },
-      Paz: { isRest: true, label: 'Spor Bloğu Yok (Tam Odak Ders)', badge: 'Tam Odak Çalışma' }
-    }
-  }
-];
-
 export type TempoKey = 'relaxed' | 'balanced' | 'intense';
 export type Tempo = { id: TempoKey; name: string; badge: string; totalWeeks: number; dailyHoursLabel: string; exampleLabel: string; desc: string; studyBlocks: { durationMin: number; label: string; tag: string }[] };
 export const TEMPO_OPTIONS: Record<TempoKey, Tempo> = {
   relaxed: {
     id: 'relaxed',
-    name: 'Rahat & Esnek Program',
-    badge: 'Rahat Tempo (22 Hafta)',
+    name: 'Rahat program',
+    badge: 'Rahat · 22 hafta',
     totalWeeks: 22,
-    dailyHoursLabel: 'Günde ~1.5 - 2 Saat',
-    exampleLabel: 'Günde 1.5 - 2 Saat (30 Soru + Konu Tekrarı + 15 Paragraf)',
-    desc: 'Program süresi senin rahatlığına göre 22 haftaya esnetilir; günlük ders yükü hafif ve sindirerek ilerler.',
+    dailyHoursLabel: 'Günde yaklaşık 1,5–2 saat',
+    exampleLabel: '30 soru, konu tekrarı, 15 paragraf',
+    desc: '22 haftaya yayılır; günlük yük hafiftir, konuları sindirerek ilerlersin.',
     studyBlocks: [
-      { durationMin: 95, label: 'Maarif TYT Konu Videosu + 30 Soru Çözümü + 15 Paragraf', tag: 'TYT Rahat Blok' }
+      { durationMin: 95, label: 'Konu videosu + 30 soru + 15 paragraf', tag: 'TYT Rahat Blok' }
     ]
   },
   balanced: {
     id: 'balanced',
-    name: 'Dengeli Program',
-    badge: 'Dengeli Kamp (16 Hafta)',
+    name: 'Dengeli program',
+    badge: 'Dengeli · 16 hafta',
     totalWeeks: 16,
-    dailyHoursLabel: 'Günde ~3 Saat',
-    exampleLabel: 'Günde 3 Saat (50 Soru + Konu Tekrarı + 20 Paragraf)',
-    desc: 'Standart 16 haftalık Maarif kamp temposu; okul, özel ders ve spor ile ideal dengede ilerler.',
+    dailyHoursLabel: 'Günde yaklaşık 3 saat',
+    exampleLabel: '50 soru, konu tekrarı, 20 paragraf',
+    desc: 'Standart 16 haftalık tempo; okul ve sabit derslerinle dengeli ilerler.',
     studyBlocks: [
-      { durationMin: 95, label: 'Maarif TYT Konu Anlatımı + 35 Soru Çözümü', tag: 'TYT Ana Blok' },
+      { durationMin: 95, label: 'Konu anlatımı + 35 soru', tag: 'TYT Ana Blok' },
       { durationMin: 75, label: '20 Paragraf Rutini + 15 Soru Konu Tekrarı & Analiz', tag: 'TYT Pekiştirme' }
     ]
   },
   intense: {
     id: 'intense',
-    name: 'Sıkışık & Yoğun Program',
-    badge: 'Sıkışık Kamp (12 Hafta)',
+    name: 'Yoğun program',
+    badge: 'Yoğun · 12 hafta',
     totalWeeks: 12,
-    dailyHoursLabel: 'Günde ~4.5+ Saat',
-    exampleLabel: 'Günde 4.5+ Saat (90 Soru + 2 Konu + Branş Denemesi)',
-    desc: 'Süre asla uzatılmaz (12 haftada biter); spordan ve sabit derslerden kalan tüm boşluklar maksimum verimle doldurulur.',
+    dailyHoursLabel: 'Günde 4,5 saat ve üzeri',
+    exampleLabel: '90 soru, 2 konu, branş denemesi',
+    desc: '12 haftada biter; okul ve sabit derslerinden kalan boş saatler çalışmaya ayrılır.',
     studyBlocks: [
-      { durationMin: 95, label: 'Maarif TYT 1. Konu Videosu + 45 Soru Çözümü', tag: 'TYT Yoğun Blok 1' },
-      { durationMin: 95, label: 'Maarif TYT 2. Konu / İleri Soru + 45 Soru Çözümü', tag: 'TYT Yoğun Blok 2' },
+      { durationMin: 95, label: '1. konu videosu + 45 soru', tag: 'TYT Yoğun Blok 1' },
+      { durationMin: 95, label: '2. konu ve ileri düzey soru + 45 soru', tag: 'TYT Yoğun Blok 2' },
       { durationMin: 75, label: '25 Paragraf + Süreli Branş Taraması & Yanlış Analizi', tag: 'TYT Yoğun Blok 3' }
     ]
   }
@@ -344,7 +237,7 @@ export const WEEKS_DATABASE: { weekNum: number; phaseId: number; title: string; 
     days: [
       { day: "Pazartesi", subj: "TYT Matematik", topic: "Tablo ve Grafik Problemleri (Daire/Sütun)", teacher: "Mert Hoca", target: "20 Paragraf + 30 Grafik Sorusu", directUrl: "https://www.youtube.com/watch?v=65pM6ofAgi8", channelUrl: DIRECT_CHANNELS.mertHoca, note: "360 derecelik daire dilimini yüzdeye veya sayıya oranlama." },
       { day: "Salı", subj: "TYT Türkçe", topic: "Paragraf Hız Denemesi & Karma Dil Bilgisi", teacher: "Rüştü Hoca", target: "40 Türkçe Karma Sorusu", directUrl: "https://www.youtube.com/watch?v=Fi0O4_z5y0U", channelUrl: DIRECT_CHANNELS.rustuHoca, note: "Süre tutarak 40 soruyu 45 dakikanın altında bitirme denemesi." },
-      { day: "Çarşamba", subj: "TYT Matematik", topic: "Rutin Olmayan (Akıl Yürütme) Problemleri", teacher: "Eyüp B.", target: "20 Paragraf + 30 Problem", directUrl: "https://www.youtube.com/watch?v=3zj29m_9lrQ", channelUrl: DIRECT_CHANNELS.eyupB, note: "Şekilli, yönergeli ve Maarif modeli mantık soruları." },
+      { day: "Çarşamba", subj: "TYT Matematik", topic: "Rutin Olmayan (Akıl Yürütme) Problemleri", teacher: "Eyüp B.", target: "20 Paragraf + 30 Problem", directUrl: "https://www.youtube.com/watch?v=3zj29m_9lrQ", channelUrl: DIRECT_CHANNELS.eyupB, note: "Şekilli, yönergeli, yeni nesil mantık soruları." },
       { day: "Perşembe", subj: "TYT Fizik & Deneme", topic: "Dalgalar 1: Yay ve Su Dalgaları", teacher: "VIP Fizik", target: "Deneme Analizi + 20 Fizik", directUrl: "https://www.youtube.com/watch?v=wva3mdDgnXc", channelUrl: DIRECT_CHANNELS.vipFizik, note: "Dalga boyu, frekans (v = λ.f) ve yansıma-kırılma kuralları." },
       { day: "Cuma", subj: "TYT Matematik", topic: "Mantık (Önermeler, Ve/Veya/İse Bağlaçları)", teacher: "Mert Hoca", target: "20 Paragraf + 25 Mantık Sorusu", directUrl: "https://www.youtube.com/watch?v=pdVMfd_lFUQ", channelUrl: DIRECT_CHANNELS.mertHoca, note: "Doğruluk değerleri ve koşullu önermenin karşıt-tersi." },
       { day: "Cumartesi", subj: "TYT Geometri & Kimya", topic: "Paralelkenar ve Eşkenar Dörtgen + Kimya Her Yerde", teacher: "Kenan Kara & Görkem Şahin", target: "25 Geo + 25 Kimya Sorusu", directUrl: "https://www.youtube.com/watch?v=wnjuhcFJENE", channelUrl: DIRECT_CHANNELS.gorkemSahin, note: "Karşılıklı kenar eşitliği, köşegen dikliği ve sabun/deterjan kimyası." },
@@ -384,7 +277,7 @@ export const WEEKS_DATABASE: { weekNum: number; phaseId: number; title: string; 
     title: "15. Hafta: Optik 2, Katı Cisimler & Osmanlı / İnkılap Tarihi",
     desc: "Küresel aynalar, kırılma, prizmalar, prizma/piramit hacimleri ve Milli Mücadele.",
     days: [
-      { day: "Pazartesi", subj: "TYT Matematik", topic: "TYT Matematik Son Tekrar: Kritik Noktalar", teacher: "Mert Hoca", target: "30 Karma Matematik Sorusu", directUrl: "https://www.youtube.com/watch?v=wIt_5zDFE3c", channelUrl: DIRECT_CHANNELS.mertHoca, note: "Sınavda en çok düşülen çeldiriciler ve Maarif modeli soru dili." },
+      { day: "Pazartesi", subj: "TYT Matematik", topic: "TYT Matematik Son Tekrar: Kritik Noktalar", teacher: "Mert Hoca", target: "30 Karma Matematik Sorusu", directUrl: "https://www.youtube.com/watch?v=wIt_5zDFE3c", channelUrl: DIRECT_CHANNELS.mertHoca, note: "Sınavda en çok düşülen çeldiriciler ve sınav soru dili." },
       { day: "Salı", subj: "TYT Tarih & Coğrafya", topic: "Osmanlı Devleti Kuruluş + Türkiye İklimi", teacher: "Sosyal Kampı", target: "25 Tarih + 25 Coğrafya", directUrl: "https://www.youtube.com/watch?v=9ra55hD5WA4", channelUrl: DIRECT_CHANNELS.rustuHoca, note: "Tımar sistemi, divan yapısı ve Türkiye'de yer şekilleri." },
       { day: "Çarşamba", subj: "TYT Geometri", topic: "Çemberde Uzunluk ve Dairede Alan", teacher: "Kenan Kara", target: "30 Geometri Sorusu", directUrl: "https://www.youtube.com/watch?v=OT33sWOXolY", channelUrl: DIRECT_CHANNELS.kenanKara, note: "Teğet-kiriş özellikleri ve π.r^2 daire dilimi alanı." },
       { day: "Perşembe", subj: "TYT Fizik & Deneme", topic: "Optik 2: Küresel Aynalar, Kırılma ve Mercekler", teacher: "VIP Fizik", target: "Deneme Analizi + 20 Fizik", directUrl: "https://www.youtube.com/watch?v=WaOjpibIQpk", channelUrl: DIRECT_CHANNELS.vipFizik, note: "Snell yasası, odak noktası ve merceklerde görüntü oluşumu." },
@@ -400,11 +293,11 @@ export const WEEKS_DATABASE: { weekNum: number; phaseId: number; title: string; 
     days: [
       { day: "Pazartesi", subj: "Genel Deneme Provası", topic: "Tam Kapsamlı TYT Genel Denemesi 1", teacher: "Tüm Kadro", target: "120 Soru (165 Dakika Tam Odak)", directUrl: "https://www.youtube.com/watch?v=h4f3zX_xzYU", channelUrl: DIRECT_CHANNELS.eyupB, note: "Gerçek sınav süresine (165 dk) birebir uyarak optik formla çöz." },
       { day: "Salı", subj: "Derinlemesine Analiz", topic: "1. Denemenin Detaylı Video Analizi & Yanlış Defteri", teacher: "Eğitmenler", target: "Bütün Yanlışların Tekrar Çözümü", directUrl: "https://www.youtube.com/watch?v=XjSESXVm7gA", channelUrl: DIRECT_CHANNELS.mertHoca, note: "Hangi konulardan hata çıktığını listele ve formül defterini tara." },
-      { day: "Çarşamba", subj: "Genel Tekrar", topic: "TYT Matematik & Fen En Çok Çıkan Soru Tipleri", teacher: "Eyüp B. & VIP Fizik", target: "40 Karma Soru Çözümü", directUrl: "https://www.youtube.com/watch?v=8G_YDMJekeQ", channelUrl: DIRECT_CHANNELS.vipFizik, note: "ÖSYM ve Maarif havuzunun vazgeçmediği klasik modeller." },
+      { day: "Çarşamba", subj: "Genel Tekrar", topic: "TYT Matematik & Fen En Çok Çıkan Soru Tipleri", teacher: "Eyüp B. & VIP Fizik", target: "40 Karma Soru Çözümü", directUrl: "https://www.youtube.com/watch?v=8G_YDMJekeQ", channelUrl: DIRECT_CHANNELS.vipFizik, note: "ÖSYM'nin vazgeçmediği klasik soru modelleri." },
       { day: "Perşembe", subj: "Genel Deneme Provası", topic: "Tam Kapsamlı TYT Genel Denemesi 2", teacher: "Tüm Kadro", target: "120 Soru (165 Dakika Odaklanma)", directUrl: "https://www.youtube.com/watch?v=h4f3zX_xzYU", channelUrl: DIRECT_CHANNELS.eyupB, note: "Turlama taktiğini uygula: İlk turda yapamadıklarına işaret koyup geç." },
       { day: "Cuma", subj: "Türkçe & Sosyal Zirvesi", topic: "2. Deneme Analizi + Paragraf ve Sosyal Kavram Taraması", teacher: "Rüştü Hoca", target: "Deneme Yanlışları + 20 Kavram", directUrl: "https://www.youtube.com/watch?v=3QJl686CM_s", channelUrl: DIRECT_CHANNELS.rustuHoca, note: "Türkçe ve Sosyal'deki kavram kelimeleri sözlüğünü tekrar et." },
       { day: "Cumartesi", subj: "Geometri & Formül Zirvesi", topic: "Geometri ve Fen Formül/Kural Haritaları Tekrarı", teacher: "Kenan Kara & Görkem Şahin", target: "Tüm Formül Kartlarının Gözden Geçirilmesi", directUrl: "https://www.youtube.com/watch?v=9pp2wVcngdg", channelUrl: DIRECT_CHANNELS.kenanKara, note: "Görsel hafıza kartlarıyla üçgenler, optik ve mol kurallarını tara." },
-      { day: "Pazar", subj: "BÜYÜK FİNAL", topic: "Kamp Başarı Değerlendirmesi & Net Hedefi Kontrolü", teacher: "Sen ve Başarın!", target: "Net Grafiğini Çıkar + Kutlama", directUrl: "https://www.youtube.com/watch?v=jklNFvh30wc", channelUrl: DIRECT_CHANNELS.mertHoca, note: "Tebrikler! Maarif TYT kampını sıfırdan zirveye tamamladın!" }
+      { day: "Pazar", subj: "BÜYÜK FİNAL", topic: "Kamp Başarı Değerlendirmesi & Net Hedefi Kontrolü", teacher: "Sen ve Başarın!", target: "Net Grafiğini Çıkar + Kutlama", directUrl: "https://www.youtube.com/watch?v=jklNFvh30wc", channelUrl: DIRECT_CHANNELS.mertHoca, note: "TYT programını tamamladın." }
     ]
   }
 ];
