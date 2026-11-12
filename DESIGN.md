@@ -57,19 +57,19 @@ colors:
   info-fg-dark: "#7CCBFF"
 typography:
   display:
-    fontFamily: "Poppins, 'Segoe UI', system-ui, sans-serif"
+    fontFamily: "Manrope, ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(2.3rem, 6.4vw, 4.9rem)"
     fontWeight: 600
     lineHeight: 1.08
     letterSpacing: "-0.03em"
   headline:
-    fontFamily: "Poppins, 'Segoe UI', system-ui, sans-serif"
+    fontFamily: "Manrope, ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(1.8rem, 3.8vw, 2.8rem)"
     fontWeight: 600
     lineHeight: 1.12
     letterSpacing: "-0.03em"
   title:
-    fontFamily: "Poppins, 'Segoe UI', system-ui, sans-serif"
+    fontFamily: "Manrope, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.12rem"
     fontWeight: 600
     lineHeight: 1.4
@@ -164,7 +164,7 @@ Sistem tek bir jeton kümesinden iki tema üretir: açık (varsayılan, mavi ail
 **Key Characteristics:**
 - Mavi eylemdir: açıkta #0B74C9, koyuda #38B6FF; düğme, bağlantı, seçili durum, odak halkası.
 - Üç rol tonu, her birinin tek işi var: nane ilerleme ve tamamlanma, mercan ders ayrıntısı, güneş sarısı takvim vurgusu.
-- Başlıklar Poppins SemiBold, sıkı aralıklı; gövde ve uygulama arayüzü sistem yazı tipi.
+- Başlıklar Manrope 700, sıkı aralıklı (-0.02em); gövde ve arayüz de aynı aile (400/500).
 - 1px çizgiler, 8 ile 18px köşe; landing metninde gradyan ve cam yok.
 - Hareket azaltma tercihi tüm animasyon ve geçişleri kapatır.
 
@@ -198,10 +198,10 @@ Mavi-lacivert nötrler üzerinde tek mavi eylem rengi; üç rol tonu ve durum re
 
 ## Typography
 
-**Display Font:** Poppins SemiBold 600 (self-host `public/fonts/poppins-600-latin*.woff2`, `font-display: swap`; yedek Segoe UI, system-ui)
+**Display Font:** Manrope (next/font/google, latin + latin-ext, `font-display: swap`, değişken `--font-manrope`; yedek ui-sans-serif, system-ui)
 **Body Font:** Segoe UI (yedek Arial, sans-serif)
 
-**Character:** Poppins yalnız başlık ve wordmark'ta konuşur, geometrik ve sıcak; gövde ve tüm uygulama içi arayüz sistem yazı tipinde, sakin ve nötr kalır.
+**Character:** Tek aile (Manrope) her yerde konuşur; hiyerarşi ağırlık ve boyutla kurulur.
 
 ### Hierarchy
 - **Display** (600, `clamp(2.3rem, 6.4vw, 4.9rem)`, 1.08, -0.03em): landing H1; iki satır, ikinci satır `--brand` renginde.
@@ -212,7 +212,7 @@ Mavi-lacivert nötrler üzerinde tek mavi eylem rengi; üç rol tonu ve durum re
 - **Label** (600, ~0.85rem): düğme, tablo başlığı (0.73rem), menü satırı (0.88rem).
 
 ### Named Rules
-**The Two Voices Rule.** Poppins yalnız logo, landing başlıkları ve adım başlıklarında; uygulama içi arayüz Segoe UI yığınında kalır.
+**The One Voice Rule.** Tüm sitede yalnız Manrope (ve sistem yedekleri); ikinci bir aile eklenmez.
 **The Tabular Rule.** Saat, tarih ve sayı sütunları `font-variant-numeric: tabular-nums` kullanır.
 
 ## Layout
@@ -267,7 +267,7 @@ Landing'in kanıtı: kenar çubuğu, bugünün programı (saat, nokta, nane iler
 - **Do** koyu temada düğme ve işaret metni için `--on-brand` kullan.
 - **Do** ilerleme çubuğu ve tamamlanma işaretini nane, ders ayrıntısını mercan, takvim vurgusunu sarı ver; eylemi mavi bırak.
 - **Do** rol tonlarını nokta, çubuk, rozet ve ikon kutusu ölçeğinde tut; metin tonlarını `-fg`/`-bg` çifti olarak ver.
-- **Do** başlıkta Poppins 600, -0.03em; uygulama içinde Segoe UI.
+- **Do** başlıkta Manrope 700, -0.02em; gövdede aynı aile.
 - **Do** tüm animasyonu `prefers-reduced-motion` altında kapatılabilir tut.
 
 ### Don't:

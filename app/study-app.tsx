@@ -1,6 +1,6 @@
 "use client";
 import {useCallback,useEffect,useMemo,useRef,useState} from 'react';
-import {Plus,LayoutDashboard,Table2,ChartNoAxesCombined,Settings,CalendarClock,AlertCircle,Printer,TrendingUp,NotebookPen,Menu,LoaderCircle,Sun,CalendarDays,Wand2} from 'lucide-react';
+import {Plus,LayoutDashboard,Table2,ChartNoAxesCombined,Settings,CalendarClock,AlertCircle,Printer,TrendingUp,NotebookPen,Menu,Sun,CalendarDays,Wand2} from '@/components/icons';
 import {SidebarProvider,Sidebar,SidebarContent,SidebarHeader,SidebarFooter,SidebarMenu,SidebarMenuItem,SidebarMenuButton,SidebarInset,SidebarTrigger,useSidebar} from '@/components/ui/sidebar';
 import {Toaster} from '@/components/ui/sonner';
 import {toast} from 'sonner';
@@ -14,7 +14,7 @@ import {AlarmCenter} from './study/plan/alarm';
 import {LessonVideoDialog} from './study/plan/ui';
 import {AuthScreen,Onboarding} from './study/auth';
 import {Landing,type AuthMode} from './study/landing';
-import {Logo} from './study/logo';
+import {Logo,BootScreen} from './study/logo';
 import {ArchiveView} from './study/archive';
 import {ReportView} from './study/report';
 import {ExamsView} from './study/exams';
@@ -91,7 +91,7 @@ export default function StudyApp(){
  function print(q:Question|null=null){setPrintOnly(q);setTimeout(()=>window.print(),150)}
  const due=dueQuestions(rows).length;const topics=monthlyTopics(rows,month);
  if(authed===false)return <><Toaster position="top-center"/>{authMode?<AuthScreen initialMode={authMode} onBack={()=>setAuthMode(null)} onDone={()=>{setAuthed(null);setAuthMode(null);void load()}}/>:<Landing onAuth={setAuthMode}/>}</>;
- if(authed===null)return <div className="boot"><Logo size={34}/><LoaderCircle className="spin" size={22}/></div>;
+ if(authed===null)return <BootScreen/>;
  const firstName=profile.name.split(' ')[0]||'';const examDays=daysUntil(profile.examDate);
  return <StudyContext.Provider value={study}><Toaster position="top-center"/><SidebarProvider><Sidebar className="app-sidebar"><SidebarHeader><button className="brand" onClick={()=>setView('home')}><Logo size={28}/><small>YKS {profile.examYear}</small></button></SidebarHeader><SidebarContent><p className="nav-label">PROGRAM</p><SidebarMenu>{planNav.map(({icon,label,id})=><NavItem key={id} icon={icon} label={label} active={view===id} badge={id==='home'?due:0} onClick={()=>{setView(id);window.scrollTo({top:0})}}/>)}{!plan&&<NavItem icon={Wand2} label="Programı oluştur" active={false} onClick={()=>setWizard(true)}/>}</SidebarMenu><p className="nav-label lesson-label">DEFTER</p><SidebarMenu>{bookNav.map(({icon,label,id})=><NavItem key={id} icon={icon} label={label} active={view===id} onClick={()=>{setView(id);window.scrollTo({top:0})}}/>)}<NavItem icon={Settings} label="Ayarlar" active={view==='settings'} onClick={()=>{setView('settings');window.scrollTo({top:0})}}/></SidebarMenu>{rows.length>0&&<><p className="nav-label lesson-label">DERSLER</p><SidebarMenu>{subjects.filter(s=>rows.some(q=>q.subject===s)).map(s=><LessonItem key={s} name={s} count={rows.filter(q=>q.subject===s).length} onClick={()=>{setSubject(s);setView('archive');window.scrollTo({top:0})}}/>)}</SidebarMenu></>}</SidebarContent><SidebarFooter><div className="target-card"><span className="eyebrow">HEDEF · YKS {profile.examYear}{profile.target?` · ${profile.target}`:''}</span>{examDays>0?<strong><CalendarClock size={18} aria-hidden="true"/> {examDays} gün kaldı</strong>:<strong>{examDays===0?'Sınav günü. Başarılar.':'Sınav tarihini güncelle'}</strong>}{profile.motto&&<p>{profile.motto}</p>}</div><button className="profile" onClick={()=>setView('settings')} title="Profili düzenle"><span>{initials(profile.name||user?.name||'?')}</span><div>{profile.name||user?.name}<small>{profile.grade==='Mezun'?'Mezun':profile.grade+'. sınıf'}{profile.school?` · ${profile.school}`:''} · YKS {profile.examYear}</small></div></button></SidebarFooter></Sidebar>
  <SidebarInset><header className="topbar"><SidebarTrigger/><span className="crumb"><span className="crumb-root">{planNav.some(n=>n.id===view)?'Program':'Defter'} / </span><b>{nav.find(n=>n.id===view)?.label}</b></span><div className="topbar-end">{user?.developer&&<><button type="button" onClick={()=>setView('settings')} className={'status '+(supabase?'good':'pending')} title="Supabase Bağlantı Durumu">{supabase?'Supabase Bağlı':'Supabase Bağlanmadı'}</button><button type="button" onClick={()=>setView('settings')} className={'status '+(ai?'good':'pending')} title="OpenAI API Bağlantı Durumu">{ai?'OpenAI API Bağlı':'OpenAI API Bağlanmadı'}</button></>}<span className="private-label">{firstName?`${genitive(firstName)} programı`:'Programın'}</span></div></header><main className="workspace">

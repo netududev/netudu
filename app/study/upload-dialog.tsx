@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useRef,useState} from 'react';
-import {Plus,ImagePlus,X,LoaderCircle,Check,AlertCircle,Images,Camera} from 'lucide-react';
+import {Plus,ImagePlus,X,LoaderCircle,Check,AlertCircle,Images,Camera} from '@/components/icons';
 import {toast} from 'sonner';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {subjects,examTypes,today,mistakeTypes,type Question} from '@/lib/study';
