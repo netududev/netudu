@@ -16,7 +16,7 @@ Poppins `@font-face` (public/fonts/*.woff2) + Segoe UI/SF yığını; 42 dosyada
 
 ## Sonra
 Simgeler: ![açık](icons-light.png) ![koyu](icons-dark.png)
-Logo film şeridi (0, .3, .6, .9, 1.2, 1.5, 2.0 sn; sağda gerçek LogoMark): ![kareler](logo-frames.png)
+Logo film şeridi (0, .2, .4, .6, .8, 1.0, 1.3 sn; sağda gerçek LogoMark; Tur 3 doğrulaması: kare etiketleri görüntüde okundu): ![kareler](logo-frames.png)
 Açılış: ![1440](landing-1440.png) ![390](landing-390.png) Boş durumlar: ![1440](empty-1440.png) ![390](empty-390.png)
 Not: önizlemelerde ağ olmadığından Manrope yüklenmez; sistem yedek fontu görünür. Tailwind sınıfları statik HTML'de çalışmaz; yalnız düz CSS sınıflı bölümler önizlendi.
 
@@ -119,4 +119,43 @@ simge denetimi (icon-audit.mjs): dışa aktarılan: 109 | içe aktarılan ad: 10
 
 ### Bilinen eksikler (tur 2)
 - `next build` ve gerçek uygulamada Tailwind çıktısı çalıştırılamadı (node_modules yok); katman basamaklaması Tailwind katman sırası benzetimiyle doğrulandı.
-- Seçili gezinme öğesi, `.empty-ico`, fiyat kartında kobalt noktanın gerçek sayfada görünümü bakılmadı; yalnız simge ızgarasında `--icon-ink` ile bakıldı.
+- (Tur 3 ile giderildi: `nav-accent.png`, gerçek `app/globals.css` ile.) Gerçek Next sayfasında bakılmadı.
+
+## Tur 3 (inceleme turu 2 bulguları)
+
+### Düzeltmeler
+- **ÖNEMLİ-1 eski görüntüler**: `empty-1440/390.png` ve `landing-1440/390.png` HEAD (a87b79a) JSX metinleriyle yeniden üretildi. Betik: statik HTML metinleri `app/study/plan/ui.tsx` (PlanStart), `app/study/shared.tsx` (SampleSkeleton, Empty), `app/study/exams.tsx` (grafik boş durumu), `app/study/landing.tsx` ve `landing-sections.tsx` ile birebir eşlendi; Tur 2'deki uydurma "Not: son şerit..." paragrafı ve stat-strip kaldırıldı; örnek grafikteki 4 nokta eklendi; açılışa Fizik satırı, net grafiği, yaklaşan deneme, Ayarlar/Yardım, üç fayda, fiyat kartı, kapanış ve altbilgi eklendi. Okundu: eski "uyku", "Özeti gör, programı başlat", "Örnek önizleme" metinleri yok; adımlar "Okul, dershane ve günlük çalışma aralığını gir. / Çalışma temposunu seç. / Başlangıç tarihi ve hatırlatmayı seç, ilk haftayı önizle." ve "Denemelere göre yanlış sayın ayrı bir grafikte görünür."; örnek etiketi "Net gelişimi". CSS çalışma ağacındaki (Tur 3) `app/globals.css`.
+- **KÜÇÜK-2**: depo kökündeki `ink.json` geçici denetim çıktısı `git rm` ile silindi (commit yok; `git status`'ta `D  ink.json`). Not: `icon-audit.mjs` çalışma dizinine `ink.json` yazıyor; denetim çıktısı silindi.
+- **KÜÇÜK-3 mürekkep noktası vurgusu**: nokta çizgiyle aynı renkteydi (çizgi `--brand-ink`). Şimdi çizgi nötr, nokta kobalt (`--icon-ink:var(--brand-ink)`):
+  - Seçili gezinme: çizgi `var(--fg)`; `.empty-ico`, `.plan-start-ico` (aynı sorun, aynı düzeltme), `.target-card` (3 seçici): çizgi `var(--fg2)`. `.empty-ico svg{color:inherit}` ile `.empty svg` kuralı geçersiz kılındı.
+  - Seçili durum yalnız renge dayanmıyor (kontrol edildi, korundu): `--sel` zemini, sol gösterge çubuğu (`::before`), `font-weight:600`, çizgi `--fg`.
+  - Gezinme/boş durum simgelerinde nokta durumu: Sun (yoktu, eklendi: merkez), CalendarDays (var), Table2 (yoktu, eklendi: sol hücre), ChartNoAxesCombined (var), TrendingUp (var), NotebookPen (var), Settings (yoktu, eklendi: üst çizgi başı), Wand2 (var), CalendarClock (var); boş durum varsayılan BookOpen (yoktu, eklendi: sayfaların birleştiği alt nokta). Kural korundu: simge başına en fazla bir nokta.
+  - Kapsam notu: `.lp-side li.on` (açılıştaki örnek kenar çubuğu) bu turda değiştirilmedi; nokta orada `currentColor`.
+- **KÜÇÜK-4 belirsiz simgeler** (`components/icons/glyphs.ts`): Building2 = pahlı 16x18 gövde + 3x2 dikey pencere çizgisi + ortada kapı; FolderTree = sekmeli klasör gövdesi (K1 pahlı) + ağaç gövdesi/dalları + kök noktası (K2); FileSpreadsheet = sekmeli belge + iki yatay (sekmelerle hizalı, kenardan kenara) + bir dikey çizgi. 48px ve 20px (4x büyütülmüş) bakıldı: Building2 bina, FolderTree klasör, FileSpreadsheet ızgara olarak okunuyor; ek tura gerek görülmedi. K2 anlatımı düzeltmesi: Tur 2'deki "ink=1: 45 simge" artık 49 (Sun, Table2, Settings, BookOpen eklendi); Building2 ve FileSpreadsheet noktasız. Kural tablosundaki FolderTree satırı: çerçeve yerine sekmeli klasör yolu (K1 pahı ve K2 var).
+
+### Gerçek komut çıktıları (Tur 3)
+```
+python3 check-css.py app/globals.css
+  süslü parantez: açık-kapalı farkı = 0 | en düşük derinlik = 0
+  parantez ( ) farkı = 0
+  tanımlı değişken: 127 | kullanılan: 100 | TANIMSIZ: ['--d', '--font-manrope', '--sp', '--sy', '--v']   (Tur 2 ile aynı; çalışma anı değişkenleri)
+node ts-check.js glyphs.ts index.tsx -> OK, OK
+python3 class-check.py -> TANIMSIZ SINIF SAYISI: 0
+python3 palette-check.py -> çıkış 0 (çıktı yok)
+node icon-audit.mjs
+  dışa aktarılan: 109 | içe aktarılan ad: 109 | EKSİK: [] | bilinmeyen glif: []
+  geçerli XML dışı: [] | glif sayısı: 98
+  ink>1: [] | ink=1: 49 | ink=0: 49
+  güvenli kenar <1 (stroke dahil): Bell, BellRing 0.62 (Tur 2'deki yanlış alarm; tokmak strokesuz dolu nokta)
+```
+Kontrast (WCAG, hesap): açık: çizgi fg/--sel 17.22, fg2/inner 7.17, fg2/surface 7.81, kobalt #3454D1 nokta / sel 5.48, inner 5.78, surface 6.30. Koyu: fg/--sel 15.96, fg2/inner 7.49, fg2/surface 7.85, #8DA2F2 nokta / sel 7.11, inner 7.72, surface 8.09. Hepsi 4.5 üstü.
+
+### Görüntüler ve commit durumu
+Tümü, `a87b79a` (HEAD) üzerindeki çalışma ağacı (commitlenmemiş Tur 3 değişiklikleri: `app/globals.css`, `components/icons/glyphs.ts`) durumundan alındı:
+- `icons-light.png`, `icons-dark.png`, `icons-accent.png` (açık üstte, koyu altta; 98 simge)
+- `nav-accent.png` (açık üstte, koyu altta: gezinme simgeleri + etiketler, "Program" seçili; boş durum ikon kutuları BookOpen, NotebookPen ve CalendarClock; hedef kartı)
+- `empty-1440.png`, `empty-390.png`, `landing-1440.png`, `landing-390.png` (statik HTML + gerçek `app/globals.css`)
+- `logo-frames.png`: a87b79a (Tur 2) durumundan; Tur 3 logoya dokunmadı.
+
+### Bilinen eksikler (tur 3)
+- Önizlemeler statik HTML'dir (node_modules yok, `next build` çalıştırılamadı); metinler JSX'ten elle eşlendi.
