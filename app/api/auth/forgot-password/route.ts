@@ -15,7 +15,7 @@ async function sendResetEmailViaResend(apiKey:string,toEmail:string,userName:str
     from:'netudu <onboarding@resend.dev>',
     to:[toEmail],
     subject:`netudu · Şifre Sıfırlama Kodun: ${code}`,
-    html:`<div style="font-family:'Segoe UI',Arial,sans-serif;max-width:480px;margin:0 auto;padding:28px;background:#1b1f23;color:#e7eaed;border-radius:16px;border:1px solid #333a41">
+    html:`<div style="font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;max-width:480px;margin:0 auto;padding:28px;background:#1b1f23;color:#e7eaed;border-radius:16px;border:1px solid #333a41">
      <h2 style="margin:0 0 12px;color:#5fd0b6">netudu · Şifre Sıfırlama</h2>
      <p style="margin:0 0 16px;color:#c3ccd3;line-height:1.6">Merhaba <b>${userName||'Öğrenci'}</b>, hesabının şifresini sıfırlamak için doğrulama kodun aşağıdadır:</p>
      <div style="background:#24292e;border:2px solid #2fb597;border-radius:12px;padding:18px;text-align:center;font-size:28px;font-weight:700;letter-spacing:8px;color:#5fd0b6;margin:18px 0">${code}</div>

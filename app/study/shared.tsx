@@ -1,6 +1,6 @@
 "use client";
 import {createContext,useContext,useEffect,useRef,useState} from 'react';
-import {BookOpen} from 'lucide-react';
+import {BookOpen} from '@/components/icons';
 import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select';
 import {topicOptions,mebGrades,gradeOfExam,type Question,type Exam,type Report,type Video,type StudyNote,type Profile} from '@/lib/study';
 import type {PlanState,Lesson} from '@/lib/plan/scheduler';
@@ -80,7 +80,18 @@ export const monthLabel=(m:string)=>new Date(m+'-01T12:00:00').toLocaleDateStrin
 export function videoId(url:string){try{const u=new URL(url);return u.hostname==='youtu.be'?u.pathname.slice(1):u.searchParams.get('v')||''}catch{return ''}}
 export const formatViews=(n?:number)=>!n?'':n>=1e6?(n/1e6).toFixed(1).replace('.0','')+' Mn':n>=1e3?Math.round(n/1e3)+' B':String(n);
 export function Choice({value,onChange,values,label,disabled}:{value:string;onChange:(v:string)=>void;values:string[];label:string;disabled?:boolean}){return <Select value={value} onValueChange={onChange} disabled={disabled}><SelectTrigger aria-label={label} className="choice"><SelectValue placeholder={label}/></SelectTrigger><SelectContent>{values.map(v=><SelectItem value={v} key={v}>{v}</SelectItem>)}</SelectContent></Select>}
-export function Empty({title='Henüz yanlış yok.',children,icon,action}:{title?:string;children:React.ReactNode;icon?:React.ReactNode;action?:React.ReactNode}){return <div className="empty"><span className="empty-ico">{icon||<BookOpen/>}</span><h3>{title}</h3><p>{children}</p>{action}</div>}
+// "Örnek" iskeleti: gerçek veri değildir; etiketli, ekran okuyuculardan gizli. kind: satır listesi, çizgi grafik ya da tablo
+export function SampleSkeleton({kind='rows',label='Önizleme'}:{kind?:'rows'|'chart'|'table';label?:string}){
+ return <figure className={'sample sample-'+kind}><figcaption><span className="sample-tag">Örnek</span> {label} · gerçek verin değildir</figcaption>
+  <div className="sample-body" aria-hidden="true">
+   {kind==='chart'?<svg viewBox="0 0 240 90" preserveAspectRatio="none"><path className="sample-grid" d="M0 22H240M0 45H240M0 68H240"/><path className="sample-line" d="M6 70C40 64 54 50 86 52S140 30 170 28 214 14 234 12"/>{[[6,70],[86,52],[170,28],[234,12]].map(([x,y])=><circle key={x} cx={x} cy={y} r="3.5"/>)}</svg>
+   :kind==='table'?[0,1,2].map(i=><div className="sample-row" key={i}><i className="sk-chip"/><i className="sk-bar w60"/><i className="sk-bar w30"/><i className="sk-dot"/></div>)
+   :[0,1,2].map(i=><div className="sample-row" key={i}><i className="sk-time"/><i className="sk-pip"/><div className="sk-stack"><i className="sk-bar w60"/><i className="sk-bar w40 thin"/></div><i className="sk-box"/></div>)}
+  </div></figure>}
+// Boş durum: başlık, açıklama, isteğe bağlı "ne olacak" adımları ve örnek iskeleti
+export function Empty({title='Henüz yanlış yok.',children,icon,action,steps,sample,sampleLabel}:{title?:string;children:React.ReactNode;icon?:React.ReactNode;action?:React.ReactNode;steps?:string[];sample?:'rows'|'chart'|'table';sampleLabel?:string}){return <div className={'empty'+(steps||sample?' rich':'')}><span className="empty-ico">{icon||<BookOpen/>}</span><h3>{title}</h3><p>{children}</p>{action}{sample&&<SampleSkeleton kind={sample} label={sampleLabel}/>}{steps&&<ol className="empty-steps">{steps.map((t,i)=><li key={t}><b>{i+1}</b><span>{t}</span></li>)}</ol>}</div>}
+// Başlık altı özet şeridi: yalnız gerçek veriden hesaplanan değerler
+export function StatStrip({items}:{items:{label:string;value:React.ReactNode;sub?:string}[]}){return <dl className="stat-strip">{items.map(x=><div key={x.label}><dt>{x.label}</dt><dd>{x.value}</dd>{x.sub&&<small>{x.sub}</small>}</div>)}</dl>}
 export const mistakeLabel:Record<string,string>={'yanlış':'Yanlış işaretledim','boş':'Boş bıraktım','emin değildim':'Doğru ama emin değildim'};
 export function download(blob:Blob,name:string){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000)}
 export function readSetting(key:string,fallback:string){try{return localStorage.getItem('net-defterim:'+key)||fallback}catch{return fallback}}

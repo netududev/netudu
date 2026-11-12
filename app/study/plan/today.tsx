@@ -1,7 +1,7 @@
 "use client";
 import {useCallback,useEffect,useMemo,useState} from 'react';
 import {toast} from 'sonner';
-import {CalendarClock,Flame,Sparkles,ArrowUpRight,Check,Clock,Target,LoaderCircle,AlertTriangle,Bell} from 'lucide-react';
+import {CalendarClock,Flame,Sparkles,ArrowUpRight,Check,Clock,Target,LoaderCircle,AlertTriangle,Bell} from '@/components/icons';
 import {planStats,MOTIVATION,daysBetween} from '@/lib/plan/scheduler';
 import {studyStreak} from '@/lib/plan/streak';
 import {dueQuestions,daysUntil,monthlyTopics,today,prevMonth} from '@/lib/study';

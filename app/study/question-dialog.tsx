@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useState} from 'react';
-import {Sparkles,LoaderCircle,Play,ArrowUpRight,Check,X,Trash2,Printer,ThumbsDown,RefreshCw,History,ShieldCheck,ShieldAlert,RotateCcw,NotebookPen} from 'lucide-react';
+import {Sparkles,LoaderCircle,Play,ArrowUpRight,Check,X,Trash2,Printer,ThumbsDown,RefreshCw,History,ShieldCheck,ShieldAlert,RotateCcw,NotebookPen} from '@/components/icons';
 import {toast} from 'sonner';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';

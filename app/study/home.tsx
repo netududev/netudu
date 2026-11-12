@@ -1,5 +1,5 @@
 "use client";
-import {Check,X} from 'lucide-react';
+import {Check,X} from '@/components/icons';
 import {toast} from 'sonner';
 import {today,reviewStageLabel,type Question} from '@/lib/study';
 import {useStudy,dates,postJson,mistakeLabel} from './shared';

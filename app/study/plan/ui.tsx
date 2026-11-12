@@ -1,11 +1,11 @@
 "use client";
 import {useCallback,useEffect,useState} from 'react';
-import {Check,Undo2,Umbrella,Play,PlusCircle,NotebookPen,Send,AlertTriangle,School,Pin,BookOpen,Coffee,RefreshCw,ThumbsDown,ExternalLink,LoaderCircle,Sigma,Zap,FlaskConical,Dna,Globe,FileText,Flag,Target,GraduationCap,CalendarClock,Wand2} from 'lucide-react';
+import {Check,Undo2,Umbrella,Play,PlusCircle,NotebookPen,Send,AlertTriangle,School,Pin,BookOpen,Coffee,RefreshCw,ThumbsDown,ExternalLink,LoaderCircle,Sigma,Zap,FlaskConical,Dna,Globe,FileText,Flag,Target,GraduationCap,CalendarClock,Wand2} from '@/components/icons';
 import {toast} from 'sonner';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {buildDay,noteSubject,dayShareText,telegramUrl,toMin,type DayPlan,type DayItem,type PlanState,type Lesson} from '@/lib/plan/scheduler';
 import {normalizeTopic,type Video} from '@/lib/study';
-import {useStudy,postJson,videoId,formatViews} from '../shared';
+import {useStudy,SampleSkeleton,postJson,videoId,formatViews} from '../shared';
 
 export const longDate=(d:string)=>new Date(d+'T12:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'long',weekday:'long'});
 export const shortDate=(d:string)=>new Date(d+'T12:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'short'});
@@ -37,7 +37,11 @@ export function LessonActions({day,compact=false}:{day:DayPlan;compact?:boolean}
 
 // Boş durum: programı yokken tek başlık, tek cümle, tek eylem (Bugün ve Haftalık program ortak kullanır)
 export function PlanStart(){const s=useStudy();
- return <section className="plan-start"><span className="plan-start-ico"><CalendarClock size={24} aria-hidden="true"/></span><h2>Programını oluştur</h2><p>Okul ve dershane saatlerini gir. Her günün işi boş saatlerine çakışmadan yerleşir.</p><button className="primary" onClick={s.openWizard}><Wand2 size={18}/> Programı oluştur</button><small>Üç kısa adım: sabit saatler, tempo, özet.</small></section>}
+ return <section className="plan-start">
+  <div className="plan-start-copy"><span className="plan-start-ico"><CalendarClock size={24} aria-hidden="true"/></span><h2>Programını oluştur</h2><p>Okul ve dershane saatlerini gir. Her günün işi boş saatlerine çakışmadan yerleşir.</p><button className="primary" onClick={s.openWizard}><Wand2 size={18}/> Programı oluştur</button>
+   <ol className="empty-steps"><li><b>1</b><span>Okul, dershane ve günlük çalışma aralığını gir.</span></li><li><b>2</b><span>Çalışma temposunu seç.</span></li><li><b>3</b><span>Başlangıç tarihi ve hatırlatmayı seç, ilk haftayı önizle.</span></li></ol></div>
+  <div className="plan-start-sample"><SampleSkeleton kind="rows" label="Günün akışı"/><SampleSkeleton kind="chart" label="İlerleme çizgisi"/></div>
+ </section>}
 
 // Tamamlanma işareti: çember ve onay çizgisi CSS ile çizilir (hareket azaltmada doğrudan görünür)
 export function DoneMark(){return <svg className="done-mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" pathLength="1"/><path d="M7 12.5l3.2 3.2L17 8.8" pathLength="1"/></svg>}

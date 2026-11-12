@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useState} from 'react';
-import {LogIn,UserPlus,Eye,EyeOff,LoaderCircle,ShieldCheck,Check,Terminal,KeyRound,Mail,ArrowLeft} from 'lucide-react';
+import {LogIn,UserPlus,Eye,EyeOff,LoaderCircle,ShieldCheck,Check,Terminal,KeyRound,Mail,ArrowLeft} from '@/components/icons';
 import {toast} from 'sonner';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {defaultExamYear,estimatedExamDate,type Profile} from '@/lib/study';
