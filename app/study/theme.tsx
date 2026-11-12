@@ -1,6 +1,6 @@
 "use client";
 import {useSyncExternalStore} from 'react';
-import {Monitor,Moon,Sun} from 'lucide-react';
+import {Monitor,Moon,Sun} from '@/components/icons';
 import {THEME_KEY as KEY} from './theme-script';
 export type ThemePref='system'|'light'|'dark';
 const EVENT='nd-theme-change';

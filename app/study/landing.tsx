@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useRef,type RefObject} from 'react';
-import {ArrowRight,CalendarDays,Check,ChevronDown,CircleHelp,House,BookOpen,ChartNoAxesCombined,Search,Settings} from 'lucide-react';
+import {ArrowRight,CalendarDays,Check,ChevronDown,CircleHelp,House,BookOpen,ChartNoAxesCombined,Search,Settings} from '@/components/icons';
 import {Logo} from './logo';
 import {NetChart,Steps,Benefits,Pricing} from './landing-sections';
 import {priceSummary} from '@/lib/pricing';

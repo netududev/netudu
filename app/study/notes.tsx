@@ -1,7 +1,7 @@
 "use client";
 import {useEffect,useState} from 'react';
 import {createPortal} from 'react-dom';
-import {Sparkles,LoaderCircle,NotebookPen,Trash2,Printer,RefreshCw,ArrowUpRight,Wand2} from 'lucide-react';
+import {Sparkles,LoaderCircle,NotebookPen,Trash2,Printer,RefreshCw,ArrowUpRight,Wand2} from '@/components/icons';
 import {toast} from 'sonner';
 import {subjects,examTypes,topicMeta,type StudyNote} from '@/lib/study';
 import {useStudy,Choice,TopicSelect,Empty,api,postJson,dates,readSetting,writeSetting,QuotaNote} from './shared';
@@ -27,6 +27,6 @@ export function NotesView({preset}:{preset:{subject:string;topic:string;examType
   <article className="panel note-view">{selected?<><div className="section-heading"><div><span className="eyebrow">{selected.subject.toLocaleUpperCase('tr')}{meta?` · ${meta.gradeLabel} · ${meta.unit}`:''}</span><h2>{selected.topic}</h2></div><div className="actions"><button className="text-button" onClick={print}><Printer size={16}/> Yazdır</button><button className="icon-button" aria-label="Notu sil" disabled={busy} onClick={()=>void remove(selected)}><Trash2 size={16}/></button></div></div>
    <div className="note-content prewrap">{selected.content}</div>
    <div className="goal-box"><h3><Wand2 size={16}/> Notu değiştir</h3><p className="muted">Örneğin “daha kısa olsun”, “5 örnek soru ekle” ya da “10. sınıf düzeyinde anlat”.</p><textarea className="notes-editor short" placeholder="Ek isteğini yaz" value={prompt} disabled={busy||!ai} onChange={e=>setPrompt(e.target.value)}/><div className="actions wrap"><button className="primary" disabled={busy||!ai||!prompt.trim()} onClick={()=>void generate({subject:selected.subject,topic:selected.topic,examType:selected.exam_type||undefined},prompt.trim())}>{busy?<LoaderCircle className="spin" size={16}/>:<Sparkles size={16}/>} Notu yeniden hazırla</button><button className="secondary" disabled={busy||!ai} onClick={()=>void generate({subject:selected.subject,topic:selected.topic,examType:selected.exam_type||undefined})}><RefreshCw size={15}/> Baştan üret</button></div>{selected.prompt&&<small className="saved-note">Son istek: “{selected.prompt}” · {new Date(selected.updated_at).toLocaleString('tr-TR')}</small>}</div>
-   <p className="footnote">Formül ve tarihleri ders kitabınla doğrula. <button className="text-button" onClick={()=>{s.setSubjectFilter(selected.subject)}}>Bu dersin yanlışlarına git <ArrowUpRight size={14}/></button></p></>:<Empty title="Bir not seç ya da yeni not hazırla." icon={<NotebookPen size={30}/>}>Ders ve konuyu seçip “Notu hazırla” düğmesine bas.</Empty>}</article>
+   <p className="footnote">Formül ve tarihleri ders kitabınla doğrula. <button className="text-button" onClick={()=>{s.setSubjectFilter(selected.subject)}}>Bu dersin yanlışlarına git <ArrowUpRight size={14}/></button></p></>:<Empty title="Bir not seç ya da yeni not hazırla." icon={<NotebookPen size={30}/>} steps={['Ders ve Maarif konusunu seç.','“Notu hazırla” düğmesine bas.','Notu kısalt, genişlet, yazdır ya da dersin yanlışlarına git.']}>Hazırlanan not burada açılır.</Empty>}</article>
  </div>
  {typeof document!=='undefined'?createPortal(printSection,document.body):printSection}</>}

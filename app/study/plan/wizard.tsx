@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useMemo,useState} from 'react';
-import {Plus,Trash2,LoaderCircle,Check,ArrowRight,ArrowLeft,Pin,TriangleAlert} from 'lucide-react';
+import {Plus,Trash2,LoaderCircle,Check,ArrowRight,ArrowLeft,Pin,TriangleAlert} from '@/components/icons';
 import {toast} from 'sonner';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {ALL_DAYS,DAY_FULL_NAMES,TEMPO_OPTIONS,defaultPlanConfig,buildDay,addDays,type PlanConfig,type DayKey,type TempoKey,type PlanState} from '@/lib/plan/scheduler';

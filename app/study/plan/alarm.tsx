@@ -1,6 +1,6 @@
 "use client";
 import {useCallback,useEffect,useRef,useState} from 'react';
-import {Play,AlarmClockOff,BellRing,Clock} from 'lucide-react';
+import {Play,AlarmClockOff,BellRing,Clock} from '@/components/icons';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {buildDay,MOTIVATION,type DayItem} from '@/lib/plan/scheduler';
 import {useStudy,readSetting,writeSetting} from '../shared';

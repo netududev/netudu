@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useMemo,useRef,useState} from 'react';
-import {Wand2,Clock,Map as MapIcon,Umbrella,RotateCcw,Send,ChevronLeft,ChevronRight,Check,Undo2,Target,AlarmClock,Flag,TriangleAlert} from 'lucide-react';
+import {Wand2,Clock,Map as MapIcon,Umbrella,RotateCcw,Send,ChevronLeft,ChevronRight,Check,Undo2,Target,AlarmClock,Flag,TriangleAlert} from '@/components/icons';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
 import {planStats,weekDates,weekMeta,buildDay,campaignWeeks,weekShareText,telegramUrl,TEMPO_OPTIONS,MACRO_PHASES,type DayPlan} from '@/lib/plan/scheduler';

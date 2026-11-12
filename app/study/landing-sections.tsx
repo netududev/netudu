@@ -1,5 +1,5 @@
 "use client";
-import {TriangleAlert,Check,ArrowRight} from 'lucide-react';
+import {TriangleAlert,Check,ArrowRight} from '@/components/icons';
 import {monthlyPriceLabel,priceSummary,trialLabel,PAYMENT_NOTE} from '@/lib/pricing';
 
 // Bu dosyadaki tüm örnek ekranlar ve sayılar gösterim amaçlıdır (gerçek kullanıcı verisi değil)
