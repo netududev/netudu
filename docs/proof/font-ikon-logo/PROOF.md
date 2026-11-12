@@ -164,3 +164,31 @@ Tümü, `a87b79a` (HEAD) üzerindeki çalışma ağacı (commitlenmemiş Tur 3 d
 - İnceleme 3: SKOR 5, PRODUCTION_READY, ENGELLEYİCİ/ÖNEMLİ yok (opus-5-5, taze bağlam).
 - Orkestratör yeniden doğrulama: CSS parantez dengesi, tip denetimi (glyphs/index), tanımsız sınıf, simge dışa aktarımı (109/109), testler (streak 9, scheduler+pricing 26, apple 15) → PASS. `next build` bu ortamda çalıştırılamadı (npm 403); son doğrulama Vercel önizleme derlemesidir.
 - Açık KÜÇÜK notlar (kapsam dışı): `lucide-react` ölü bağımlılık; mobil alt çubukta seçili simge tümüyle kobalt; `.app-sidebar .target-card svg` şampanya kuralı etkisiz; FileSpreadsheet yatayları sekmelerle birleşiyor.
+
+## Tur 4 — açılış kapısı
+İstek: oturum hızlı çözülse de logo animasyonu bitmeden site açılmasın.
+
+### Ne değişti (yalnız `app/study-app.tsx`, +5/-2)
+- `BOOT_MIN_MS=1410` sabiti (tek yorum satırıyla CSS ilişkisi belirtildi).
+- `bootDone` durumu (başlangıç false) ve bir `useEffect`: `prefers-reduced-motion: reduce` ise hemen true; değilse `setTimeout(BOOT_MIN_MS)` ile true (temizlikli). Effect, erken `return`'lerden önce (satır 75 civarı) olduğundan Hooks sırası değişmedi.
+- Kapı `if(authed===null||!bootDone)return <BootScreen/>;` `authed===false` dalından önce; Landing de bekletilir. Sonraki `setAuthed(null)` (giriş sonrası) BootScreen'i yine gösterir, ama `bootDone` true kaldığı için ek bekleme yok. `load()` ve hata/offline akışı değişmedi.
+
+### Hesap
+`globals.css` `.logo-anim`: en geç biten öğe wordmark `.86s + .3s = 1.16s`; `.boot` fade `.1s + .25s = .35s`. Maks = 1.16s + 0.25s nefes = 1410 ms.
+
+### Komutlar ve çıktı
+- `node ts-check.js app/study-app.tsx` -> `OK   app/study-app.tsx`, çıkış 0.
+- `node boot-sim.cjs` (CSS'ten süreleri okur, sabiti kaynaktan çeker, zamanlayıcı kapısını simüle eder):
+```
+öğe bitişleri(s): 0.41 0.46 0.60 0.69 0.97 1.16 | logoEnd 1160 bootEnd 350 | BOOT_MIN_MS 1410 pay 250
+PASS sabit >= bitiş
+authedAt=50 reduced=true: içerik 50ms'de açıldı
+authedAt=50 reduced=false: içerik 1409ms'de açıldı
+authedAt=3000 reduced=false: içerik 3000ms'de açıldı
+```
+- streak/scheduler/pricing/apple testleri: bu turda yeniden koşulmadı (depoda test dosyası yok; önceki turlardaki geçici betikler bu diff'in dokunmadığı `lib/` dosyalarını sınar). Diff yalnız `app/study-app.tsx`.
+
+### Bilinen sınırlar
+- Gerçek tarayıcıda zamanlama görülmedi (`next build` ve Playwright'lı sayfa bu ortamda yok); simülasyon yalnız kapı mantığını ve süre >= bitiş koşulunu gösterir.
+- Sabit CSS süreleriyle elle eşleşir; CSS değişirse güncellenmeli (yorumda belirtildi).
+- BootScreen -> içerik geçişi anidir (çıkış animasyonu eklenmedi; istek gereği basit tutuldu).
