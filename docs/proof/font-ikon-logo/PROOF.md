@@ -125,7 +125,7 @@ simge denetimi (icon-audit.mjs): dışa aktarılan: 109 | içe aktarılan ad: 10
 
 ### Düzeltmeler
 - **ÖNEMLİ-1 eski görüntüler**: `empty-1440/390.png` ve `landing-1440/390.png` HEAD (a87b79a) JSX metinleriyle yeniden üretildi. Betik: statik HTML metinleri `app/study/plan/ui.tsx` (PlanStart), `app/study/shared.tsx` (SampleSkeleton, Empty), `app/study/exams.tsx` (grafik boş durumu), `app/study/landing.tsx` ve `landing-sections.tsx` ile birebir eşlendi; Tur 2'deki uydurma "Not: son şerit..." paragrafı ve stat-strip kaldırıldı; örnek grafikteki 4 nokta eklendi; açılışa Fizik satırı, net grafiği, yaklaşan deneme, Ayarlar/Yardım, üç fayda, fiyat kartı, kapanış ve altbilgi eklendi. Okundu: eski "uyku", "Özeti gör, programı başlat", "Örnek önizleme" metinleri yok; adımlar "Okul, dershane ve günlük çalışma aralığını gir. / Çalışma temposunu seç. / Başlangıç tarihi ve hatırlatmayı seç, ilk haftayı önizle." ve "Denemelere göre yanlış sayın ayrı bir grafikte görünür."; örnek etiketi "Net gelişimi". CSS çalışma ağacındaki (Tur 3) `app/globals.css`.
-- **KÜÇÜK-2**: depo kökündeki `ink.json` geçici denetim çıktısı `git rm` ile silindi (commit yok; `git status`'ta `D  ink.json`). Not: `icon-audit.mjs` çalışma dizinine `ink.json` yazıyor; denetim çıktısı silindi.
+- **KÜÇÜK-2**: depo kökündeki `ink.json` geçici denetim çıktısı `git rm` ile silindi (5174bfd ile commitlendi). Not: `icon-audit.mjs` çalışma dizinine `ink.json` yazıyor; denetim çıktısı silindi.
 - **KÜÇÜK-3 mürekkep noktası vurgusu**: nokta çizgiyle aynı renkteydi (çizgi `--brand-ink`). Şimdi çizgi nötr, nokta kobalt (`--icon-ink:var(--brand-ink)`):
   - Seçili gezinme: çizgi `var(--fg)`; `.empty-ico`, `.plan-start-ico` (aynı sorun, aynı düzeltme), `.target-card` (3 seçici): çizgi `var(--fg2)`. `.empty-ico svg{color:inherit}` ile `.empty svg` kuralı geçersiz kılındı.
   - Seçili durum yalnız renge dayanmıyor (kontrol edildi, korundu): `--sel` zemini, sol gösterge çubuğu (`::before`), `font-weight:600`, çizgi `--fg`.
@@ -159,3 +159,8 @@ Tümü, `a87b79a` (HEAD) üzerindeki çalışma ağacı (commitlenmemiş Tur 3 d
 
 ### Bilinen eksikler (tur 3)
 - Önizlemeler statik HTML'dir (node_modules yok, `next build` çalıştırılamadı); metinler JSX'ten elle eşlendi.
+
+## Tur 3 — inceleme sonucu (orkestratör)
+- İnceleme 3: SKOR 5, PRODUCTION_READY, ENGELLEYİCİ/ÖNEMLİ yok (opus-5-5, taze bağlam).
+- Orkestratör yeniden doğrulama: CSS parantez dengesi, tip denetimi (glyphs/index), tanımsız sınıf, simge dışa aktarımı (109/109), testler (streak 9, scheduler+pricing 26, apple 15) → PASS. `next build` bu ortamda çalıştırılamadı (npm 403); son doğrulama Vercel önizleme derlemesidir.
+- Açık KÜÇÜK notlar (kapsam dışı): `lucide-react` ölü bağımlılık; mobil alt çubukta seçili simge tümüyle kobalt; `.app-sidebar .target-card svg` şampanya kuralı etkisiz; FileSpreadsheet yatayları sekmelerle birleşiyor.
