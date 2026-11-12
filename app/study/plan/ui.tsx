@@ -39,7 +39,7 @@ export function LessonActions({day,compact=false}:{day:DayPlan;compact?:boolean}
 export function PlanStart(){const s=useStudy();
  return <section className="plan-start">
   <div className="plan-start-copy"><span className="plan-start-ico"><CalendarClock size={24} aria-hidden="true"/></span><h2>Programını oluştur</h2><p>Okul ve dershane saatlerini gir. Her günün işi boş saatlerine çakışmadan yerleşir.</p><button className="primary" onClick={s.openWizard}><Wand2 size={18}/> Programı oluştur</button>
-   <ol className="empty-steps"><li><b>1</b><span>Sabit saatlerini gir: okul, dershane, uyku.</span></li><li><b>2</b><span>Çalışma temposunu seç.</span></li><li><b>3</b><span>Özeti gör, programı başlat.</span></li></ol></div>
+   <ol className="empty-steps"><li><b>1</b><span>Okul, dershane ve günlük çalışma aralığını gir.</span></li><li><b>2</b><span>Çalışma temposunu seç.</span></li><li><b>3</b><span>Başlangıç tarihi ve hatırlatmayı seç, ilk haftayı önizle.</span></li></ol></div>
   <div className="plan-start-sample"><SampleSkeleton kind="rows" label="Günün akışı"/><SampleSkeleton kind="chart" label="İlerleme çizgisi"/></div>
  </section>}
 
