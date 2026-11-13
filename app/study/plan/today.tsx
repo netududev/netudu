@@ -8,6 +8,7 @@ import {dueQuestions,daysUntil,monthlyTopics,today,prevMonth} from '@/lib/study'
 import {useStudy,Empty,Count,SkelRows,monthLabel,postJson,readSetting,writeSetting} from '../shared';
 import {DueList} from '../home';
 import {Timeline,Warnings,LessonActions,LessonHead,PlanStart,DoneMark,dayFor,nextBlock,minutesUntil,longDate,localToday} from './ui';
+import {TodayResources} from './resources';
 
 // Günün ilerlemesi halkası: değer 0-100, gerçek veriden gelir
 function Ring({value,label,sub}:{value:number;label:string;sub:string}){
@@ -33,7 +34,8 @@ export function TodayView(){const s=useStudy();const {plan,rows,loading,ai}=s;co
  // Tek anahtar {date,max}: gün değişince sıfırlanır, eski günlerin anahtarları birikmez
  useEffect(()=>{if(loading)return;let prev=0;try{const o=JSON.parse(readSetting(dueKey,'{}')) as {date?:string;max?:number};if(o.date===date)prev=Number(o.max)||0}catch{}const m=Math.max(prev,due.length);writeSetting(dueKey,JSON.stringify({date,max:m}));setDueMax(m)},[loading,due.length,dueKey,date]);
  const dueTotal=Math.max(dueMax,due.length);const lessonDone=!!(day?.lesson&&plan?.done[String(day.lesson.index)]);
- const dayTotal=(day?.lesson?1:0)+dueTotal;const dayDone=(lessonDone?1:0)+(dueTotal-due.length);const dayPct=dayTotal?Math.round(dayDone/dayTotal*100):0;const allDone=dayTotal>0&&dayDone===dayTotal;
+ const resTotal=day?.resources.length||0,resDone=day?.resources.filter(t=>t.done).length||0;
+ const dayTotal=(day?.lesson?1:0)+dueTotal+resTotal;const dayDone=(lessonDone?1:0)+(dueTotal-due.length)+resDone;const dayPct=dayTotal?Math.round(dayDone/dayTotal*100):0;const allDone=dayTotal>0&&dayDone===dayTotal;
  const streak=plan?studyStreak(plan.done,today()):0;
  // Gün tamamlanma kutlaması günde bir kez oynar; sonraki gösterimlerde tamamlanmış durum animasyonsuz görünür
  const dayCelebKey='day-celebrated:'+(s.user?.email||'');const [celebrate,setCelebrate]=useState(false);
@@ -63,6 +65,7 @@ export function TodayView(){const s=useStudy();const {plan,rows,loading,ai}=s;co
     </ul>
    </aside>
   </section>}
+  {plan&&day&&<section className="td-resources"><TodayResources day={day}/></section>}
   {plan&&day&&<section className="td-flow"><article className="panel"><div className="section-heading"><div><span className="eyebrow">SAATLİK PLAN</span><h2>Bugünün akışı</h2></div><button className="text-button" onClick={()=>s.setView('program')}>Haftalık program <ArrowUpRight size={15}/></button></div><Timeline day={day} live/></article></section>}
   {(plan||rows.length>0)&&<section className="dashboard-grid">
    {dueSection}

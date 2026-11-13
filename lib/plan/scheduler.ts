@@ -5,6 +5,8 @@
 //  - Program takvime bağlı: başlangıç tarihi + gün sırası → bugünün dersi; tamamlanan dersler kaydırmada dersle birlikte kayar.
 //  - Kenar durumlar: boş gün, çakışan bloklar, gece yarısını aşan saatler ve geçersiz saat girişi hata vermez (bkz. normalizePlanConfig).
 //  - Eski kayıtlardaki `sport` alanı okunurken yok sayılır (spor özelliği kaldırıldı).
+import {addDays,daysBetween,dayKeyOf} from './dates';
+import {normalizeResources,resourceTasksForDay,kindTitle,kindTag,type Resource,type ResourceTask} from './resources';
 import {ALL_DAYS,DAY_FULL_NAMES,DIRECT_CHANNELS,LINEAR_CURRICULUM,MACRO_PHASES,TEMPO_OPTIONS,WEEKS_DATABASE,type DayKey,type TempoKey,type Unit} from './curriculum';
 
 export type FixedBlock={id:string;title:string;days:DayKey[];start:string;end:string};
@@ -15,13 +17,14 @@ export type PlanConfig={
  dayStart:string;dayEnd:string;
  startDate:string;
  alarm:{enabled:boolean;time:string;blockReminders:boolean};
+ resources:Resource[];
 };
 export type OffDay={date:string;topic:string};
 export type PlanState={config:PlanConfig;done:Record<string,string>;offDays:Record<string,OffDay>;updated_at?:string};
 export type Lesson={index:number;weekNum:number;phaseId:number;subj:string;topic:string;teacher:string;target:string;directUrl:string;channelUrl:string;note:string};
 export type CampaignWeek={weekNum:number;phaseId:number;phaseName:string;title:string;desc:string;days:Lesson[]};
-export type DayItem={type:'school'|'fixed'|'study'|'off';startMin:number;endMin:number;start:string;end:string;title:string;detail:string;tag:string;fitted:boolean};
-export type DayPlan={date:string;dayKey:DayKey;dayName:string;slot:number;isOff:boolean;lesson:Lesson|null;finished:boolean;shifted:boolean;items:DayItem[];warnings:string[]};
+export type DayItem={type:'school'|'fixed'|'study'|'resource'|'off';startMin:number;endMin:number;start:string;end:string;title:string;detail:string;tag:string;fitted:boolean};
+export type DayPlan={date:string;dayKey:DayKey;dayName:string;slot:number;isOff:boolean;lesson:Lesson|null;finished:boolean;shifted:boolean;items:DayItem[];resources:ResourceTask[];warnings:string[]};
 
 export {ALL_DAYS,DAY_FULL_NAMES,TEMPO_OPTIONS,MACRO_PHASES};
 export type {DayKey,TempoKey};
@@ -38,14 +41,12 @@ export function range(start:string,end:string,fallback=60){const a=toMin(start,9
  if(okStart&&okEnd&&pe!==a){const b0=Math.min(DAY_END,pe);if(b0>a)return {startMin:a,endMin:b0,start:fmt(a),end:pe===DAY_END?'24:00':fmt(b0),valid:true,overnight:false,tailMin:0};
   return {startMin:a,endMin:DAY_END,start:fmt(a),end:'24:00',valid:true,overnight:true,tailMin:Math.min(pe,DAY_END)}}
  const b=Math.min(DAY_END-1,a+fallback);return {startMin:a,endMin:b,start:fmt(a),end:fmt(b),valid:false,overnight:false,tailMin:0}}
-export function addDays(date:string,days:number){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10)}
-export function daysBetween(from:string,to:string){return Math.round((Date.parse(to+'T12:00:00Z')-Date.parse(from+'T12:00:00Z'))/86400000)}
-export function dayKeyOf(date:string):DayKey{const js=new Date(date+'T12:00:00Z').getUTCDay();return ALL_DAYS[js===0?6:js-1]}
+export {addDays,daysBetween,dayKeyOf};
 
 export function defaultPlanConfig(today:string,grade='12'):PlanConfig{return {
  school:{enabled:grade!=='Mezun',title:'Okul',days:['Pzt','Sal','Çar','Per','Cum'],start:'08:00',end:'16:00'},
  fixedBlocks:[],tempo:'balanced',
- dayStart:'08:00',dayEnd:'23:30',startDate:today,alarm:{enabled:true,time:'08:00',blockReminders:true}}}
+ dayStart:'08:00',dayEnd:'23:30',startDate:today,alarm:{enabled:true,time:'08:00',blockReminders:true},resources:[]}}
 
 // ---------- boş saat bulma ----------
 type Busy={startMin:number;endMin:number;buffer?:number};
@@ -108,13 +109,15 @@ export function normalizePlanConfig(raw:unknown,today=new Date().toISOString().s
   tempo:(Object.prototype.hasOwnProperty.call(TEMPO_OPTIONS,r.tempo)?r.tempo:'balanced') as TempoKey,
   dayStart:cleanTime(r.dayStart,def.dayStart),dayEnd:cleanTime(r.dayEnd,def.dayEnd),
   startDate:typeof r.startDate==='string'&&/^20\d{2}-\d{2}-\d{2}$/.test(r.startDate)&&!Number.isNaN(Date.parse(r.startDate+'T12:00:00Z'))?r.startDate:today,
-  alarm:{enabled:al.enabled===undefined?def.alarm.enabled:!!al.enabled,time:cleanTime(al.time,def.alarm.time),blockReminders:al.blockReminders===undefined?true:!!al.blockReminders}
+  alarm:{enabled:al.enabled===undefined?def.alarm.enabled:!!al.enabled,time:cleanTime(al.time,def.alarm.time),blockReminders:al.blockReminders===undefined?true:!!al.blockReminders},
+  resources:normalizeResources(r.resources)
  }}
 
 // ---------- birleşik gün planı ----------
 const prevKey=(k:DayKey):DayKey=>ALL_DAYS[(ALL_DAYS.indexOf(k)+6)%7];
-export function buildDay(plan:PlanState,date:string):DayPlan{const cfg=normalizePlanConfig(plan.config);const dayKey=dayKeyOf(date);const slot=slotOf({...plan,config:cfg},date);const at=slot>=0?lessonAt({...plan,config:cfg},slot):{isOff:false,lesson:null,shifted:false,finished:false};
- const items:DayItem[]=[];const busy:Busy[]=[];const warnings:string[]=[];
+// today: kaynak görevlerinin aralığı bugüne göre hesaplanır; geçmiş günlerde kaynak görevi gösterilmez.
+export function buildDay(plan:PlanState,date:string,today=new Date().toISOString().slice(0,10)):DayPlan{const cfg=normalizePlanConfig(plan.config);const dayKey=dayKeyOf(date);const slot=slotOf({...plan,config:cfg},date);const at=slot>=0?lessonAt({...plan,config:cfg},slot):{isOff:false,lesson:null,shifted:false,finished:false};
+ const items:DayItem[]=[];const busy:Busy[]=[];const warnings:string[]=[];const resources:ResourceTask[]=[];
  const push=(type:DayItem['type'],r:{startMin:number;endMin:number},title:string,detail:string,tag:string,buffer=15)=>{busy.push({startMin:r.startMin,endMin:r.endMin,buffer});items.push({type,startMin:r.startMin,endMin:r.endMin,start:fmt(r.startMin),end:r.endMin>=DAY_END?'24:00':fmt(r.endMin),title,detail,tag,fitted:true})};
  // Okul ve sabit bloklar; gece yarısını aşan blok o günün sonuna kadar sürer, kalan kısmı ertesi günün başına eklenir.
  const hardBlocks:{title:string;days:DayKey[];start:string;end:string;fallback:number;detail:string;tag:string}[]=[];
@@ -131,9 +134,15 @@ export function buildDay(plan:PlanState,date:string):DayPlan{const cfg=normalize
  else{const tempo=TEMPO_OPTIONS[cfg.tempo];const lesson=at.lesson;const blocks=lesson?tempo.studyBlocks:[{durationMin:120,label:'Genel deneme ve yanlış defteri analizi',tag:'Serbest tekrar'}];
   const alloc=allocateFreeSlots(busy,blocks.map(b=>b.durationMin),{startMin:ds,endMin:de});
   if(alloc.collision)warnings.push('Gün çok dolu: çalışma blokları tam sığmadı, bazıları kısaltıldı veya geç saate kaydı.');
-  blocks.forEach((b,i)=>{const s=alloc.slots[i];items.push({type:'study',startMin:s.startMin,endMin:s.endMin,start:fmt(s.startMin),end:fmt(s.endMin),title:i===0&&lesson?`${lesson.subj}: ${lesson.topic}`:b.label,detail:i===0&&lesson?`${b.label} · ${lesson.teacher}`:b.tag,tag:b.tag,fitted:s.fitted})})}
+  blocks.forEach((b,i)=>{const s=alloc.slots[i];items.push({type:'study',startMin:s.startMin,endMin:s.endMin,start:fmt(s.startMin),end:fmt(s.endMin),title:i===0&&lesson?`${lesson.subj}: ${lesson.topic}`:b.label,detail:i===0&&lesson?`${b.label} · ${lesson.teacher}`:b.tag,tag:b.tag,fitted:s.fitted})})
+  alloc.slots.forEach(sl=>busy.push({startMin:sl.startMin,endMin:sl.endMin}))}
+ // Kaynak blokları (soru bankası / oynatma listesi): okul, sabit ve ders blokları yerleştikten sonra kalan boş saatlere; dinlenme gününde yok
+ if(!at.isOff)resources.push(...resourceTasksForDay(cfg.resources,date,today));
+ if(resources.length){const alloc=allocateFreeSlots(busy,resources.map(t=>t.minutes),{startMin:ds,endMin:de});
+  if(alloc.collision)warnings.push('Gün çok dolu: kaynak blokları tam sığmadı, bazıları kısaltıldı veya geç saate kaydı.');
+  resources.forEach((t,i)=>{const sl=alloc.slots[i];const r=cfg.resources.find(x=>x.id===t.id)!;t.start=fmt(sl.startMin);t.end=sl.endMin>=DAY_END?'24:00':fmt(sl.endMin);items.push({type:'resource',startMin:sl.startMin,endMin:sl.endMin,start:fmt(sl.startMin),end:fmt(sl.endMin),title:`${kindTitle(r)}: ${t.name} — ${t.label}`,detail:`${t.subject?t.subject+' · ':''}${t.units.length} ${t.unit}${t.done?' · tamamlandı':''}`,tag:kindTag(r),fitted:sl.fitted})})}
  items.sort((a,b)=>a.startMin-b.startMin);
- return {date,dayKey,dayName:DAY_FULL_NAMES[dayKey],slot,isOff:at.isOff,lesson:at.lesson,finished:at.finished,shifted:at.shifted,items,warnings}}
+ return {date,dayKey,dayName:DAY_FULL_NAMES[dayKey],slot,isOff:at.isOff,lesson:at.lesson,finished:at.finished,shifted:at.shifted,items,resources,warnings}}
 
 // ---------- özet ----------
 export function planStats(plan:PlanState,today:string){const total=flatLessons(plan.config.tempo).length;const done=Object.keys(plan.done).filter(k=>Number(k)<total).length;const off=Object.keys(plan.offDays).length;const length=total+off;const slot=slotOf(plan,today);
