@@ -1,6 +1,6 @@
 "use client";
 import {useCallback,useEffect,useState} from 'react';
-import {Check,Undo2,Umbrella,Play,PlusCircle,NotebookPen,Send,AlertTriangle,School,Pin,BookOpen,Coffee,RefreshCw,ThumbsDown,ExternalLink,LoaderCircle,Sigma,Zap,FlaskConical,Dna,Globe,FileText,Flag,Target,GraduationCap,CalendarClock,Wand2} from '@/components/icons';
+import {Check,Undo2,Umbrella,Play,PlusCircle,NotebookPen,Send,AlertTriangle,School,Pin,BookOpen,Coffee,RefreshCw,ThumbsDown,ExternalLink,LoaderCircle,Sigma,Zap,FlaskConical,Dna,Globe,FileText,Flag,Target,GraduationCap,CalendarClock,Wand2,List} from '@/components/icons';
 import {toast} from 'sonner';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {buildDay,noteSubject,dayShareText,telegramUrl,toMin,type DayPlan,type DayItem,type PlanState,type Lesson} from '@/lib/plan/scheduler';
@@ -12,7 +12,7 @@ export const shortDate=(d:string)=>new Date(d+'T12:00:00').toLocaleDateString('t
 export const nowMin=()=>{const n=new Date();return n.getHours()*60+n.getMinutes()};
 export const localToday=()=>{const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`};
 
-const itemIcon:Record<DayItem['type'],typeof Check>={school:School,fixed:Pin,study:BookOpen,off:Coffee};
+const itemIcon:Record<DayItem['type'],typeof Check>={school:School,fixed:Pin,study:BookOpen,resource:List,off:Coffee};
 // Günün birleşik saat çizelgesi (okul, sabit bloklar, çalışma blokları)
 export function Timeline({day,live=false}:{day:DayPlan;live?:boolean}){const n=live?nowMin():-1;
  return <ol className="timeline">{day.items.map((it,i)=>{const Icon=itemIcon[it.type]||BookOpen;const current=live&&it.type!=='off'&&n>=it.startMin&&n<it.endMin;const past=live&&it.type!=='off'&&n>=it.endMin;
@@ -90,6 +90,7 @@ export function LessonHead({day}:{day:DayPlan}){const l=day.lesson;if(day.isOff)
  if(!l)return <div className="lesson-head"><span className="lesson-emoji">{day.finished?<Flag size={18} aria-hidden="true"/>:<FileText size={18} aria-hidden="true"/>}</span><div><span className="eyebrow">{day.finished?'PROGRAM TAMAMLANDI':'SERBEST GÜN'}</span><h3>{day.finished?'Tüm konular bitti. Şimdi deneme ve eksik kapatma zamanı.':'Serbest tekrar'}</h3><p>Bir TYT denemesi çöz, yanlışlarını deftere ekle.</p></div></div>;
  return <div className="lesson-head"><span className="lesson-emoji"><SubjectIcon subj={l.subj} size={18}/></span><div><span className="eyebrow">{l.subj.toLocaleUpperCase('tr')} · {l.weekNum}. HAFTA{day.shifted?' · KAYDIRILDI':''}</span><h3>{l.topic}</h3><p>{l.note}</p><div className="lesson-meta"><span><Target size={14} aria-hidden="true" style={{verticalAlign:'-2px'}}/> {l.target}</span><span><GraduationCap size={14} aria-hidden="true" style={{verticalAlign:'-2px'}}/> {l.teacher}</span></div></div></div>}
 
-export const dayFor=(plan:PlanState,date:string)=>buildDay(plan,date);
+// Kaynak görevlerinin aralığı bugüne göre hesaplanır: bugün = cihazın yerel günü
+export const dayFor=(plan:PlanState,date:string)=>buildDay(plan,date,localToday());
 export function nextBlock(day:DayPlan){const n=nowMin();return day.items.find(i=>i.type!=='off'&&i.startMin>n)||null}
 export function minutesUntil(t:string){return toMin(t)-nowMin()}

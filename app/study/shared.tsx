@@ -4,8 +4,9 @@ import {BookOpen} from '@/components/icons';
 import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select';
 import {topicOptions,mebGrades,gradeOfExam,type Question,type Exam,type Report,type Video,type StudyNote,type Profile} from '@/lib/study';
 import type {PlanState,Lesson} from '@/lib/plan/scheduler';
-export type View='home'|'program'|'archive'|'report'|'exams'|'notes'|'settings';
-export type AiKind='solve'|'note'|'report'|'video'|'quote';
+import type {PlaylistItem} from '@/lib/plan/resources';
+export type View='home'|'program'|'resources'|'archive'|'report'|'exams'|'notes'|'settings';
+export type AiKind='solve'|'note'|'report'|'video'|'quote'|'playlist';
 export type Usage=Record<AiKind,{used:number;limit:number}>&{unlimited:boolean};
 export type Account={
  id?:string;
@@ -21,7 +22,7 @@ export type Account={
  authProvider?:'supabase'|'local';
  createdAt?:string;
 };
-export type ApiResponse={error?:string;sessionToken?:string;questions:Question[];question:Question;exams:Exam[];exam:Exam;aiReady:boolean;youtubeReady:boolean;supabaseReady?:boolean;user:Account|null;usage:Usage;profileSet:boolean;plan:PlanState|null;report:Report|null;previous:Report|null;videos:Video[];notice:string;added:number;received:number;notes:StudyNote[];note:StudyNote|null;profile:Profile};
+export type ApiResponse={error?:string;sessionToken?:string;questions:Question[];question:Question;exams:Exam[];exam:Exam;aiReady:boolean;youtubeReady:boolean;supabaseReady?:boolean;user:Account|null;usage:Usage;profileSet:boolean;plan:PlanState|null;report:Report|null;previous:Report|null;videos:Video[];notice:string;added:number;received:number;notes:StudyNote[];note:StudyNote|null;profile:Profile;playlist?:{listId:string;total:number;items:PlaylistItem[]}};
 export type UploadPreset={subject?:string;topic?:string;examType?:string;exam?:string;question?:string};
 export class ApiError extends Error{constructor(message:string,public status:number){super(message)}}
 export function authHeaders(extra?:Record<string,string>):Record<string,string>{
@@ -96,7 +97,7 @@ export const mistakeLabel:Record<string,string>={'yanlış':'Yanlış işaretled
 export function download(blob:Blob,name:string){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000)}
 export function readSetting(key:string,fallback:string){try{return localStorage.getItem('net-defterim:'+key)||fallback}catch{return fallback}}
 export function writeSetting(key:string,value:string){try{localStorage.setItem('net-defterim:'+key,value)}catch{}}
-export type Study={rows:Question[];exams:Exam[];ai:boolean;youtube:boolean;supabase?:boolean;user:Account|null;usage:Usage|null;bumpUsage:(k:AiKind)=>void;logout:()=>Promise<void>;plan:PlanState|null;setPlan:(p:PlanState|null)=>void;openWizard:()=>void;planOp:(body:Record<string,unknown>,success?:string)=>Promise<void>;loading:boolean;solving:Set<string>;busy:boolean;setView:(v:View)=>void;openUpload:(files?:File[],preset?:UploadPreset)=>void;select:(q:Question|null)=>void;solve:(q:Question)=>Promise<void>;upsert:(q:Question)=>void;remove:(id:string)=>void;setExams:(f:(e:Exam[])=>Exam[])=>void;reload:()=>Promise<void>;setSubjectFilter:(s:string)=>void;profile:Profile;setProfile:(p:Profile)=>void;examDate:string;setExamDate:(d:string)=>void;openNotes:(p:{subject:string;topic:string;examType?:string})=>void;openLessonVideo:(l:Lesson)=>void};
+export type Study={rows:Question[];exams:Exam[];ai:boolean;youtube:boolean;supabase?:boolean;user:Account|null;usage:Usage|null;bumpUsage:(k:AiKind)=>void;logout:()=>Promise<void>;plan:PlanState|null;setPlan:(p:PlanState|null)=>void;openWizard:()=>void;planOp:(body:Record<string,unknown>,success?:string)=>Promise<void>;resourceOp:(body:Record<string,unknown>,success?:string)=>Promise<boolean>;resourceBusy:Record<string,number>;loading:boolean;solving:Set<string>;busy:boolean;setView:(v:View)=>void;openUpload:(files?:File[],preset?:UploadPreset)=>void;select:(q:Question|null)=>void;solve:(q:Question)=>Promise<void>;upsert:(q:Question)=>void;remove:(id:string)=>void;setExams:(f:(e:Exam[])=>Exam[])=>void;reload:()=>Promise<void>;setSubjectFilter:(s:string)=>void;profile:Profile;setProfile:(p:Profile)=>void;examDate:string;setExamDate:(d:string)=>void;openNotes:(p:{subject:string;topic:string;examType?:string})=>void;openLessonVideo:(l:Lesson)=>void};
 export const StudyContext=createContext<Study|null>(null);
 export function useStudy(){const c=useContext(StudyContext);if(!c)throw new Error('StudyContext eksik');return c}
 // MEB ünite/konu menüsü: Ders seçildikten sonra sınıf › ünite gruplarıyla konu listesi. examType "10. Sınıf" gibi bir sınıfsa o sınıf öne alınır.
@@ -104,7 +105,7 @@ export function TopicSelect({subject,value,onChange,examType,allowEmpty=true,lab
  return <select className="choice-native" aria-label={label} value={known||!value?value:'__custom'} onChange={e=>onChange(e.target.value==='__custom'?value:e.target.value)}>{allowEmpty&&<option value="">Konu seç{prefer?` (${mebGrades[prefer]} önde)`:''}</option>}{!known&&value&&<option value="__custom">{value} (listede yok)</option>}{grades.map(g=>{const units=[...new Set(opts.filter(o=>o.grade===g).map(o=>o.unit))];return units.map(u=><optgroup key={g+u} label={`${mebGrades[g]||g} · ${u}`}>{opts.filter(o=>o.grade===g&&o.unit===u).map(o=><option key={o.grade+o.unit+o.value} value={o.value}>{o.value}</option>)}</optgroup>)})}</select>}
 // Günlük yapay zekâ hakkı: kalan sayı (sınırsızsa null)
 export const remaining=(u:Usage|null,k:AiKind)=>!u||u.unlimited?null:Math.max(0,u[k].limit-u[k].used);
-export const kindLabel:Record<AiKind,string>={solve:'Soru çözümü',note:'Ders notu',report:'Aylık rapor',video:'Video yenileme',quote:'Günün cümlesi'};
+export const kindLabel:Record<AiKind,string>={solve:'Soru çözümü',note:'Ders notu',report:'Aylık rapor',video:'Video yenileme',quote:'Günün cümlesi',playlist:'Liste getirme'};
 export function QuotaNote({kind}:{kind:AiKind}){const s=useStudy();const left=remaining(s.usage,kind);if(left===null||!s.ai)return null;return <span className={'quota-note'+(left===0?' empty':'')}>{left===0?`Bugünkü ${kindLabel[kind].toLocaleLowerCase('tr')} hakkın bitti. Gece yarısı yenilenir`:`Bugün kalan: ${left}/${s.usage![kind].limit} ${kindLabel[kind].toLocaleLowerCase('tr')}`}</span>}
 
 // Sayıların sayarak artması: yalnız gerçek değerlerle çalışır. Hareket azaltma tercihinde ve ilk çizimde kayma olmaması için

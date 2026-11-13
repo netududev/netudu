@@ -39,7 +39,7 @@ Google ile giriş için Google Cloud Console'da OAuth istemcisi oluştur ve yön
 |---|---|
 | `OPENAI_API_KEY` | Yapay zekâ özellikleri (gizli) |
 | `OPENAI_MODEL` | Varsayılan `gpt-5.6-luna` |
-| `AI_LIMIT_SOLVE` / `AI_LIMIT_NOTE` / `AI_LIMIT_REPORT` / `AI_LIMIT_VIDEO` | Kişi başı günlük haklar |
+| `AI_LIMIT_SOLVE` / `AI_LIMIT_NOTE` / `AI_LIMIT_REPORT` / `AI_LIMIT_VIDEO` / `AI_LIMIT_PLAYLIST` | Kişi başı günlük haklar |
 | `ADMIN_EMAILS` | Sınırsız hakkı olan yöneticiler (virgülle) |
 | `REGISTRATION_OPEN` | `false` ise yeni kayıt kapalı |
 | `APP_URL` | Genel adres (Google dönüşü için) |
