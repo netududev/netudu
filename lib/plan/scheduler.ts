@@ -6,7 +6,7 @@
 //  - Kenar durumlar: boş gün, çakışan bloklar, gece yarısını aşan saatler ve geçersiz saat girişi hata vermez (bkz. normalizePlanConfig).
 //  - Eski kayıtlardaki `sport` alanı okunurken yok sayılır (spor özelliği kaldırıldı).
 import {addDays,daysBetween,dayKeyOf} from './dates';
-import {normalizeResources,resourceTasksForDay,kindTitle,kindTag,type Resource,type ResourceTask} from './resources';
+import {MIN_BLOCK,normalizeResources,resourceTasksForDay,kindTitle,kindTag,type Resource,type ResourceTask} from './resources';
 import {ALL_DAYS,DAY_FULL_NAMES,DIRECT_CHANNELS,LINEAR_CURRICULUM,MACRO_PHASES,TEMPO_OPTIONS,WEEKS_DATABASE,type DayKey,type TempoKey,type Unit} from './curriculum';
 
 export type FixedBlock={id:string;title:string;days:DayKey[];start:string;end:string};
@@ -114,9 +114,12 @@ export function normalizePlanConfig(raw:unknown,today=new Date().toISOString().s
  }}
 
 // ---------- birleşik gün planı ----------
+// Dinlenme günü (kaydırılmış) mü? Program başlamadan önceki/sonraki günler dinlenme sayılmaz.
+const isOffDay=(plan:PlanState,date:string)=>{const slot=slotOf(plan,date);return slot>=0&&lessonAt(plan,slot).isOff};
 const prevKey=(k:DayKey):DayKey=>ALL_DAYS[(ALL_DAYS.indexOf(k)+6)%7];
 // today: kaynak görevlerinin aralığı bugüne göre hesaplanır; geçmiş günlerde kaynak görevi gösterilmez.
 export function buildDay(plan:PlanState,date:string,today=new Date().toISOString().slice(0,10)):DayPlan{const cfg=normalizePlanConfig(plan.config);const dayKey=dayKeyOf(date);const slot=slotOf({...plan,config:cfg},date);const at=slot>=0?lessonAt({...plan,config:cfg},slot):{isOff:false,lesson:null,shifted:false,finished:false};
+ const todayOff=date===today?at.isOff:isOffDay({...plan,config:cfg},today);
  const items:DayItem[]=[];const busy:Busy[]=[];const warnings:string[]=[];const resources:ResourceTask[]=[];
  const push=(type:DayItem['type'],r:{startMin:number;endMin:number},title:string,detail:string,tag:string,buffer=15)=>{busy.push({startMin:r.startMin,endMin:r.endMin,buffer});items.push({type,startMin:r.startMin,endMin:r.endMin,start:fmt(r.startMin),end:r.endMin>=DAY_END?'24:00':fmt(r.endMin),title,detail,tag,fitted:true})};
  // Okul ve sabit bloklar; gece yarısını aşan blok o günün sonuna kadar sürer, kalan kısmı ertesi günün başına eklenir.
@@ -137,10 +140,13 @@ export function buildDay(plan:PlanState,date:string,today=new Date().toISOString
   blocks.forEach((b,i)=>{const s=alloc.slots[i];items.push({type:'study',startMin:s.startMin,endMin:s.endMin,start:fmt(s.startMin),end:fmt(s.endMin),title:i===0&&lesson?`${lesson.subj}: ${lesson.topic}`:b.label,detail:i===0&&lesson?`${b.label} · ${lesson.teacher}`:b.tag,tag:b.tag,fitted:s.fitted})})
   alloc.slots.forEach(sl=>busy.push({startMin:sl.startMin,endMin:sl.endMin}))}
  // Kaynak blokları (soru bankası / oynatma listesi): okul, sabit ve ders blokları yerleştikten sonra kalan boş saatlere; dinlenme gününde yok
- if(!at.isOff)resources.push(...resourceTasksForDay(cfg.resources,date,today));
+ if(!at.isOff)resources.push(...resourceTasksForDay(cfg.resources,date,today,todayOff));
  if(resources.length){const alloc=allocateFreeSlots(busy,resources.map(t=>t.minutes),{startMin:ds,endMin:de});
   if(alloc.collision)warnings.push('Gün çok dolu: kaynak blokları tam sığmadı, bazıları kısaltıldı veya geç saate kaydı.');
-  resources.forEach((t,i)=>{const sl=alloc.slots[i];const r=cfg.resources.find(x=>x.id===t.id)!;t.start=fmt(sl.startMin);t.end=sl.endMin>=DAY_END?'24:00':fmt(sl.endMin);items.push({type:'resource',startMin:sl.startMin,endMin:sl.endMin,start:fmt(sl.startMin),end:fmt(sl.endMin),title:`${kindTitle(r)}: ${t.name} — ${t.label}`,detail:`${t.subject?t.subject+' · ':''}${t.units.length} ${t.unit}${t.done?' · tamamlandı':''}`,tag:kindTag(r),fitted:sl.fitted})})}
+  resources.forEach((t,i)=>{const sl=alloc.slots[i];const r=cfg.resources.find(x=>x.id===t.id)!;
+   // Sığmayan ve MIN_BLOCK'tan kısa kalan blok çizelgeye (ve alarma) girmez; görev listesinde notla kalır
+   if(!sl.fitted&&sl.endMin-sl.startMin<MIN_BLOCK){t.note='Bugün için boş saat yok';return}
+   t.start=fmt(sl.startMin);t.end=sl.endMin>=DAY_END?'24:00':fmt(sl.endMin);items.push({type:'resource',startMin:sl.startMin,endMin:sl.endMin,start:fmt(sl.startMin),end:fmt(sl.endMin),title:`${kindTitle(r)}: ${t.name} — ${t.label}`,detail:`${t.subject?t.subject+' · ':''}${t.units.length} ${t.unit}${t.done?' · tamamlandı':''}`,tag:kindTag(r),fitted:sl.fitted})})}
  items.sort((a,b)=>a.startMin-b.startMin);
  return {date,dayKey,dayName:DAY_FULL_NAMES[dayKey],slot,isOff:at.isOff,lesson:at.lesson,finished:at.finished,shifted:at.shifted,items,resources,warnings}}
 

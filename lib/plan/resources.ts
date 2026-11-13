@@ -15,9 +15,9 @@ export type Resource={
 };
 export type ResourceInput={kind:ResourceKind;name:string;subject?:string;unit?:ResourceUnit;total:number;done?:number;perDay:number;minPerUnit?:number;days?:DayKey[];listId?:string;items?:PlaylistItem[]};
 export type ProgressOp={mode:'delta';delta:number}|{mode:'set';position:number}|{mode:'toggle';index:number};
-export type ResourceTask={id:string;kind:ResourceKind;name:string;subject:string;unit:ResourceUnit;units:number[];label:string;minutes:number;done:boolean;start?:string;end?:string};
+export type ResourceTask={id:string;kind:ResourceKind;name:string;subject:string;unit:ResourceUnit;units:number[];label:string;minutes:number;done:boolean;start?:string;end?:string;note?:string};
 
-export const LIMITS={resources:30,total:2000,perDay:200,minPerUnit:600,items:300,title:200,name:120,subject:60,log:400};
+export const LIMITS={resources:30,total:2000,perDay:200,minPerUnit:600,items:300,itemsTotal:1500,title:200,name:120,subject:60,log:400};
 export const DEFAULT_MIN:Record<ResourceUnit,number>={test:25,sayfa:6,video:40};
 export const UNIT_TITLE:Record<ResourceUnit,string>={test:'Test',sayfa:'Sayfa',video:'Video'};
 export const MIN_BLOCK=15,MAX_BLOCK=240;
@@ -46,6 +46,8 @@ export function continueUrl(r:Resource,index:number):string{if(r.kind!=='playlis
  return id&&VIDEO_ID.test(id)?`https://www.youtube.com/watch?v=${id}&list=${r.listId}`:`https://www.youtube.com/watch?list=${r.listId}&index=${Math.max(1,index)}`}
 
 // ---------- ilerleme okuma ----------
+// Tüm oynatma listelerinde saklanan başlık sayısı (config boyutu sınırı için)
+export const itemsTotal=(list:Resource[])=>list.reduce((a,r)=>a+(r.items?.length||0),0);
 export const doneCount=(r:Resource)=>r.kind==='playlist'?(r.watched||[]).length:r.done;
 export const isFinished=(r:Resource)=>r.total>0&&doneCount(r)>=r.total;
 export const percentOf=(r:Resource)=>r.total?Math.round(doneCount(r)/r.total*100):0;
@@ -76,18 +78,19 @@ function chunk(r:Resource,today:string,from:number,count:number,useLog:boolean):
 export function selectedBetween(days:DayKey[],from:string,to:string):number{const n=daysBetween(from,to);const set=uniqDays(days);if(n<=0||!set.length)return 0;const weeks=Math.floor(n/7);let c=weeks*set.length;const base=addDays(from,weeks*7);for(let i=0;i<n%7;i++)if(set.includes(dayKeyOf(addDays(base,i))))c++;return c}
 // Bir gün için kaynağın birimleri: geçmiş günlerde ve seçili olmayan günlerde null.
 // Bugün: kota = bugüne kadar tamamlananlar + sıradaki birimler. Gelecek: bugünün kotası tamamlanacak varsayımıyla perDay × aradaki seçili gün kadar ilerlemiş sayılır.
-export function unitsFor(r:Resource,date:string,today:string):{units:number[];done:boolean}|null{
- if(date<today||!r.days.includes(dayKeyOf(date)))return null;
- const todaySelected=r.days.includes(dayKeyOf(today));const n=selectedBetween(r.days,today,date);
+// todayOff: bugün dinlenme günü (kaydırılmış). Bugünün kotası 0 sayılır, pay yarına kalır; gelecek tahmin bugünü saymaz.
+export function unitsFor(r:Resource,date:string,today:string,todayOff=false):{units:number[];done:boolean}|null{
+ if(date<today||!r.days.includes(dayKeyOf(date))||(todayOff&&date===today))return null;
+ const todaySelected=!todayOff&&r.days.includes(dayKeyOf(today));const n=selectedBetween(r.days,todayOff?addDays(today,1):today,date);
  const units=chunk(r,today,n*r.perDay,r.perDay,todaySelected);if(!units.length)return null;
  return {units,done:units.every(i=>isUnitDone(r,i))}}
-export function resourceTasksForDay(resources:Resource[],date:string,today:string):ResourceTask[]{const out:ResourceTask[]=[];
- for(const r of resources){const u=unitsFor(r,date,today);if(!u)continue;out.push({id:r.id,kind:r.kind,name:r.name,subject:r.subject,unit:r.unit,units:u.units,label:spanLabel(r,u.units),minutes:taskMinutes(r,u.units.length),done:u.done})}
+export function resourceTasksForDay(resources:Resource[],date:string,today:string,todayOff=false):ResourceTask[]{const out:ResourceTask[]=[];
+ for(const r of resources){const u=unitsFor(r,date,today,todayOff);if(!u)continue;out.push({id:r.id,kind:r.kind,name:r.name,subject:r.subject,unit:r.unit,units:u.units,label:spanLabel(r,u.units),minutes:taskMinutes(r,u.units.length),done:u.done})}
  return out}
 // Tahmini bitiş: kalan birim / perDay kadar seçili gün sonra (bugünün kotası tamamlandıysa yarından say). Seçili gün yoksa tarih yok.
-export function finishEstimate(r:Resource,today:string):{finished:boolean;date:string|null;slots:number}{
+export function finishEstimate(r:Resource,today:string,todayOff=false):{finished:boolean;date:string|null;slots:number}{
  const left=r.total-doneCount(r);if(left<=0)return {finished:true,date:null,slots:0};const set=uniqDays(r.days);if(!set.length)return {finished:false,date:null,slots:0};
- const slots=Math.ceil(left/r.perDay);const todayUnits=unitsFor(r,today,today);const start=todayUnits&&todayUnits.done?addDays(today,1):today;
+ const slots=Math.ceil(left/r.perDay);const todayUnits=unitsFor(r,today,today,todayOff);const start=todayOff||(todayUnits&&todayUnits.done)?addDays(today,1):today;
  const weeks=Math.floor((slots-1)/set.length);let need=slots-weeks*set.length;let d=addDays(start,weeks*7);
  for(let guard=0;guard<14;guard++){if(set.includes(dayKeyOf(d))){need--;if(need===0)return {finished:false,date:d,slots}}d=addDays(d,1)}
  return {finished:false,date:null,slots}}
@@ -114,10 +117,10 @@ export function applyProgress(r:Resource,op:ProgressOp,today:string):Resource{
 export function completeToday(r:Resource,today:string):Resource{const u=unitsFor(r,today,today);const units=u?u.units:upcoming(r);const pending=units.filter(i=>!isUnitDone(r,i));if(!pending.length)return r;
  if(r.kind==='book')return applyProgress(r,{mode:'delta',delta:Math.max(...pending)-r.done},today);
  let cur=r;for(const i of pending)cur=applyProgress(cur,{mode:'toggle',index:i},today);return cur}
-// "Geri al": bugünün kotasındaki tamamlanmış birimleri geri açar (kitapta o kadar birim geri, listede o videoların işareti kalkar)
-export function undoToday(r:Resource,today:string):Resource{const u=unitsFor(r,today,today);if(!u)return r;const doneUnits=u.units.filter(i=>isUnitDone(r,i));if(!doneUnits.length)return r;
- if(r.kind==='book')return applyProgress(r,{mode:'delta',delta:-doneUnits.length},today);
- let cur=r;for(const i of doneUnits)cur=applyProgress(cur,{mode:'toggle',index:i},today);return cur}
+// "Geri al": bugünün log'undaki (bugün tamamlanan) tüm birimleri geri açar; kota üstü eklenenler dahil. Kitapta done o kadar düşer, listede o videoların işareti kalkar, log sıfırlanır.
+export function undoToday(r:Resource,today:string):Resource{const units=todayLog(r,today);if(!units.length)return r;
+ if(r.kind==='book')return applyProgress(r,{mode:'delta',delta:-units.length},today);
+ let cur=r;for(const i of units)if(isUnitDone(cur,i))cur=applyProgress(cur,{mode:'toggle',index:i},today);return cur}
 
 // ---------- oluşturma ve normalleştirme ----------
 export function makeResource(input:ResourceInput,id:string):Resource{
@@ -126,7 +129,7 @@ export function makeResource(input:ResourceInput,id:string):Resource{
  if(book)return base;
  return {...base,listId:input.listId,items:(input.items||[]).slice(0,LIMITS.items).map(x=>({id:x.id,title:x.title.slice(0,LIMITS.title)})),watched:Array.from({length:done},(_,i)=>i+1)}}
 // Eski/bozuk kayıtları güvenle okur: geçersiz kaynak atlanır, sayılar sınırlanır, tutarsız ilerleme düzeltilir.
-export function normalizeResources(raw:unknown):Resource[]{if(!Array.isArray(raw))return [];const out:Resource[]=[];const ids=new Set<string>();
+export function normalizeResources(raw:unknown):Resource[]{if(!Array.isArray(raw))return [];const out:Resource[]=[];const ids=new Set<string>();let budget:number=LIMITS.itemsTotal;
  for(const [i,x] of raw.entries()){if(out.length>=LIMITS.resources)break;if(!x||typeof x!=='object')continue;const r=x as Record<string,any>;
   const kind:ResourceKind|null=r.kind==='book'||r.kind==='playlist'?r.kind:null;const name=typeof r.name==='string'?r.name.trim().slice(0,LIMITS.name):'';if(!kind||!name)continue;
   const total=int(r.total,0,LIMITS.total,0);if(total<1)continue;
@@ -138,7 +141,7 @@ export function normalizeResources(raw:unknown):Resource[]{if(!Array.isArray(raw
   const log=lg&&lg.units.length?{log:lg}:{};
   if(kind==='book'){out.push({...base,done:int(r.done,0,total,0),...log});continue}
   if(typeof r.listId!=='string'||!LIST_ID.test(r.listId))continue;
-  const items=(Array.isArray(r.items)?r.items:[]).filter((v:any)=>v&&typeof v.id==='string'&&VIDEO_ID.test(v.id)).slice(0,LIMITS.items).map((v:any)=>({id:v.id as string,title:String(v.title??'').slice(0,LIMITS.title)}));
+  const items=(Array.isArray(r.items)?r.items:[]).filter((v:any)=>v&&typeof v.id==='string'&&VIDEO_ID.test(v.id)).slice(0,Math.min(LIMITS.items,budget)).map((v:any)=>({id:v.id as string,title:String(v.title??'').slice(0,LIMITS.title)}));budget-=items.length;
   const watched=unitList(r.watched,total);
   out.push({...base,listId:r.listId,items,watched,done:watched.length,...log})}
  return out}

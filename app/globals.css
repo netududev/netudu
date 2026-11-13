@@ -863,6 +863,8 @@ button,input,select,textarea{font-family:inherit}
 .res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:var(--s4)}
 .res-card{display:flex;flex-direction:column;gap:var(--s3);min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:var(--s5);box-shadow:var(--shadow-s)}
 .res-card.fin{background:var(--inner)}
+.res-card[aria-busy="true"]{cursor:progress}
+.res-card[aria-busy="true"] .rc-progress .bar{opacity:.6}
 .rc-top{display:flex;align-items:flex-start;gap:var(--s3)}
 .rc-ico{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;background:var(--brand-soft);border:1px solid var(--line);color:var(--brand-ink);--icon-ink:var(--brand-ink)}
 .rc-title{flex:1;min-width:0}
@@ -934,5 +936,7 @@ button,input,select,textarea{font-family:inherit}
 }
 .tl-resource .tl-dot{background:var(--champ-bg);color:var(--champ-ink);--icon-ink:var(--champ-ink)}
 .tl-resource .tl-body{border-color:var(--champ-line)}
-.stat-strip>div:last-child:nth-child(odd){grid-column:1/-1}
-@media(min-width:900px){.stat-strip>div:last-child:nth-child(odd){grid-column:auto}}
+/* Yalnız Kaynaklar özet şeridi: tek kalan hücre tam satır olur */
+.res-stats{display:contents}
+.res-stats .stat-strip>div:last-child:nth-child(odd){grid-column:1/-1}
+@media(min-width:900px){.res-stats .stat-strip>div:last-child:nth-child(odd){grid-column:auto}}

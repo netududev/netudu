@@ -15,6 +15,10 @@ export const resourceSchema=z.object({
  log:z.object({date,units:z.array(num(1,LIMITS.total)).max(LIMITS.log)}).optional()
 }).refine(r=>r.kind==='book'?r.unit!=='video':r.unit==='video'&&!!r.listId,{message:'Kaynak türü ile birimi uyuşmuyor.'});
 
+// Tüm kaynaklar: en çok LIMITS.resources kaynak ve toplam LIMITS.itemsTotal playlist başlığı (config boyutu sınırı)
+export const ITEMS_TOTAL_MESSAGE=`Toplam en fazla ${LIMITS.itemsTotal} video başlığı saklanabilir. Önce bir oynatma listesini sil ya da video sayısını elle gir.`;
+export const resourcesSchema=z.array(resourceSchema).max(LIMITS.resources).refine(l=>l.reduce((a,r)=>a+(r.items?.length||0),0)<=LIMITS.itemsTotal,{message:ITEMS_TOTAL_MESSAGE});
+
 const base={name:z.string().trim().min(1).max(LIMITS.name),subject:z.string().trim().max(LIMITS.subject).default(''),total:num(1,LIMITS.total),done:num(0,LIMITS.total).default(0),perDay:num(1,LIMITS.perDay),minPerUnit:num(1,LIMITS.minPerUnit).optional(),days:days.default([...ALL_DAYS])};
 export const addSchema=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('book'),unit:z.enum(['test','sayfa']),...base}),

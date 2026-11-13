@@ -2,7 +2,7 @@
 import {z} from 'zod';
 import {db} from '../server';
 import {ALL_DAYS,normalizePlanConfig,type PlanConfig,type PlanState} from './scheduler';
-import {resourceSchema} from './resource-schema';
+import {resourcesSchema} from './resource-schema';
 import {LIMITS} from './resources';
 const time=z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
 const day=z.enum(ALL_DAYS);
@@ -15,7 +15,7 @@ export const configSchema=z.object({
  startDate:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),
  alarm:z.object({enabled:z.boolean(),time,blockReminders:z.boolean().default(true)}),
  // Kaynaklar (soru bankası / oynatma listesi) config JSON'ında yaşar; eski kayıtlarda yoktur
- resources:z.array(resourceSchema).max(LIMITS.resources).default([])
+ resources:resourcesSchema.default([])
 });
 const parse=<T,>(v:unknown,f:T):T=>{try{return v?JSON.parse(String(v)):f}catch{return f}};
 // Kaynaklar şemayla değil normalizeResources ile okunur (normalizePlanConfig içinde): tek bozuk kaynak tüm programı açılmaz yapmaz.

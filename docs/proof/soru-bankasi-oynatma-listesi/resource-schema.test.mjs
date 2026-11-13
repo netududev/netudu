@@ -25,4 +25,8 @@ await t('packPlan: bozuk kaynak programı açılmaz yapmaz (yalnız o kaynak at�
 await t('packPlan: bozuk config hâlâ null',()=>{assert.equal(St.packPlan(row({tempo:'x'})),null);assert.equal(St.packPlan(row(null)),null);assert.equal(St.packPlan({config:'{bozuk'}),null);assert.equal(St.packPlan(null),null)});
 await t('configSchema: resources yoksa [], ≤30, geçerli kaynak kabul',()=>{const {configSchema:C}=St;const c=C.parse({...oldCfg,alarm:{enabled:true,time:'08:00'}});assert.deepEqual(c.resources,[]);
  const r=X.makeResource({kind:'book',name:'A',total:9,perDay:2,unit:'test'},'a');const many=Array.from({length:31},(_,i)=>({...r,id:'k'+i}));assert.ok(C.safeParse({...c,resources:many.slice(0,30)}).success);assert.ok(!C.safeParse({...c,resources:many}).success)});
+await t('config: tüm kaynaklarda toplam playlist başlığı ≤1500 (zod)',()=>{const {configSchema:C}=St;const c=C.parse({...oldCfg,alarm:{enabled:true,time:'08:00'}});
+ const pl=(i,n)=>({id:'p'+i,kind:'playlist',name:'p'+i,subject:'',unit:'video',total:300,done:0,perDay:2,minPerUnit:40,days:['Pzt'],listId:LID,items:Array.from({length:n},(_,k)=>({id:'v'+String(k).padStart(10,'0'),title:'t'}))});
+ assert.ok(C.safeParse({...c,resources:Array.from({length:5},(_,i)=>pl(i,300))}).success);const over=C.safeParse({...c,resources:Array.from({length:6},(_,i)=>pl(i,300))});assert.ok(!over.success);assert.match(JSON.stringify(over.error.issues),/1500/);
+ assert.ok(!Sc.resourcesSchema.safeParse(Array.from({length:6},(_,i)=>pl(i,300))).success);assert.ok(Sc.resourcesSchema.safeParse([]).success)});
 console.log(`\n${n} test geçti`+(process.exitCode?' — BAŞARISIZ VAR':''));
