@@ -7,6 +7,7 @@ import {toast} from 'sonner';
 import {subjects,today,daysUntil,monthlyTopics,dueQuestions,defaultProfile,initials,genitive,type Question,type Exam,type Goal,type Profile} from '@/lib/study';
 import {StudyContext,api,postJson,readSetting,writeSetting,ApiError,dates,monthLabel,type View,type Study,type Usage,type Account,type AiKind,type UploadPreset} from './study/shared';
 import type {PlanState,Lesson} from '@/lib/plan/scheduler';
+import {makeQueue} from '@/lib/plan/queue';
 import {TodayView} from './study/plan/today';
 import {ProgramView} from './study/plan/program';
 import {PlanWizard} from './study/plan/wizard';
@@ -89,11 +90,9 @@ export default function StudyApp(){
  const planOp=useCallback(async(body:Record<string,unknown>,success?:string)=>{try{const d=await postJson('/api/plan/progress',body);setPlan(d.plan);if(success)toast.success(success)}catch(e){toast.error((e as Error).message)}},[]);
  // Kaynak işlemleri tek sekmede sırayla çalışır: sunucu config'i oku-değiştir-yaz yaptığı için eşzamanlı istekler birbirini ezerdi.
  // Her çağrı öncekinin bitmesini bekler; yanıtlar sırayla uygulandığından plan her zaman son işlemin sonucudur. resourceBusy: kaynak başına bekleyen işlem sayısı (kartta aria-busy).
- const resourceQueue=useRef<Promise<unknown>>(Promise.resolve());const [resourceBusy,setResourceBusy]=useState<Record<string,number>>({});
- const resourceOp=useCallback((body:Record<string,unknown>,success?:string):Promise<boolean>=>{const id=typeof body.id==='string'?body.id:'';
-  const bump=(d:number)=>{if(id)setResourceBusy(b=>{const n=(b[id]||0)+d;const c={...b};if(n>0)c[id]=n;else delete c[id];return c})};bump(1);
-  const run=resourceQueue.current.then(async()=>{try{const d=await postJson('/api/plan/resources',body);setPlan(d.plan);if(success)toast.success(success);return true}catch(e){toast.error((e as Error).message);return false}finally{bump(-1)}});
-  resourceQueue.current=run;return run},[]);
+ const [resourceBusy,setResourceBusy]=useState<Record<string,number>>({});
+ const resourceQueue=useRef(makeQueue((id,d)=>{if(id)setResourceBusy(b=>{const n=(b[id]||0)+d;const c={...b};if(n>0)c[id]=n;else delete c[id];return c})}));
+ const resourceOp=useCallback((body:Record<string,unknown>,success?:string):Promise<boolean>=>resourceQueue.current(typeof body.id==='string'?body.id:'',async()=>{try{const d=await postJson('/api/plan/resources',body);setPlan(d.plan);if(success)toast.success(success);if(d.note)toast.message(d.note);return true}catch(e){toast.error((e as Error).message);return false}}),[]);
  const solve=useCallback(async(q:Question)=>{setSolving(s=>new Set(s).add(q.id));try{const d=await api(`/api/questions/${q.id}/solve`,{method:'POST'});upsert(d.question);bumpUsage('solve');toast.success(d.question.analysis?.readable?`Çözüm hazır: ${d.question.subject} · ${d.question.topic}`:'Fotoğrafın bir kısmı okunamadı. Daha net bir fotoğraf dene.')}catch(e){toast.error((e as Error).message)}finally{setSolving(s=>{const n=new Set(s);n.delete(q.id);return n})}},[upsert,bumpUsage]);
  const openUpload=useCallback((files?:File[],preset?:UploadPreset)=>{setUploadFiles(files||[]);setUploadPreset(preset||null);setUpload(true)},[]);
  // WebMCP araçları (ChatGPT/Codex bu sayfadaki defteri okuyup aylık notu kaydedebilir)

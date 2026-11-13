@@ -130,4 +130,14 @@ await t('çok dolu gün: sığmayan ve 15 dk altı kaynak bloğu çizelgeye girm
 await t('rahat gün: hiçbir kaynak notu/eleme yok',()=>{const d=buildDay(mk([book(),list()]),'2026-11-07',T0);assert.equal(res(d).length,2);for(const r of d.resources)assert.equal(r.note,undefined)});
 await t('toplam başlık sınırı: tüm kaynaklarda en çok 1500 öğe (normalize ilk gelenleri tutar)',()=>{assert.equal(X.LIMITS.itemsTotal,1500);const mkp=(i)=>({kind:'playlist',name:'p'+i,total:300,listId:LID,items:Array.from({length:300},(_,k)=>({id:'v'+String(k).padStart(10,'0'),title:'t'}))});
  const out=X.normalizeResources(Array.from({length:7},(_,i)=>mkp(i)));assert.equal(out.length,7);assert.equal(X.itemsTotal(out),1500);assert.equal(out[5].items.length,0);assert.equal(out[4].items.length,300);assert.equal(X.itemsTotal([]),0)});
+await t('shouldRefund: yalnız kullanıcı kaynaklı olmayan hatada hak iade edilir',()=>{const E=(s)=>new P.PlaylistError('x',s);
+ assert.equal(P.shouldRefund(E(404)),false);assert.equal(P.shouldRefund(E(400)),false);assert.equal(P.shouldRefund(E(502)),true);assert.equal(P.shouldRefund(E(503)),true);
+ assert.equal(P.shouldRefund(new P.PlaylistError('y')),true);assert.equal(P.shouldRefund(new Error('beklenmeyen')),true)});
+await t('fitItems: eklenen başlıklar kalan toplam bütçeye kırpılır, reddedilmez',()=>{const mkp=(n)=>X.makeResource({kind:'playlist',name:'p',total:300,done:0,perDay:2,listId:LID,items:Array.from({length:n},(_,i)=>({id:'v'+String(i).padStart(10,'0'),title:'t'}))},'x'+n);
+ const its=Array.from({length:300},(_,i)=>({id:'w'+String(i).padStart(10,'0'),title:'t'}));
+ const full=[mkp(300),mkp(300),mkp(300),mkp(300)];assert.equal(X.itemsTotal(full),1200);assert.equal(X.fitItems(full,its).length,300);
+ const near=[...full,mkp(250)];assert.equal(X.itemsTotal(near),1450);assert.equal(X.fitItems(near,its).length,50);assert.deepEqual(X.fitItems(near,its),its.slice(0,50));
+ const maxed=[...full,mkp(300)];assert.equal(X.fitItems(maxed,its).length,0);assert.equal(X.fitItems([],its).length,300);
+ const made=X.makeResource({kind:'playlist',name:'n',total:300,done:0,perDay:2,listId:LID,items:X.fitItems(near,its)},'n');const out=X.normalizeResources([...near,made]);assert.equal(out.length,6);assert.equal(X.itemsTotal(out),1500);assert.equal(X.titleOf(out[5],51),'')});
+await t('hasTodayLog: bugünün log\'u doluysa true (dinlenme/seçili olmayan gün için "Geri al")',()=>{const b=X.applyProgress(book(),{mode:'delta',delta:2},T0);assert.equal(X.hasTodayLog(b,T0),true);assert.equal(X.hasTodayLog(b,addDays(T0,1)),false);assert.equal(X.hasTodayLog(book(),T0),false)});
 console.log(`\n${n} test geçti`+(process.exitCode?' — BAŞARISIZ VAR':''));

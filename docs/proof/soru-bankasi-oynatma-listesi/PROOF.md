@@ -47,13 +47,17 @@ Yükleyici: bu dizindeki `reg.mjs` (+`hook.mjs`); resource-schema için `reg2.mj
 - Kaynak değişiklikleri tüm config'i oku-değiştir-yaz yapar; tek sekmede istekler tur 2'den beri sıraya alınır, İKİ AYRI sekme/cihaz arasındaki yarış sürer (mevcut plan akışıyla aynı desen).
 - Silinmiş/özel videolar API'de yer tutar; numaralandırma YouTube'un listesiyle bire bir olmayabilir. 300'den uzun listelerde yalnız ilk 300 başlık saklanır (tüm kaynaklarda toplam 1500), kalan videolar "n. video" görünür.
 - buildDay'e 3. parametre `today` eklendi (varsayılan UTC günü); UI çağrıları cihaz yerel gününü geçer.
+- Gelecek günlerin tahmini (`unitsFor`/`finishEstimate`/`buildDay`) ileride seçilecek dinlenme günlerini bilmez: dinlenme günü (`offDays`) o gün kullanıcı eylemiyle işaretlenir, önceden bilinemez; bu yüzden tahmin "gelecekte dinlenme yok" varsayar ve o gün gelince yenilenir. `selectedBetween`'e tarih kümesi geçirilmedi (tur 3, bulgu 6).
 - Mobil alt çubuğa öğe eklenmedi: Kaynaklar yan menüde ("Diğer") ve Program sayfasındaki düğmede.
 
 ## Yeniden üretme
+Tüm komutlar depo kökünden, `ND_ROOT=$PWD` ile çalışır (P=docs/proof/soru-bankasi-oynatma-listesi). Araçlar `$P/tools/` altındadır.
 1. Bu turun commit'ini checkout et (SHA: PR head'i).
-2. Depo kökünden: `ND_ROOT=$PWD node --experimental-strip-types --import ./docs/proof/soru-bankasi-oynatma-listesi/reg.mjs docs/proof/soru-bankasi-oynatma-listesi/resources.test.mjs`
+2. Kaynak mantığı: `node --experimental-strip-types --import ./$P/reg.mjs $P/resources.test.mjs`; kuyruk: aynısı `$P/queue.test.mjs` ile.
 3. Şema: aynısı `reg2.mjs` ve `resource-schema.test.mjs` ile (zod /opt/npm-tools'ta olmalı).
-4. Önizleme: `static-preview.mjs` başlığındaki komut (playwright ve glyphs.json gerekir).
+4. Mevcut testler: `... --import ./$P/reg.mjs $P/tools/{scheduler,streak,apple}.cur.test.mjs`.
+5. CSS/sınıf/simge: `python3 $P/tools/check-css.py app/globals.css`; `python3 $P/tools/class-check.py app/study/plan/resources.tsx`; `NODE_PATH=/opt/npm-tools/node_modules node --experimental-strip-types $P/tools/icon-audit.mjs` (playwright gerekir; dosya yazmaz).
+6. Önizleme: `static-preview.mjs` başlığındaki komut (playwright ve glyphs.json gerekir).
 
 ## Orkestratör doğrulaması (tur 1)
 - Testler bağımsız yeniden koşuldu: resources 43, resource-schema 10, scheduler+pricing 26, streak 9/9, apple 15 → hepsi geçti (çıkış 0).
@@ -97,3 +101,34 @@ Not: strict tsc (modül türleri eksik) lib/plan, lib/limits ve route'ta hata ve
 - Testler bağımsız yeniden koşuldu (ND_ROOT=$PWD): resources 50, resource-schema 11, scheduler+pricing 26, streak 9/9, apple 15 → hepsi geçti.
 - resources-390.png açılıp bakıldı: özet şeridi 2+1 düzeninde, kartlarda taşma yok.
 - Kuyruk (#1), limit (#2), details/aria/form (#3–5) React'te çalıştırılmadı; yalnız kod okuması + transpile.
+
+## Tur 3 (inceleme 2, SKOR < 5 → düzeltmeler; REVIEW-2.md)
+Önce kırmızı: `resources.test.mjs` → `50 test geçti — BAŞARISIZ VAR` (shouldRefund, fitItems, hasTodayLog: "is not a function"); `queue.test.mjs` → `ERR_MODULE_NOT_FOUND lib/plan/queue.ts`. Sonra kod.
+
+| # | Bulgu | Değişiklik | Kanıt |
+|---|---|---|---|
+| 1 | Her hatada hak iadesi; 400/404 (var olmayan/özel liste) kota harcayıp hak iade ediyor | `lib/plan/playlist.ts` `shouldRefund(e)`: PlaylistError 400/404 → iade yok; ağ/zaman aşımı/502/5xx/diğer → iade. `route.ts` `refund` yalnız `shouldRefund` ise | resources.test.mjs "shouldRefund…" |
+| 2 | Sabırsız çift tık / iyimser durum yok | `lib/plan/queue.ts` `makeQueue` (sıralı, hata sonrası devam, sayaç); `study-app.tsx` `resourceOp` onu kullanır; `resources.tsx` kartta `resourceBusy[r.id]` doluyken bitirdim/geri al/±/konum kaydet/onay kutuları ve Bugün listesi düğmeleri `disabled` | queue.test.mjs (3 test); UI React'te çalıştırılmadı, transpile |
+| 3 | Dinlenme/seçili olmayan günde log doluysa "Geri al" yok | `hasTodayLog` (resources.ts); kart `canUndo = todayU?.done \|\| (!todayU && hasTodayLog)` | "hasTodayLog…" testi; UI transpile |
+| 4 | 1201–1499 arası ekleme reddi | `fitItems(list,items)`: eklemede başlıklar kalan bütçeye kırpılır; reddetme yok; yanıtta `note` (Türkçe), istemci `toast.message` ile gösterir | "fitItems…" testi (300/50/0 kalan) |
+| 5 | Yorum eksik | `normalizeResources` bütçe satırına Türkçe yorum | kod |
+| 6 | Gelecek dinlenme günleri | Basitçe çözülemez (dinlenme günü önceden bilinmez); "Kapsam dışı / bilinen eksikler"e yazıldı | PROOF |
+| 7 | Araçlar kopyalanmamış | `tools/` altına check-css, class-check (+cssparse), icon-audit, scheduler/streak/apple .cur.test; yollar `ND_ROOT`'a bağlandı; "Yeniden üretme" güncellendi | bu dosya |
+
+Gerçek çıktılar (`ND_ROOT=$PWD`, depo kökünden):
+| Komut | Çıktı |
+|---|---|
+| resources.test.mjs | `53 test geçti` |
+| queue.test.mjs | `3 test geçti` |
+| resource-schema.test.mjs (reg2) | `11 test geçti` |
+| tools/scheduler.cur.test.mjs | `scheduler+pricing: 26 test geçti` |
+| tools/streak.cur.test.mjs | `streak: 9/9 PASS` |
+| tools/apple.cur.test.mjs | `apple: 15 test geçti` |
+| ts.transpileModule (queue, playlist, resources, route, study-app, resources.tsx) | `6 dosya OK, hata 0` |
+| check-css.py globals.css | `parantez ( ) farkı = 0`; tanımsız değişkenler eskisiyle aynı (--d, --font-manrope, --sp, --sy, --v) |
+| class-check.py resources.tsx | `TANIMSIZ SINIF SAYISI: 0` (resource-dialog.tsx'te 4 ad `className={x==='test'?…}` yanlış pozitifi) |
+| icon-audit.mjs | `EKSİK: [] · bilinmeyen glif: [] · ink>1: []` (Bell/BellRing kenar 0.62 eskiden var); ink.json yazılmadı |
+Not: `makeQueue`, `shouldRefund` ve `fitItems` saf birim testli; route/`consume`/`refund` (DB) ve React davranışı çalıştırılmadı.
+
+## Orkestratör doğrulaması (tur 3)
+- Testler bağımsız yeniden koşuldu (ND_ROOT=$PWD, kanıt dizinindeki reg.mjs ve tools/): resources 53, queue 3, resource-schema 11, scheduler+pricing 26, streak 9/9, apple 15 → hepsi geçti. Çalışma ağacında ink.json / __pycache__ yok.

@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+const R=(process.env.ND_ROOT||'/home/claude/netudu/.claude/worktrees/soru-bankasi-oynatma-listesi')+'/lib/plan/';
+const {makeQueue}=await import(R+'queue.ts');
+let n=0;const t=(name,f)=>Promise.resolve().then(f).then(()=>{n++;console.log('ok  ',name)},e=>{console.log('FAIL',name,'\n',e.stack?.split('\n').slice(0,4).join('\n'));process.exitCode=1});
+const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
+await t('sıralı çalışma: görevler girdiği sırayla, üst üste binmeden biter',async()=>{const log=[];let running=0,maxRun=0;const q=makeQueue();
+ const job=(name,ms)=>async()=>{running++;maxRun=Math.max(maxRun,running);log.push('başla '+name);await wait(ms);log.push('bitti '+name);running--;return true};
+ const rs=await Promise.all([q('a',job('1',20)),q('a',job('2',1)),q('b',job('3',5))]);
+ assert.deepEqual(rs,[true,true,true]);assert.equal(maxRun,1);assert.deepEqual(log,['başla 1','bitti 1','başla 2','bitti 2','başla 3','bitti 3'])});
+await t('hata sonrası devam: atan görev false döner, sıradaki çalışır',async()=>{const q=makeQueue();const log=[];
+ const r=await Promise.all([q('a',async()=>{log.push(1);throw new Error('x')}),q('a',async()=>{log.push(2);return true}),q('a',async()=>{log.push(3);return false})]);
+ assert.deepEqual(r,[false,true,false]);assert.deepEqual(log,[1,2,3])});
+await t('sayaç: kuyruğa girince +1, bitince -1 (hatada da)',async()=>{const c={};const q=makeQueue((id,d)=>{c[id]=(c[id]||0)+d});
+ const p1=q('a',async()=>{await wait(5);return true});const p2=q('a',async()=>{throw new Error('x')});const p3=q('b',async()=>true);
+ assert.deepEqual(c,{a:2,b:1});await Promise.all([p1,p2,p3]);assert.deepEqual(c,{a:0,b:0})});
+console.log(`\n${n} test geçti`+(process.exitCode?' — BAŞARISIZ VAR':''));

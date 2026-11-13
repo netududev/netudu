@@ -48,6 +48,8 @@ export function continueUrl(r:Resource,index:number):string{if(r.kind!=='playlis
 // ---------- ilerleme okuma ----------
 // Tüm oynatma listelerinde saklanan başlık sayısı (config boyutu sınırı için)
 export const itemsTotal=(list:Resource[])=>list.reduce((a,r)=>a+(r.items?.length||0),0);
+// Eklenen başlıkları tüm kaynaklardaki kalan toplam bütçeye kırpar (aşan videolar "n. video" görünür)
+export const fitItems=(list:Resource[],items:PlaylistItem[])=>items.slice(0,Math.max(0,Math.min(LIMITS.items,LIMITS.itemsTotal-itemsTotal(list))));
 export const doneCount=(r:Resource)=>r.kind==='playlist'?(r.watched||[]).length:r.done;
 export const isFinished=(r:Resource)=>r.total>0&&doneCount(r)>=r.total;
 export const percentOf=(r:Resource)=>r.total?Math.round(doneCount(r)/r.total*100):0;
@@ -70,6 +72,7 @@ export const kindTitle=(r:Resource)=>r.kind==='book'?'Soru bankası':'Oynatma li
 
 // ---------- bugünün işi ve gelecek tahmini ----------
 const todayLog=(r:Resource,today:string)=>r.log&&r.log.date===today?r.log.units:[];
+export const hasTodayLog=(r:Resource,today:string)=>todayLog(r,today).length>0;
 // Kuyruktaki [from, from+count) aralığı. useLog: bugün tamamlananlar kuyruğun başında sayılır (bugünün kotası kaymasın).
 function chunk(r:Resource,today:string,from:number,count:number,useLog:boolean):number[]{
  if(r.kind==='book'){const n=useLog?Math.min(todayLog(r,today).length,r.done):0;const start=r.done-n;const out:number[]=[];for(let i=start+from+1;i<=r.total&&out.length<count;i++)out.push(i);return out}
@@ -141,6 +144,7 @@ export function normalizeResources(raw:unknown):Resource[]{if(!Array.isArray(raw
   const log=lg&&lg.units.length?{log:lg}:{};
   if(kind==='book'){out.push({...base,done:int(r.done,0,total,0),...log});continue}
   if(typeof r.listId!=='string'||!LIST_ID.test(r.listId))continue;
+  // Toplam başlık bütçesi sırayla tüketilir; bütçe bitince sonraki listelerin başlıkları kırpılır
   const items=(Array.isArray(r.items)?r.items:[]).filter((v:any)=>v&&typeof v.id==='string'&&VIDEO_ID.test(v.id)).slice(0,Math.min(LIMITS.items,budget)).map((v:any)=>({id:v.id as string,title:String(v.title??'').slice(0,LIMITS.title)}));budget-=items.length;
   const watched=unitList(r.watched,total);
   out.push({...base,listId:r.listId,items,watched,done:watched.length,...log})}

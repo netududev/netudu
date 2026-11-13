@@ -2,6 +2,8 @@
 // Anahtar ve ağ dışarıdan verilir: bu modül framework/ortam bilmez, sahte fetch ile test edilir.
 import {LIMITS,LIST_ID,VIDEO_ID,type PlaylistItem} from './resources';
 export class PlaylistError extends Error{status:number;constructor(message:string,status=502){super(message);this.status=status}}
+// Hak iadesi: kullanıcı kaynaklı hatalar (geçersiz/yok/özel liste: 400, 404) YouTube kotası harcadığı için hak da harcanır; ağ, zaman aşımı ve YouTube 5xx/403 (502 eşlemesi) iade edilir.
+export const shouldRefund=(e:unknown)=>!(e instanceof PlaylistError&&(e.status===400||e.status===404));
 type Fetcher=(url:string,init?:RequestInit)=>Promise<Response>;
 // Listeyi sayfalayarak okur: en çok 300 öğe, her istek 15 sn zaman aşımı. total = YouTube'un bildirdiği toplam (en çok 2000).
 export async function loadPlaylist(listId:string,key:string,doFetch:Fetcher=fetch):Promise<{items:PlaylistItem[];total:number}>{
