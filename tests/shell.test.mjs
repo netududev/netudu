@@ -1,7 +1,7 @@
 // Kabuk (üst çubuk, kenar çubuğu, sayfa başlığı, alt çubuk) saf mantığı: lib/shell.ts
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {headings,planNavEntries,bookNavEntries,sidebarNavLabels,pageActions,topbarAddVariant,contentWidth,mobileBarItems,views} from '../lib/shell';
+import {headings,planNavEntries,bookNavEntries,settingsEntry,pageActions,topbarAddVariant,contentWidth,views} from '../lib/shell';
 
 test('headings: her ekranın yalnız başlığı ve tek satır açıklaması var (büyük harfli eyebrow yok)',()=>{
   for(const v of views){
@@ -14,13 +14,14 @@ test('headings: her ekranın yalnız başlığı ve tek satır açıklaması var
 });
 
 test('kenar çubuğu gezinmesinde "Programı oluştur" yok',()=>{
-  for(const plan of [true,false])assert.ok(!sidebarNavLabels(plan).includes('Programı oluştur'),'plan='+plan);
+  const labels=[...planNavEntries,...bookNavEntries,settingsEntry].map(e=>e.label);
+  assert.ok(!labels.includes('Programı oluştur'));
   assert.deepEqual(planNavEntries.map(e=>e.id),['home','program','resources']);
   assert.deepEqual(bookNavEntries.map(e=>e.id),['archive','report','exams','notes']);
 });
 
-test('sayfa başlığı eylemleri: "Yanlış ekle" hiçbir ekranda yok; Programı düzenle yalnız Bugün + program varken',()=>{
-  for(const v of views)for(const plan of [true,false])assert.ok(!pageActions(v,{plan}).includes('add-wrong'),v);
+test('sayfa başlığı eylemleri: Programı düzenle yalnız Bugün + program varken',()=>{
+  for(const v of views)for(const plan of [true,false])assert.ok(pageActions(v,{plan}).every(a=>['print','edit-plan'].includes(a)),v);
   assert.deepEqual(pageActions('home',{plan:true}),['edit-plan']);
   assert.deepEqual(pageActions('home',{plan:false}),[]);
   assert.deepEqual(pageActions('archive',{plan:true}),['print']);
@@ -28,13 +29,8 @@ test('sayfa başlığı eylemleri: "Yanlış ekle" hiçbir ekranda yok; Program�
   assert.deepEqual(pageActions('settings',{plan:true}),[]);
 });
 
-test('üst çubuk "Yanlış ekle": tek birincil; program yokken Bugün\'de boş durumun birincili öne çıkar',()=>{
-  assert.equal(topbarAddVariant('home',false),'secondary');
-  assert.equal(topbarAddVariant('home',true),'primary');
-  assert.equal(topbarAddVariant('resources',false),'secondary');
-  assert.equal(topbarAddVariant('notes',true),'secondary');
-  assert.equal(topbarAddVariant('archive',false),'primary');
-  assert.equal(topbarAddVariant('settings',true),'primary');
+test('üst çubuk "Yanlış ekle": yalnız Defter\'te birincil; diğer tüm ekranlarda ikincil (ekran başına tek kobalt)',()=>{
+  for(const v of views)assert.equal(topbarAddVariant(v),v==='archive'?'primary':'secondary',v);
 });
 
 test('içerik genişliği: yalnız Ayarlar okuma genişliği; Notlar (iki sütun) dahil diğerleri geniş',()=>{
@@ -42,7 +38,10 @@ test('içerik genişliği: yalnız Ayarlar okuma genişliği; Notlar (iki sütun
   for(const v of ['home','program','resources','archive','report','exams','notes'])assert.equal(contentWidth(v),'wide',v);
 });
 
-test('mobil alt çubuk: Bugün, Program, +, Defter, Daha fazla',()=>{
-  assert.deepEqual(mobileBarItems.map(i=>i.label),['Bugün','Program','Yanlış ekle','Defter','Daha fazla']);
-  assert.equal(mobileBarItems[2].id,'add');
+test('giriş CSS: kahraman h1 clamp ölçeklemesini ezmez; üst çubuk hedefleri 44px',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const css=readFileSync(new URL('../app/styles/80-kabuk-giris.css',import.meta.url),'utf8');
+  assert.doesNotMatch(css,/\.lp-hero h1\{[^}]*font-size/);
+  assert.match(css,/\.lp-link,\.lp-nav nav a,\.lp-logo\{[^}]*min-height:var\(--h-btn\)/);
+  assert.match(css,/:is\(\.page-heading,\.error-banner\)/);
 });

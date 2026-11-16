@@ -20,10 +20,7 @@ export const headings:Record<View,{title:string;description:string}>={
  settings:{title:'Ayarlar.',description:'Profilin, üyeliğin, programın ve yedeğin.'},
 };
 
-// Kenar çubuğu gezinme etiketleri; "Programı oluştur" gezinme değil eylemdir (Bugün boş durumunda)
-export function sidebarNavLabels(_hasPlan:boolean):string[]{return [...planNavEntries,...bookNavEntries,settingsEntry].map(e=>e.label)}
-
-export type PageAction='print'|'edit-plan'|'add-wrong';
+export type PageAction='print'|'edit-plan';
 // "Yanlış ekle" tek yerde durur: üst çubuk. Burada yalnız ikincil eylemler kalır.
 export function pageActions(view:View,{plan}:{plan:boolean}):PageAction[]{
  const out:PageAction[]=[];
@@ -32,11 +29,8 @@ export function pageActions(view:View,{plan}:{plan:boolean}):PageAction[]{
  return out;
 }
 
-// Ekran başına tek birincil: ekranın kendi birincil eylemi varsa (program yokken Bugün/Kaynaklar'daki "Programı oluştur", Notlar'daki "Notu hazırla")
-// üst çubuktaki "Yanlış ekle" ikincil çizilir; diğer ekranlarda üst çubuk birincilin tek yeridir.
-export function topbarAddVariant(view:View,hasPlan:boolean):'primary'|'secondary'{return (!hasPlan&&(view==='home'||view==='resources'))||view==='notes'?'secondary':'primary'}
+// Ekran başına tek kobalt: Bugün (Tamamla / Programı oluştur), Program, Kaynaklar, Aylık rapor, Denemeler, Notlar ve Ayarlar'ın kendi birincili var;
+// üst çubuktaki "Yanlış ekle" yalnız Defter'de (kendi birincili olmayan tek ekran) birincil çizilir.
+export function topbarAddVariant(view:View):'primary'|'secondary'{return view==='archive'?'primary':'secondary'}
 
 export function contentWidth(view:View):'wide'|'reading'{return view==='settings'?'reading':'wide'}
-
-export type MobileBarItem={id:'home'|'program'|'add'|'archive'|'more';label:string};
-export const mobileBarItems:MobileBarItem[]=[{id:'home',label:'Bugün'},{id:'program',label:'Program'},{id:'add',label:'Yanlış ekle'},{id:'archive',label:'Defter'},{id:'more',label:'Daha fazla'}];

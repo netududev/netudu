@@ -2,14 +2,15 @@
 // Radix/shadcn kabukları düz karşılıklarla (scripts/preview/ui-stubs.tsx) değiştirilir; Next/React çalıştırılmaz, tailwind derlenmez
 // (preflight yerine eşdeğer sıfırlama eklenir). Yazı tipi bu makinede Manrope değil, yedek yazı tipidir. Ekrandaki veriler ÖRNEKTİR.
 // Çalıştırma: ND_ROOT=<çalışma dizini> MODE=onceki|sonraki OUT=<çıktı dizini> PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node scripts/shell-preview.mjs
+// TABLE=1: ekran görüntüsü yerine kobalt dolgu buton tablosu (1440x900 ilk ekran) ve landing h1/dokunma hedefi ölçümü; olcum-tablo.json yazar.
 // MODE=onceki: kabuk için docs/proof/feat-kabuk-ve-giris/before-frame.tsx (taban kabuğunun kopyası); CSS ND_ROOT'un app/styles'ı (onceki için taban CSS'i içeren dizini ND_ROOT verin).
 import fs from 'node:fs';import {createRequire} from 'node:module';
 const NM='/opt/npm-tools/node_modules';const require=createRequire(NM+'/x.cjs');const {chromium}=require('playwright');const esbuild=require('esbuild');
 const W=process.env.ND_ROOT+'/',MODE=process.env.MODE||'sonraki',OUT=process.env.OUT||W+'docs/proof/feat-kabuk-ve-giris';
 const SRC=process.env.SRC_ROOT?process.env.SRC_ROOT+'/':W; // bileşen/stub kaynağı (before-frame.tsx ve entry)
 const tmp=fs.mkdtempSync('/tmp/nd-shell-');const STUB=SRC+'scripts/preview/ui-stubs.tsx';
-await esbuild.build({entryPoints:[SRC+'scripts/preview/shell-entry.tsx'],bundle:true,platform:'node',format:'cjs',outfile:tmp+'/ssr.cjs',jsx:'automatic',logLevel:'error',define:{'process.env.NODE_ENV':'"production"'},nodePaths:[NM],
- alias:{'@':W.replace(/\/$/,''),'sonner':STUB},plugins:[{name:'stubs',setup(b){b.onResolve({filter:/^@\/components\/ui\/(dialog|select|alert-dialog|table|sidebar|sonner)$/},()=>({path:STUB}));b.onResolve({filter:/^@\/docs\/proof\//},a=>({path:SRC+a.path.slice(2)+'.tsx'}));b.onResolve({filter:/^react(-dom)?(\/.*)?$/},a=>({path:require.resolve(a.path,{paths:[NM]})}))}}]});
+await esbuild.build({entryPoints:[SRC+'scripts/preview/'+(MODE==='onceki'?'shell-entry-onceki.tsx':'shell-entry.tsx')],bundle:true,platform:'node',format:'cjs',outfile:tmp+'/ssr.cjs',jsx:'automatic',logLevel:'error',define:{'process.env.NODE_ENV':'"production"'},nodePaths:[NM],
+ alias:{'@':W.replace(/\/$/,''),'sonner':STUB},plugins:[{name:'stubs',setup(b){b.onResolve({filter:/^@\/components\/ui\/(dialog|select|alert-dialog|table|sidebar|sonner)$/},()=>({path:STUB}));b.onResolve({filter:/^recharts$/},()=>({path:STUB}));b.onResolve({filter:/^@\/docs\/proof\//},a=>({path:SRC+a.path.slice(2)+'.tsx'}));b.onResolve({filter:/^react(-dom)?(\/.*)?$/},a=>({path:require.resolve(a.path,{paths:[NM]})}))}}]});
 const S=require(tmp+'/ssr.cjs');
 const parts=fs.readdirSync(W+'app/styles').sort().map(f=>fs.readFileSync(W+'app/styles/'+f,'utf8')).join('');
 const css=parts.replace(/@import[^;]*;/g,'').replace(/@theme inline\{[^\n]*\n/,'');
@@ -28,6 +29,17 @@ for(const [w,h] of sizes)for(const dark of [false,true]){
  shots.push([`bugun-bos-${w}-${th}`,w,h,mk('home'),dark,false]);
 }
 shots.push(['ayarlar-1568-acik',1568,900,mk('settings'),false,false],['notlar-1568-acik',1568,900,mk('notes'),false,false],['defter-1568-acik',1568,900,mk('archive'),false,false]);
+if(process.env.TABLE){
+ const bt=await chromium.launch();const out={kobalt:{},landing:{}};
+ const cob=()=>{const vis=e=>{const b=e.getBoundingClientRect(),cs=getComputedStyle(e);return b.width>0&&b.height>0&&cs.visibility!=='hidden'&&cs.display!=='none'};
+  return [...document.querySelectorAll('button,a')].filter(e=>vis(e)&&getComputedStyle(e).backgroundColor==='rgb(52, 84, 209)'&&e.getBoundingClientRect().top<innerHeight&&!e.classList.contains('lesson-count')).map(e=>(e.textContent||e.getAttribute('aria-label')||'').trim().slice(0,30))};
+ for(const view of ['home','program','resources','archive','report','exams','notes','settings'])for(const withPlan of [false,true]){
+  const key=view+(withPlan?' plan-var':' plan-yok');
+  try{const html=mk(view,{withPlan,dev:false});const p=await bt.newPage({viewport:{width:1440,height:900}});await p.setContent(wrap(html,false));out.kobalt[key]=await p.evaluate(cob);await p.close()}catch(e){out.kobalt[key]='HATA: '+String(e).slice(0,120)}}
+ for(const w of [320,390,520,521,600,768,900,901,1024,1440]){const p=await bt.newPage({viewport:{width:w,height:900}});await p.setContent(wrap(S.landing(),false));
+  out.landing[w]=await p.evaluate(()=>{const h=document.querySelector('.lp-hero h1'),cs=getComputedStyle(h),lh=parseFloat(cs.lineHeight);const t=s=>{const e=document.querySelector(s);return e?Math.round(e.getBoundingClientRect().height):null};
+   return {fontSize:cs.fontSize,lines:Math.round(h.getBoundingClientRect().height/lh),link:t('.lp-link'),navA:t('.lp-nav nav a'),logo:t('.lp-logo'),sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}});await p.close()}
+ fs.writeFileSync(`${OUT}/olcum-tablo.json`,JSON.stringify(out,null,1));console.log(JSON.stringify(out,null,1));await bt.close();fs.rmSync(tmp,{recursive:true,force:true});process.exit(0)}
 const only=process.env.ONLY;const meas={};
 const b=await chromium.launch();
 for(const [name,w,h,html,dark,full] of shots){if(only&&!name.includes(only))continue;const p=await b.newPage({viewport:{width:w,height:h}});await p.setContent(wrap(html,dark));

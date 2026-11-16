@@ -20,3 +20,6 @@ export const SidebarMenuItem=({children}:any)=><li data-slot="sidebar-menu-item"
 export const SidebarMenuButton=({children,isActive,onClick}:any)=><button data-slot="sidebar-menu-button" data-active={isActive?'true':'false'} onClick={onClick} style={{display:'flex',alignItems:'center',gap:8,width:'100%',padding:'8px',textAlign:'left'}}>{children}</button>;
 export const SidebarInset=({children}:any)=><div data-slot="sidebar-inset" className="sb-inset">{children}</div>;
 export const SidebarTrigger=()=><button data-slot="sidebar-trigger" className="sb-trigger" aria-label="Kenar çubuğunu aç" style={{display:'inline-grid',placeItems:'center'}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>;
+// recharts düz karşılıkları (grafik çizilmez; yalnız yerleşim kutusu)
+export const ResponsiveContainer=({children,height}:any)=><div className="chart-stub" style={{width:'100%',height:height||240}}>{children}</div>;
+export const LineChart=()=>null,BarChart=()=>null,Line=()=>null,Bar=()=>null,XAxis=()=>null,YAxis=()=>null,Tooltip=()=>null,CartesianGrid=()=>null;

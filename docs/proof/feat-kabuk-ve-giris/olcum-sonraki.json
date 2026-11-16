@@ -729,9 +729,9 @@
    "right": 336
   },
   "add": {
-   "x": 1243,
+   "x": 1257,
    "y": 10,
-   "w": 151,
+   "w": 137,
    "h": 44,
    "right": 1394
   },
@@ -740,9 +740,7 @@
   "statusBtns": 0,
   "navHasCreate": false,
   "targetToProfileGap": 16,
-  "cobaltAboveFold": [
-   "Yanlış ekle[topbar-add primary]"
-  ],
+  "cobaltAboveFold": [],
   "coloredGradientPseudos": [],
   "h1": {
    "x": 532,

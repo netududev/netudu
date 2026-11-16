@@ -16,7 +16,7 @@
 /* İçerik genişliği: kap 1120px ortalı; Ayarlar 760px okuma sütunu (başlıkla birlikte); Notlar iki sütunlu olduğu için geniş */
 .workspace{width:100%;max-width:1120px;margin-inline:auto}
 .view[data-width=reading]{max-width:760px;margin-inline:auto}
-.workspace:has(.view[data-width=reading]) .page-heading{max-width:760px;margin-inline:auto}
+.workspace:has(.view[data-width=reading]) :is(.page-heading,.error-banner){max-width:760px;margin-inline:auto}
 /* Kenar çubuğu alt bloğu: hedef kartı ile kullanıcı satırı arası tam 16px */
 .app-sidebar [data-slot=sidebar-footer]{gap:0}
 .app-sidebar .target-card{margin-bottom:var(--s4)}
@@ -26,6 +26,9 @@
 .lp-btn.ink:active{transform:scale(.97)}
 .lp-plan::after{content:none;animation:none}
 .lp-hero{grid-template-columns:minmax(0,560px) minmax(0,1fr)}
-.lp-hero h1{font-size:4.25rem;line-height:1.02}
+.lp-hero h1{line-height:1.02}
 @media(max-width:900px){.lp-hero{grid-template-columns:minmax(0,1fr)}.lp-visual{min-height:480px}}
-@media(max-width:520px){.lp-hero h1{font-size:2.5rem}.lp-cta .lp-btn,.lp-cta .lp-quiet{width:100%;justify-content:center}}
+@media(max-width:520px){.lp-cta .lp-btn,.lp-cta .lp-quiet{width:100%;justify-content:center}}
+/* Giriş sayfası üst çubuğu: dokunma hedefleri en az 44px */
+.lp-link,.lp-nav nav a,.lp-logo{min-height:var(--h-btn);display:inline-flex;align-items:center}
+.lp-link{white-space:nowrap}

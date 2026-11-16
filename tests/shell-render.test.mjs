@@ -1,23 +1,28 @@
 // Kabuk ve giriş sayfası: gerçek bileşenlerin react-dom/server çıktısında metin/sınıf denetimi.
-// esbuild ve react /opt/npm-tools (ya da NODE_PATH) altında yoksa testler atlanır. Radix kabukları scripts/preview/ui-stubs.tsx ile değiştirilir.
+// esbuild ve react bulunamazsa test BAŞARISIZ olur (sessiz atlama yok). Aranan yollar: NODE_PATH, /opt/npm-tools/node_modules, <kök>/node_modules, <kök>/../node_modules ve üst dizinlerin node_modules'u.
+// Radix kabukları ve recharts scripts/preview/ui-stubs.tsx ile değiştirilir. Test paketi docs/proof altına bağımlı değildir.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {mkdtempSync,rmSync} from 'node:fs';
-import {join,dirname,delimiter} from 'node:path';
+import {join,dirname,delimiter,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const root=join(dirname(fileURLToPath(import.meta.url)),'..');
-const dirs=[...(process.env.NODE_PATH||'').split(delimiter).filter(Boolean),'/opt/npm-tools/node_modules'];
+const up=[];for(let d=resolve(root);;d=dirname(d)){up.push(join(d,'node_modules'));if(dirname(d)===d)break}
+const dirs=[...new Set([...(process.env.NODE_PATH||'').split(delimiter).filter(Boolean),'/opt/npm-tools/node_modules',...up])];
 let NM=null,esbuild=null;
 for(const d of dirs){try{const r=createRequire(join(d,'x.cjs'));esbuild=r('esbuild');r.resolve('react-dom/server');NM=d;break}catch{}}
-const skip=!esbuild&&'esbuild/react bulunamadı';
+test('önizleme araçları (esbuild + react-dom) bulunabilir; bulunamazsa açık hata',()=>{
+  assert.ok(NM&&esbuild,'esbuild/react-dom bulunamadı; aranan yollar: '+dirs.join(', '));
+});
+const skip=false;
 let S=null;
 async function load(){
   if(S)return S;
   const require=createRequire(join(NM,'x.cjs'));const tmp=mkdtempSync('/tmp/nd-shell-test-');const stub=join(root,'scripts/preview/ui-stubs.tsx');
   await esbuild.build({entryPoints:[join(root,'scripts/preview/shell-entry.tsx')],bundle:true,platform:'node',format:'cjs',outfile:tmp+'/ssr.cjs',jsx:'automatic',logLevel:'silent',define:{'process.env.NODE_ENV':'"production"'},nodePaths:[NM],
-    alias:{'@':root,'sonner':stub},plugins:[{name:'s',setup(b){b.onResolve({filter:/^@\/components\/ui\/(dialog|select|alert-dialog|table|sidebar|sonner)$/},()=>({path:stub}));b.onResolve({filter:/^@\/docs\/proof\//},a=>({path:join(root,a.path.slice(2)+'.tsx')}));b.onResolve({filter:/^react(-dom)?(\/.*)?$/},a=>({path:require.resolve(a.path,{paths:[NM]})}))}}]});
+    alias:{'@':root,'sonner':stub},plugins:[{name:'s',setup(b){b.onResolve({filter:/^@\/components\/ui\/(dialog|select|alert-dialog|table|sidebar|sonner)$/},()=>({path:stub}));b.onResolve({filter:/^recharts$/},()=>({path:stub}));b.onResolve({filter:/^react(-dom)?(\/.*)?$/},a=>({path:require.resolve(a.path,{paths:[NM]})}))}}]});
   S=require(tmp+'/ssr.cjs');rmSync(tmp,{recursive:true,force:true});return S;
 }
 const text=h=>h.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
@@ -35,6 +40,13 @@ test('kenar çubuğu gezinmesinde "Programı oluştur" yok; Bugün boş durumund
   const m=await load();const h=m.shell('home');const side=h.slice(h.indexOf('<aside'),h.indexOf('</aside>'));
   assert.ok(!side.includes('Programı oluştur'));assert.match(h,/class="primary"[^>]*>.*?Programı oluştur/s);
   assert.match(h.slice(h.indexOf('<header class="topbar"')),/topbar-add secondary/);
+});
+test('ekran başına tek kobalt: üst çubuk "Yanlış ekle" yalnız Defter\'te birincil, diğer ekranlarda ikincil',{skip},async()=>{
+  const m=await load();
+  for(const withPlan of [true,false])for(const v of ['home','program','resources','archive','report','exams','notes','settings']){
+    const h=m.shell(v,{withPlan,dev:false});const top=h.slice(h.indexOf('<header class="topbar"'),h.indexOf('</header>'));
+    assert.match(top,v==='archive'?/topbar-add primary/:/topbar-add secondary/,v+' plan='+withPlan);
+  }
 });
 test('Ayarlar .view okuma genişliği; Notlar ve Defter geniş; alt çubuk etiketleri',{skip},async()=>{
   const m=await load();assert.match(m.shell('notes'),/data-view="notes" data-width="wide"/);assert.match(m.shell('settings'),/data-width="reading"/);assert.match(m.shell('archive'),/data-width="wide"/);
