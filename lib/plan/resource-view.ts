@@ -1,5 +1,6 @@
 // Kaynaklar sayfasında tek kobalt eylem: ekrandaki sırada (önce soru bankaları, sonra oynatma listeleri) bugün işi bekleyen ilk kaynak.
-// Bugün işi kalmamışsa ilk bitmemiş kaynak; hepsi bitmişse (ya da liste boşsa) null.
+// Bugün işi kalmamışsa ilk bitmemiş kaynak (id null olmaz); o kart bekleyen iş olmadığından birincil eylem değil, yalnız ikincil "Geri al" çizer (bilinçli).
+// Hepsi bitmişse (ya da liste boşsa) null.
 import {isFinished,unitsFor,type Resource} from './resources';
 
 export function leadResourceId(list:Resource[],today:string,todayOff=false):string|null{

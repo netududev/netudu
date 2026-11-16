@@ -30,7 +30,7 @@ test('leadResourceId: bugünkü payı tamamlanan kitap lead olmaz; iş bekleyen 
   assert.equal(V.leadResourceId([b1,r('b2','book',0,9)],TODAY),'b2');
   assert.equal(V.leadResourceId([b1,r('p1','playlist',0,10)],TODAY),'p1');
 });
-test('leadResourceId: bugün işi kalmadıysa ilk bitmemiş kaynak (kobalt kaybolmaz)',()=>{
+test('leadResourceId: bugün işi kalmadıysa ilk bitmemiş kaynak (id null olmaz; kart yalnız ikincil Geri al çizer)',()=>{
   const b1=r('b1','book',5,9,{log:{date:TODAY,units:[4,5]}});
   assert.equal(V.leadResourceId([b1],TODAY),'b1');
   assert.equal(V.leadResourceId([b1,r('b2','book',1,9,{days:['Sal']})],TODAY),'b1');

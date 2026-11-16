@@ -16,8 +16,9 @@
 .week-chips button.on{background:var(--fg);border-color:var(--fg);color:var(--bg)}
 .week-chips button.on.cur{border-color:var(--fg)}
 /* Gün kartı eylemleri: Tamamla ikincil ve tam satır; kaydır + video yan yana */
+/* .compact genel kuralı (00-tokens.css: min-height:140px;padding:18px) sızmasın: ikisi de sıfırlanır */
 /* Tamamla tam satır; Günü kaydır + Video yan yana, kart ikisine yetecek kadar geniş değilse alt alta (etiket kırpılmaz, sarar) */
-.day-card .lesson-actions.compact{display:flex;flex-wrap:wrap;align-content:flex-start;gap:var(--s2);margin:var(--s3) 0 0;width:100%;padding:0}
+.day-card .lesson-actions.compact{display:flex;flex-wrap:wrap;gap:var(--s2);margin:var(--s3) 0 0;width:100%;padding:0;min-height:0}
 .day-card .lesson-actions.compact>:is(.primary,.secondary):first-child{flex:1 1 100%}
 .day-card .lesson-actions.compact :is(.primary,.secondary){flex:1 1 124px;min-width:0;min-height:var(--h-btn);padding:6px 8px;font-size:.8125rem;gap:4px;line-height:1.25;text-align:center}
 @media(max-width:767px){.day-card .lesson-actions.compact :is(.primary,.secondary){min-height:48px}}

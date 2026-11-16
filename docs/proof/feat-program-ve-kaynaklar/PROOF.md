@@ -66,7 +66,7 @@ Yeni testler: `tests/week-view.test.mjs` (5; modül yokken kırmızı koşuldu: 
 - Program `open` günü `[plan]` efektiyle tazelenir (mevcut, dokunulmadı); Kaynaklar'da ⋯ menüsü Silme onayını kart düzeyindeki `del` durumuyla açar (menü içinde AlertDialog yok).
 
 ## Tur 2 (inceleme SKOR 4 bulguları)
-- ÖNEMLİ, "Günü kaydır" kırpılması: gün kartı eylemleri `flex-wrap` oldu; "Tamamla" tam satır, "Günü kaydır" + "Video" her biri `flex:1 1 124px`, `nowrap` kaldırıldı; kart ikisine yetmiyorsa alt alta düşer. Kopya değişmedi. `align-content:flex-start` ile Tamamla ile alt satır arası 8px (önce ~30px: kart yüksekliği satırlara dağıtılıyordu; `.lesson-actions` margin sızıntısı değil). `.day-card .lesson-actions.compact` seçicisi iki yerden tek kurala birleştirildi.
+- ÖNEMLİ, "Günü kaydır" kırpılması: gün kartı eylemleri `flex-wrap` oldu; "Tamamla" tam satır, "Günü kaydır" + "Video" her biri `flex:1 1 124px`, `nowrap` kaldırıldı; kart ikisine yetmiyorsa alt alta düşer. Kopya değişmedi. (Bu turdaki "kart yüksekliği satırlara dağıtılıyordu" kök neden anlatımı yanlıştı; gerçek neden Tur 3'te.) `.day-card .lesson-actions.compact` seçicisi iki yerden tek kurala birleştirildi.
 - Ölçüm (`olcum-sonraki.json` `dugmeKirpma`; scrollWidth>clientWidth ya da ikon/etiket düğme dışına taşma = kırpık; 21 düğme/genişlik, 390'da 3):
 
 | Genişlik | En dar düğme (px) | Kırpık | Tamamla–alt satır boşluğu | sw==cw |
@@ -85,8 +85,16 @@ Yeni testler: `tests/week-view.test.mjs` (5; modül yokken kırmızı koşuldu: 
 - `sihirbaz-390-*.png`: önizleme düz `Dialog` karşılığı `sr-only` açıklamayı ("Okul ve sabit saatlerinle...") görünür çiziyor; gerçek uygulamada `sr-only` ile gizlidir (önizleme artefaktı).
 - Test: `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` -> tests 85, pass 85, fail 0, çıkış 0. Önizleme betiği genişletildi (`dugmeKirpma` ölçümü, program 900/1280).
 
+## Tur 3 (inceleme 2. tur bulguları)
+- ÖNEMLİ, kök neden: `00-tokens.css:7` genel `.compact{min-height:140px;padding:18px}` kuralı `.lesson-actions.compact`'a sızıyordu; `95-program-kaynaklar.css` yalnız `padding:0` yapıyor, `min-height:140px` kalıyordu (flex-wrap + `align-content` satırlara dağıtılan yükseklik bunun yan etkisiydi). Düzeltme: kurala `min-height:0` eklendi, gereksizleşen `align-content:flex-start` kaldırıldı. `.compact` için başka sızan özellik yok (`30-v3-v4.css`/`50-v10-v11.css` kuralları margin/gap/düğme boyutu; hepsi 95'te geçersiz kılınıyor). Başka ekran etkilenmedi (seçici `.day-card` altında).
+- Ölçüm (`olcum-sonraki.json` `dugmeKirpma.kartAltBosluk` = kart alt kenarı − son düğme alt kenarı; kart padding + çerçeve = 16px, ölü boşluk yok): 390, 768, 900, 1024, 1280, 1440'ta 16px; satır aralığı 8px; düğme kırpılması 0 (21 düğme/genişlik, 390'da 3); sw==cw. Önizleme betiğine bu ölçüm eklendi.
+- Gözle bakılan: `program-390-acik-sonraki.png`, `program-900-acik-sonraki.png` (gün kartı düğmelerin altında ölü boşluk yok). Tüm `*-sonraki.png` yeniden üretildi.
+- Bilinçli seçim: lead kaynak bugünkü payı tamamlanmış kitaba düşerse (bekleyen iş yok) kart yalnız ikincil "Geri al" çizer, birincil kobalt eylem yok (`resources.tsx`). Test adı ve `resource-view.ts` yorumu bu davranışı anlatacak şekilde düzeltildi ("kobalt kaybolmaz" yanıltıcıydı).
+
 ## Orkestratör doğrulaması
 
+- (Tur 1) `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` yeniden koşuldu: 83/83, çıkış 0.
+- (Tur 1) Gerçek Radix (⋯ menüsü, silme onayı, sihirbaz) bu ortamda denenemedi; Vercel önizlemesinde teyit gerekir.
 
 ## Kapsam dışı / bilinen eksikler
 - Önizleme: Next/Tailwind yok; Radix bileşenleri düz karşılık; yazı tipi Manrope değil; açık/kapalı pencere ve DropdownMenu/AlertDialog gerçek tarayıcıda denenmedi (⋯ menüsü, Sil onayı, sihirbaz adım 2-3 ekran görüntüsü yok: SSR yalnız adım 1'i çizer). Mobil alt çubuk tam sayfa ekran görüntüsünde ortada görünür (önizleme artefaktı).
@@ -104,3 +112,8 @@ Yeni testler: `tests/week-view.test.mjs` (5; modül yokken kırmızı koşuldu: 
 
 - `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` yeniden koşuldu: 85/85, çıkış 0 (Tur 1: 83/83).
 - Kaynak penceresindeki seçili gün biçimi önizlemede görünmüyor (res-dialog çizilmiyor); Vercel önizlemesinde teyit gerekir.
+
+## Orkestratör doğrulaması (Tur 3)
+
+- `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` yeniden koşuldu: 85/85, çıkış 0.
+- Diff kapsamı: 95-program-kaynaklar.css, program-preview.mjs, week-view test adı, resource-view yorumu, PROOF ve kanıt görselleri.
