@@ -24,13 +24,20 @@ test('sayfa başlığı eylemleri: Programı düzenle yalnız Bugün + program v
   for(const v of views)for(const plan of [true,false])assert.ok(pageActions(v,{plan}).every(a=>['print','edit-plan'].includes(a)),v);
   assert.deepEqual(pageActions('home',{plan:true}),['edit-plan']);
   assert.deepEqual(pageActions('home',{plan:false}),[]);
-  assert.deepEqual(pageActions('archive',{plan:true}),['print']);
+  assert.deepEqual(pageActions('archive',{plan:true}),[],'Defter: Yazdır/PDF artık "Dışa aktar" menüsünde');
   assert.deepEqual(pageActions('report',{plan:false}),['print']);
   assert.deepEqual(pageActions('settings',{plan:true}),[]);
 });
 
 test('üst çubuk "Yanlış ekle": yalnız Defter\'te birincil; diğer tüm ekranlarda ikincil (ekran başına tek kobalt)',()=>{
-  for(const v of views)assert.equal(topbarAddVariant(v),v==='archive'?'primary':'secondary',v);
+  for(const v of views)assert.equal(topbarAddVariant(v,{rows:5,loading:false}),v==='archive'?'primary':'secondary',v);
+});
+
+test('üst çubuk "Yanlış ekle": Defter boşken ikincil (birincil boş durumdaki "İlk yanlışını ekle"); yüklenirken ya da satır varken birincil',()=>{
+  assert.equal(topbarAddVariant('archive',{rows:0,loading:false}),'secondary');
+  assert.equal(topbarAddVariant('archive',{rows:0,loading:true}),'primary');
+  assert.equal(topbarAddVariant('archive',{rows:1,loading:false}),'primary');
+  assert.equal(topbarAddVariant('home',{rows:0,loading:false}),'secondary');
 });
 
 test('içerik genişliği: yalnız Ayarlar okuma genişliği; Notlar (iki sütun) dahil diğerleri geniş',()=>{

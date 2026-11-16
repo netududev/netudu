@@ -96,11 +96,11 @@ export default function StudyApp(){
  if(authed===false)return <><Toaster position="top-center"/>{authMode?<AuthScreen initialMode={authMode} onBack={()=>setAuthMode(null)} onDone={()=>{setAuthed(null);setAuthMode(null);void load()}}/>:<Landing onAuth={setAuthMode}/>}</>;
  const examDays=daysUntil(profile.examDate);
  return <StudyContext.Provider value={study}><Toaster position="top-center"/>
- <AppFrame view={view} setView={setView} plan={plan} due={due} rows={rows} profile={profile} user={user} examDays={examDays} error={error} onRetry={()=>void load()} openUpload={()=>openUpload()} openWizard={()=>setWizard(true)} onPrint={()=>print()} setSubject={setSubject}>
+ <AppFrame view={view} setView={setView} plan={plan} due={due} rows={rows} loading={loading} profile={profile} user={user} examDays={examDays} error={error} onRetry={()=>void load()} openUpload={()=>openUpload()} openWizard={()=>setWizard(true)} onPrint={()=>print()} setSubject={setSubject}>
  {view==='home'&&<TodayView/>}
  {view==='program'&&<ProgramView/>}
  {view==='resources'&&<ResourcesView/>}
- {view==='archive'&&<ArchiveView subject={subject} setSubject={setSubject} filteredRef={filteredRef}/>}
+ {view==='archive'&&<ArchiveView subject={subject} setSubject={setSubject} filteredRef={filteredRef} onPrint={()=>print()}/>}
  {view==='report'&&<ReportView month={month} setMonth={setMonth} notes={notes} setNotes={setNotes} goals={goals} setGoals={setGoals} onPrint={()=>print()}/>}
  {view==='exams'&&<ExamsView/>}
  {view==='notes'&&<NotesView preset={notesPreset}/>}

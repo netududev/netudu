@@ -24,13 +24,18 @@ export type PageAction='print'|'edit-plan';
 // "Yanlış ekle" tek yerde durur: üst çubuk. Burada yalnız ikincil eylemler kalır.
 export function pageActions(view:View,{plan}:{plan:boolean}):PageAction[]{
  const out:PageAction[]=[];
- if(view==='archive'||view==='report')out.push('print');
+ // Defter'de "Yazdır / PDF" "Dışa aktar" menüsündedir; başlıkta yalnız Aylık rapor'da kalır
+ if(view==='report')out.push('print');
  if(view==='home'&&plan)out.push('edit-plan');
  return out;
 }
 
 // Ekran başına tek kobalt: Bugün (Tamamla / Programı oluştur), Program, Kaynaklar, Aylık rapor, Denemeler, Notlar ve Ayarlar'ın kendi birincili var;
 // üst çubuktaki "Yanlış ekle" yalnız Defter'de (kendi birincili olmayan tek ekran) birincil çizilir.
-export function topbarAddVariant(view:View):'primary'|'secondary'{return view==='archive'?'primary':'secondary'}
+// Defter boşken (yüklenme bitmiş, satır yok) birincil boş durumdaki "İlk yanlışını ekle"dir; üst çubuk düğmesi ikincil olur.
+export function topbarAddVariant(view:View,{rows,loading}:{rows:number;loading:boolean}={rows:1,loading:false}):'primary'|'secondary'{
+ if(view!=='archive')return 'secondary';
+ return !loading&&rows===0?'secondary':'primary';
+}
 
 export function contentWidth(view:View):'wide'|'reading'{return view==='settings'?'reading':'wide'}

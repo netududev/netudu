@@ -1,0 +1,56 @@
+/* PR 4: Yanlış defteri araç çubuğu ve filtre paneli, kontrol şeridi, Yanlış ekle ve etiket penceresi, soru penceresi eylemleri */
+/* Kontrol bekleyenler şeridi: kum (champ) jetonları; tamamı tek 44px+ düğme */
+.pending-strip{display:flex;align-items:center;gap:var(--s3);width:100%;min-height:var(--h-btn);padding:10px var(--s4);margin-bottom:var(--s3);border:1px solid var(--champ-line);border-radius:var(--r-ctl);background:var(--champ-bg);color:var(--champ-ink);font:inherit;font-size:.9375rem;line-height:1.4;text-align:left}
+.pending-strip svg{flex:none}.pending-strip b{font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.pending-strip:hover{border-color:var(--champ-ink)}
+/* Araç çubuğu: satır 1 arama + Filtreler + görünüm; açılır panel; satır 2 sayaç + Dışa aktar */
+.defter-bar{display:flex;flex-direction:column;gap:var(--s3);margin-bottom:var(--s4)}
+.defter-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+.defter-row .search-field{flex:1 1 260px;min-width:0}
+.filters-btn{display:inline-flex;align-items:center;gap:var(--s2);min-height:var(--h-btn);padding:0 var(--s4);border:1px solid var(--line2);border-radius:999px;background:var(--surface);color:var(--fg);font:inherit;font-size:.875rem;font-weight:600;white-space:nowrap}
+.filters-btn:hover,.filters-btn[aria-expanded=true]{background:var(--inner2)}
+.filters-btn.on{border-color:var(--fg)}
+.filters-badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--fg);color:var(--bg);font-size:.75rem;font-weight:700;line-height:1}
+.filters-panel{border:1px solid var(--line);border-radius:var(--r-card);background:var(--inner);padding:var(--s4)}
+.filters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--s3)}
+.filter-field{display:flex;flex-direction:column;gap:6px;min-width:0}.filter-field>span{font-size:.8125rem;font-weight:600;color:var(--fg2)}
+.filter-field .choice{width:100%;margin-top:0}
+.filters-foot{display:flex;justify-content:flex-end;margin-top:var(--s3)}
+.defter-count{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);font-size:.9375rem}
+.export-btn{min-height:var(--h-btn);white-space:nowrap}
+.export-menu{min-width:11rem;background:var(--surface);color:var(--fg);border-color:var(--line)}
+.export-menu [data-slot=dropdown-menu-item]{min-height:var(--h-btn);font-size:.9375rem}
+@media(max-width:767px){.defter-row .search-field{flex-basis:100%}.defter-row .segmented{flex:1 1 auto}.defter-row .segmented button{flex:1 1 auto;justify-content:center;white-space:nowrap}.filters-grid{grid-template-columns:minmax(0,1fr)}}
+/* Üst çubuk pencereleri: solda kapat (44px), ortada başlık */
+.dlg-bar{display:grid;grid-template-columns:var(--h-btn) minmax(0,1fr) var(--h-btn);align-items:center;gap:var(--s2)}
+.dlg-bar [data-slot=dialog-title]{font-size:1.0625rem;font-weight:700;letter-spacing:-.01em;line-height:1.2;text-align:center}
+.dlg-close{display:grid;place-items:center;width:var(--h-btn);height:var(--h-btn);border:0;border-radius:50%;background:transparent;color:var(--fg)}.dlg-close:hover{background:var(--inner2)}
+/* Yanlış ekle: masaüstünde 560px, mobilde tam ekran (mobil kural 20-mobil-ve-tema.css'te); 3 sütun ızgara */
+@media(min-width:768px){.upload-dialog{width:min(560px,calc(100vw - 32px))!important;max-width:560px!important;max-height:calc(100dvh - 48px);overflow-y:auto}}
+.cap-lead{font-size:.9375rem;line-height:1.5;color:var(--fg2)}.cap-lead b{color:var(--fg);font-weight:700}
+@media(min-width:768px){.cap-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.cap-info{display:flex;align-items:flex-start;gap:var(--s3);padding:12px 14px;border:1px solid var(--champ-line);border-radius:var(--r-ctl);background:var(--champ-bg);color:var(--champ-ink)}
+.cap-info svg{flex:none;margin-top:1px}.cap-info p{margin:0;font-size:.875rem;line-height:1.5}
+.cap-foot{border-top:1px solid var(--line);padding-bottom:var(--s1)}
+/* Etiket ekranı */
+.tag-eyebrow{letter-spacing:0}
+.tag-save{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);min-height:var(--h-btn);padding:0 var(--s5);border:1px solid var(--fg);border-radius:999px;background:var(--fg);color:var(--bg);font:inherit;font-size:.9375rem;font-weight:600}
+.tag-save:hover{background:var(--fg2);border-color:var(--fg2)}
+.tag-card .tag-btn{min-width:var(--h-btn)}
+.tag-row{min-width:0}
+@media(max-width:480px){.tag-row{display:grid;grid-template-columns:54px minmax(0,1fr);align-items:start}.tag-row .tag-btn{grid-column:2;justify-self:start}}
+/* Soru penceresi alt eylemleri: birincil, ikincil, üç nokta menüsü */
+.dialog-actions{flex-wrap:wrap;justify-content:flex-end}
+.dialog-actions :is(.primary,.secondary){min-height:var(--h-btn)}
+.more-button{display:inline-grid;place-items:center;min-width:var(--h-btn);min-height:var(--h-btn);border:1px solid var(--line2);border-radius:999px;background:var(--surface);color:var(--fg)}
+.more-button:hover{background:var(--inner2)}
+[data-slot=dropdown-menu-item].danger-item,[data-slot=dropdown-menu-item].danger-item svg{color:var(--destructive)}
+/* Silme onayı: tehlikeli eylem kırmızı metin ve çerçeve, dolgu yok */
+[data-slot=alert-dialog-action].danger-confirm{background:transparent;color:var(--destructive);border:1px solid var(--destructive)}
+[data-slot=alert-dialog-action].danger-confirm:hover{background:color-mix(in srgb,var(--destructive) 10%,transparent)}
+@media(max-width:767px){.dialog-actions{width:100%}.dialog-actions .primary{flex:1 1 100%}.dialog-actions .secondary{flex:1}}
+/* Dokunma hedefleri: görünüm seçici ve panel temizleme düğmesi masaüstünde de en az 44px */
+.defter-row .segmented button,.filters-foot .text-button{min-height:var(--h-btn)}
+/* Sabit alt çubuklar pencere iç boşluğuna kadar uzanır: altlarından içerik görünmez */
+.cap-foot,.tag-foot{bottom:calc(-1*(var(--s4) + env(safe-area-inset-bottom)));margin-bottom:calc(-1*(var(--s4) + env(safe-area-inset-bottom)));padding-bottom:calc(var(--s4) + env(safe-area-inset-bottom))}
+@media(min-width:768px){.cap-foot,.tag-foot{bottom:calc(-1*var(--s6));margin-bottom:calc(-1*var(--s6));padding-bottom:var(--s6)}}

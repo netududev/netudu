@@ -42,3 +42,10 @@ test('styles/: silinen ölü sınıflar geri gelmedi',()=>{
   const joined=partImports().map(p=>readFileSync(join(appDir,p),'utf8')).join('\n');
   for(const dead of ['dropzone','camera-button'])assert.ok(!new RegExp('\\.'+dead+'(?![\\w-])').test(joined),dead);
 });
+
+test('styles/90-defter-yukleme.css: son parça olarak @import edilmiş; araç çubuğu, kontrol şeridi ve pencere sınıfları var',()=>{
+  assert.equal(partImports().at(-1),'./styles/90-defter-yukleme.css');
+  const css=readFileSync(join(appDir,'styles','90-defter-yukleme.css'),'utf8');
+  for(const c of ['pending-strip','filters-btn','filters-panel','dlg-bar','cap-info','tag-save','danger-confirm'])assert.match(css,new RegExp('\\.'+c+'(?![\\w-])'),c);
+  assert.ok(!/#[0-9a-f]{3,8}\b/i.test(css.replace(/\/\*.*?\*\//g,'')),'renk jetonlardan gelir, düz hex yok');
+});
