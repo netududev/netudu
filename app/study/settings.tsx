@@ -372,7 +372,7 @@ export function SettingsView({initialTab}:{initialTab?:string}={}){const s=useSt
      </div>
      <div className="actions wrap section-save">
       <button type="submit" className="secondary" disabled={supaBusy||!supaForm.key.trim()}>{supaBusy?<LoaderCircle className="spin" size={16}/>:<Check size={16}/>} {supa?.connected?'Supabase bağlantısını güncelle':'Supabase\'i bağla ve test et'}</button>
-      <button type="button" className="secondary" onClick={()=>{void navigator.clipboard.writeText(SUPABASE_DDL);toast.success('Supabase Auth + Tenant + Veri SQL şeması panoya kopyalandı! Supabase SQL Editor ekranına yapıştırıp çalıştırabilirsin.')}}><Copy size={16}/> SQL şemasını kopyala (supabase/schema.sql)</button>
+      <button type="button" className="secondary" onClick={()=>{void navigator.clipboard.writeText(SUPABASE_DDL);toast.success('Supabase Auth + Tenant + Veri SQL şeması panoya kopyalandı! Supabase SQL Editor ekranına yapıştırıp çalıştırabilirsin.')}}><Copy size={16}/> SQL şemasını kopyala</button>
       {supa?.connected&&<button type="button" className="secondary" disabled={supaBusy} onClick={()=>void syncSupabase()}><RefreshCw size={16}/> Mevcut verileri Supabase'e aktar</button>}
       {supa?.connected&&supa.source==='runtime'&&<button type="button" className="danger-button inline" disabled={supaBusy} onClick={()=>void disconnectSupabase()}><Unplug size={16}/> Bağlantıyı kaldır</button>}
      </div>

@@ -33,10 +33,10 @@
 .view[data-view=notes] .note-view{min-width:0;max-width:760px}
 .view[data-view=notes] .nv,.view[data-view=notes] .note-content{max-width:760px}
 .view[data-view=notes] .nv{margin-inline:0}
-.view[data-view=notes] .note-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}
-.view[data-view=notes] .note-actions>*{width:100%}
+.view[data-view=notes] .note-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:var(--s3)}
+.view[data-view=notes] .note-actions>*{width:100%;white-space:nowrap;min-width:0}
 @media(max-width:1000px){.view[data-view=notes] .notes-layout{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:480px){.view[data-view=notes] .note-actions{grid-template-columns:minmax(0,1fr)}.page-heading .month-select,.page-heading .actions .secondary{flex:1 1 100%;min-width:0}.settings-tablist [role=tab]{padding:0 var(--s3)}}
+@media(max-width:480px){.page-heading .month-select,.page-heading .actions .secondary{flex:1 1 100%;min-width:0}.settings-tablist [role=tab]{padding:0 var(--s3)}}
 .view[data-view=notes] .nv-memory{background:var(--champ-bg);color:var(--champ-ink)}
 /* Ayarlar: sekmeler + bölüm yığını; Kaydet bölümün sağ altında */
 .settings-tabs [data-slot=tabs]{display:flex;flex-direction:column;gap:var(--s4)}

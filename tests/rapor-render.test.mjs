@@ -58,7 +58,7 @@ test('Ders notları: görsel not bölümleri, okuma genişliği ≤760, alttaki 
   assert.equal(count(h,/class="primary[ "]/g),1);
   const acts=between(h,'class="actions note-actions"','</div>');assert.equal(count(acts,/<button/g),2);
   assert.match(css,/\[data-view=notes\] \.nv,[^{]*\{max-width:760px\}/);
-  assert.match(css,/\.note-actions\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(css,/\.note-actions\{display:grid;grid-template-columns:repeat\(auto-fit,minmax\(min\(100%,220px\),1fr\)\)/);
 });
 test('Ayarlar: sekmeler hesap türüne göre; her sekme kendi bölümlerini gösterir',async()=>{
   const S=await load();

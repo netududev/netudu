@@ -61,3 +61,21 @@ Tam ölçüm: `olcum-sonraki.json` (60 ekran: rapor, rapor-bos, denemeler, denem
 ## Orkestratör doğrulaması (Tur 2)
 
 - `npm test` yeniden koşuldu: 99/99, çıkış 0; 60 ekranda kirikDugme/taşma/küçük hedef boş (yazar ölçümü).
+
+## Tur 3 (inceleme 2 bulgusu: 481-1280px aralığında kırılan düğmeler)
+- Kök neden: `.note-actions` 481px üstünde koşulsuz 2 sütundu (sabit görünüm medya sorgusu); Tur 2'de yalnız 390 yamalandı ve ölçüm yalnız 1440/390'da yapıldı. Not detayı sütunu 1001-1280px'te dar kaldığı için düğmeler 91-206px'e düşüp metni 2-3 satıra kırdı.
+- Düzeltme: `.note-actions{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}` + çocuklara `white-space:nowrap;min-width:0`; kapsayıcı genişliği 2x220'ye yetmezse düğmeler alt alta iner. 480 altı `.note-actions` kuralı kaldırıldı. Ayarlar > Geliştirici'de 390'da 2 satıra kırılan "SQL şemasını kopyala (supabase/schema.sql)" etiketi (yeni eşikle yakalandı) "SQL şemasını kopyala" olarak kısaltıldı (dosya adı alttaki ipucunda zaten var). Test regex'i yeni kurala güncellendi.
+- Ölçüm betiği: `kirikDugme` eşiği 46px (<768'de 50px, çünkü orada `min-height:48px`) + metnin birden çok satıra kırılmasını yakalayan satır sayımı; `.note-list` ve `.segmented` istisnaları korundu. Genişlikler: 1440, 1280, 1100, 1000, 800, 768, 481, 390. Ölü `setMonth` prop'u `scripts/preview/shell-entry.tsx`'ten silindi (repoda kalan `setMonth` yalnız gerçek kullanımlar: `study-app.tsx`, `shell.tsx` FrameProps, önizleme çerçeve nesneleri).
+- Ölçüm (150 ekran): taşma, kırpılan, küçük hedef, kirikDugme, birincil>1 hepsinde 0/boş. notEylemGenislik (notlar, açık): 1440 254+254, 1280 424+424, 1100 292+292, 1000 292+292, 800 396+396, 768 364+364, 481 373+373, 390 282+282 (hepsi tek satır). Gözle kontrol: notlar-481/768/1100, rapor-481/768.
+- Test: `npm test` 99/99 yeşil, çıkış 0.
+
+## Tur 2 doğrulaması notu ve geri konan şablon satırları
+- "(yazar ölçümü)": Tur 2 ölçümünü yazar yaptı; yalnız 1440/390 kapsıyordu, bu yüzden Tur 3 gerekti.
+- Diff kapsamı: CSS (98-rapor-not-ayarlar.css, 20-mobil-ve-tema.css), rapor/notlar/ayarlar bileşenleri, testler, önizleme betikleri ve giriş dosyaları, .env.example, docs/proof; kapsam dışı dosya yok.
+- Görseller: `docs/proof/feat-rapor-not-ayarlar/*.png` (önce/sonra) ve `olcum-sonraki.json`.
+- Süreç temizliği: geçici --detach worktree'ler kaldırıldı; önizleme geçici dizinleri silindi.
+
+## Orkestratör doğrulaması (Tur 3)
+
+- `npm test` yeniden koşuldu: 99/99, çıkış 0. Ölçüm yazar tarafından üretildi; bağımsız yeniden üretimi inceleyiciye bırakıldı.
+- Ek: Ayarlar > Geliştirici düğme etiketi "SQL şemasını kopyala (supabase/schema.sql)" → "SQL şemasını kopyala" (390px kırılması; dosya adı ipucunda duruyor).
