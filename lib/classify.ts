@@ -39,6 +39,15 @@ export function manualClassification(prev:Classification|null,edit:{subtopic?:st
 export const hasTopic=(t:string)=>!!t&&t!==UNKNOWN_TOPIC;
 // Ders değişince eski dersin konusu yeni dersin altında kalmasın.
 export const carryTopic=(prevSubject:string,prevTopic:string,subject:string)=>subject===prevSubject?prevTopic:UNKNOWN_TOPIC;
+// PATCH'te konu kararı: konu gelmediyse eski konu yalnız aynı derste kalır; ders değiştiyse gelen konu yeni dersin listesinde değilse "Konu belirlenmedi".
+export function resolveTopic(row:{subject:string;topic:string},subject:string,incoming?:string){
+ if(!incoming)return carryTopic(row.subject,row.topic,subject);
+ const topic=normalizeTopic(subject,incoming);
+ return subject!==row.subject&&!(topicTree[subject]||[]).includes(topic)?UNKNOWN_TOPIC:topic;
+}
+// Gövdede ders/konu alanının bulunması düzenleme değildir (diyalog her kayıtta gönderir); etiket yalnız gerçekten değişince ya da açıkça istenince yenilenir.
+export const isLabelEdit=(d:{confirm?:boolean;subtopic?:string;difficulty?:string;examType?:string},row:{subject:string;topic:string;exam_type:string},next:{subject:string;topic:string})=>
+ d.confirm===true||d.subtopic!==undefined||d.difficulty!==undefined||next.subject!==row.subject||next.topic!==row.topic||(d.examType!==undefined&&d.examType!==row.exam_type);
 // Öğrenci düzenlemesinden sonraki etiket: konu belirsizse "elle doğrulandı" denmez, kontrol bayrağı kalır.
 export function editedClassification(prev:Classification|null,edit:{subtopic?:string;difficulty?:string},topic:string):Classification{
  const base=manualClassification(prev,edit);

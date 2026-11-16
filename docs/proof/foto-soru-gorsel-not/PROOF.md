@@ -5,13 +5,13 @@
 | Yanlış ekle: yalnız fotoğraf + yapay zekâ sınıflandırma + etiket ekranı; görsel ders notu; giriş sayfasında mor parıltı yerine fotoğraf paneli | karma | 9c3c24f..bu turun commit'i | 1 | sonnet |
 
 ## İddia
-- [ ] Sınıflandırma çıktısı güvenle doğrulanır: geçersiz ders mevcut derse düşer, konu MEB listesine eşlenir, güven eşiği 0,6, bozuk girdi hiçbir zaman fırlatmaz (classify.test.mjs, 17 test).
-- [ ] POST /api/questions için deneme adı, tarih, sınav, ders zorunlu değil; varsayılanlar (bugün, "Yanlış defteri", profil sınıfı, ilk ders + "Konu belirlenmedi" + kontrol bayrağı) (question-defaults.test.mjs, 8 test).
-- [ ] Not JSON şeması doğrulanır, eski markdown notlar eskisi gibi çizilir, bozuk önekli kayıt çökmez (note-format.test.mjs, 11 test).
+- [x] Sınıflandırma çıktısı güvenle doğrulanır: geçersiz ders mevcut derse düşer, konu MEB listesine eşlenir, güven eşiği 0,6, bozuk girdi hiçbir zaman fırlatmaz (classify.test.mjs, 26 test; tur 3 dahil).
+- [x] POST /api/questions için deneme adı, tarih, sınav, ders zorunlu değil; varsayılanlar (bugün, "Yanlış defteri", profil sınıfı, ilk ders + "Konu belirlenmedi" + kontrol bayrağı) (question-defaults.test.mjs, 9 test).
+- [x] Not JSON şeması doğrulanır, eski markdown notlar eskisi gibi çizilir, bozuk önekli kayıt çökmez (note-format.test.mjs, 16 test).
 - [ ] Veritabanı şeması değişmedi; alt konu/zorluk/güven `questions.analysis` JSON'unda `classification` anahtarında, görsel not `study_notes.content` içinde "ndnote1:" önekli JSON. memory-db üzerinde INSERT/UPDATE denendi.
 - [ ] Giriş: mor/radyal parıltı ve ndDrift kaldırıldı; fotoğraf yokken "FOTOĞRAF" yer tutucusu yok, ürün kartlarından kompozisyon görünür (landing-1440.png, landing-390.png).
-- [ ] Yanlış ekle ve etiket ekranı, görsel not 390 px'te taşmıyor (sw=cw ölçümü), koyu temada okunur.
-- [ ] Eski testler yeşil.
+- [x] Yanlış ekle ve etiket ekranı, görsel not 390 px'te taşmıyor (sw=cw ölçümü), koyu temada okunur.
+- [x] Eski testler yeşil (tur 3'te yeniden koşuldu).
 
 ## Önce
 Mantık kanıtı: yeni özellik. Kırmızı adım: ilk koşuda lib/classify.ts, question-defaults.ts, note-format.ts yoktu ve testler modül bulunamadı hatasıyla düştü (not: ilk iki koşuda ND_ROOT tanımsızdı, yani kırmızı "modül yok"tan çok yükleyici hatasıydı; note-format için tam kırmızı gözlendi). Eski giriş/yükleme görselleri alınmadı.
@@ -26,9 +26,9 @@ Görseller **statik önizlemedir** (static-preview.mjs): gerçek app/globals.css
 Yükleyici: bu dizindeki reg.mjs/reg2.mjs (+hook, server-stub). Hepsi `ND_ROOT=$PWD` ile.
 | Komut | Beklenen | Gerçek | Çıkış kodu | Sonuç |
 |---|---|---|---|---|
-| classify.test.mjs | yeşil | 17 test geçti | 0 | PASS |
-| question-defaults.test.mjs | yeşil | 8 test geçti | 0 | PASS |
-| note-format.test.mjs | yeşil | 11 test geçti | 0 | PASS |
+| classify.test.mjs | yeşil | 26 test geçti | 0 | PASS |
+| question-defaults.test.mjs | yeşil | 9 test geçti | 0 | PASS |
+| note-format.test.mjs | yeşil | 16 test geçti | 0 | PASS |
 | soru-bankasi resources / queue / resource-schema | yeşil | 53 / 3 / 11 test geçti | 0 | PASS |
 | tools scheduler / streak / apple | yeşil | 26 / 9 / 15 | 0 | PASS |
 | ts.transpileModule, 24 değişen .ts/.tsx | hata 0 | 24/24 OK | 0 | PASS |
@@ -44,7 +44,9 @@ Yükleyici: bu dizindeki reg.mjs/reg2.mjs (+hook, server-stub). Hepsi `ND_ROOT=$
 - Gerçek OpenAI çağrısı ve `next build`/tam tsc çalıştırılmadı; sınıflandırma istemi ve not şeması gerçek modelle denenmedi.
 - Fotoğraf dosyası yok: lib/hero.ts HERO_PHOTO=null. Dosya eklenince yol yazılır.
 - Zorluk/alt konu/güven yalnız analysis.classification içinde; arşiv filtresi/rapor bunları kullanmıyor (yalnız kart ve "Kontrol et" rozeti).
-- Eski Preview/NetChart kodu kaldırıldı; ilgili .lp-preview/.lp-card CSS kuralları globals.css'te ölü kaldı.
+- Eski Preview/NetChart kodu kaldırıldı; ilgili ölü .lp-preview/.lp-card CSS kuralları tur 2'de silindi (tsx'te kullanım 0).
+- Hero koyu renkleri (#2A241E / #5C4E31, globals.css ~931): kullanıcının onayladığı tasarımdan gelir; "onaylı tasarım rengi" olarak bilerek korundu.
+- Bildirim: iade akışı (notes `respond` 'incomplete' durumu dahil hata iade edilir) DB/ağ gerektirdiğinden testsiz; 'incomplete' ayrımı `respond`u değiştirmeyi gerektirdiğinden yapılmadı.
 - Program ön ayarıyla açılan yükleme (plan/ui.tsx) artık soru metni almıyor; ders+konu ön ayarı varsa sınıflandırma atlanır.
 
 ## Yeniden üretme
@@ -91,3 +93,31 @@ Sınırlar: gerçek OpenAI/DB/React etkileşimi yok; PATCH/solve/notes route'lar
 ## Orkestratör doğrulaması (tur 2)
 - Testler bağımsız yeniden koşuldu: classify 22, note-format 16, question-defaults 9, report 4, resources 53, queue 3, scheduler+pricing 26, streak 9/9, apple 15 → hepsi geçti; ink.json/__pycache__ yok.
 - note-print-dark.png açıldı: koyu temada baskı açık zeminde okunur. Not: karşılaştırma diyagramında "Karşılaştırma" etiketi solda boş alan bırakıyor (baskı genişliğinde sütunlar sağa yaslı).
+
+## Tur 3 (inceleme 2 düzeltmeleri; bulgular: REVIEW-2.md)
+Komutlar `ND_ROOT=$PWD` ile; testler önce kırmızı koşuldu (classify 4, report 2 FAIL), sonra yeşil.
+| Bulgu | Değişiklik | Kanıt (gerçek çıktı) |
+|---|---|---|
+| 1a "edited" her kayıtta true | `lib/classify.ts`: `isLabelEdit` (confirm/alt konu/zorluk/ders değişti/konu değişti/sınav değişti) ve `resolveTopic`; PATCH ikisini kullanır | classify.test.mjs: 26 test geçti (değişmemiş ders+konu + answerKey → düzenleme değil; ders değişti + eski konu → UNKNOWN + needsReview) |
+| 1b ders değişince konu | question-dialog: ders değişince `topic:''`, Kaydet kapalı + "Konu seç" uyarısı (`tag-why`) | transpile OK (etkileşim tarayıcıda çalıştırılmadı) |
+| 1c sunucu | `resolveTopic`: ders değiştiyse ve konu yeni dersin topicTree'sinde yoksa "Konu belirlenmedi" → `editedClassification` needsReview bırakır | classify.test.mjs |
+| 2 tutarsız sayım/export | `lib/study.ts`: `subjectCount`, `matchesSubject`, `PENDING_FILTER`, `UNSET_SUBJECT`; `exportRows` tanınmayana "Belirlenmedi"; arşiv gruplu görünümde "Belirlenmemiş", Excel konu özetinde "Belirlenmedi"; kenar çubuğu sayacı tanınmayanları dışlar + "Kontrol bekleyenler (N)" satırı → arşiv filtresi | report.test.mjs: 6 test geçti; sidebar-review.png (statik önizleme) |
+| 3 isUnrecognized kapsamı | Yorum: ders bilinen/konu belirsiz kayıt da kapsanır; filtre ikisini birlikte gösterir | kod |
+| 4 rapor | Tüm ay tanınmamışsa "Bu ayın N sorusu henüz tanınmadı; önce ders ve konularını belirle." | transpile OK |
+| 5 notes | `maxTokens` seçeneği kaldırıldı (varsayılan 6500, main ile aynı) | transpile OK; 'incomplete' ayrımı yapılmadı (yukarıya bak) |
+| 6 tablo hücresi | `hasSolution` | transpile OK |
+| 7 baskı/ekran karşılaştırma | Kök neden: `<figure class="nv-fig nv-compare">` figürün kendisini grid yapıyordu (başlık ilk sütunda). `note-visual.tsx`: tür sınıfı `nv-t-<tür>` oldu; CSS'e dokunulmadı | note-print-dark.png ve note-diagrams-390.png yeniden üretildi, bakıldı: başlık üstte, iki sütun tam genişlik; note-visual-1440 değişmedi |
+| 8 hero rengi | Dokunulmadı (onaylı tasarım rengi) | — |
+
+| Komut | Gerçek | Çıkış |
+|---|---|---|
+| foto-soru-gorsel-not/*.test.mjs (reg2) | classify 26 / note-format 16 / question-defaults 9 / report 6 test geçti | 0 |
+| soru-bankasi resources / queue | 53 / 3 test geçti | 0 |
+| tools scheduler / streak / apple | 26 / 9/9 PASS / 15 | 0 |
+| ts.transpileModule, 9 değişen .ts/.tsx | 9 dosya, hata 0 | 0 |
+| check-css.py app/globals.css | parantez farkı 0; tanımsız yalnız --cols --d --font-manrope --sp --v (eskiden var) | 0 |
+| class-check.py | TANIMSIZ SINIF SAYISI: 0 | 0 |
+| icon-audit.mjs | ink>1 []; yalnız Bell/BellRing 0.62 (eskiden var) | 0 |
+
+## Orkestratör doğrulaması (tur 3)
+- Testler bağımsız yeniden koşuldu: classify 26, note-format 16, question-defaults 9, report 6, resources 53, queue 3, scheduler+pricing 26, streak 9/9, apple 15 → hepsi geçti; ink.json/__pycache__ yok.

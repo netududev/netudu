@@ -35,6 +35,12 @@ export function dueQuestions(rows:Question[],date=today()){return rows.filter(q=
 export type TopicStat={subject:string;topic:string;count:number;reviewed:number;notes:string[];prev:number;blank:number;unsure:number;questions:Question[]};
 // Tanınamayan soru: ders/konu henüz belirlenmedi ve kontrol bekliyor. Kayıtta ders yer tutucudur; ders bazlı sayımlara girmez.
 export const isUnrecognized=(q:Pick<Question,'topic'|'analysis'>)=>q.topic==='Konu belirlenmedi'&&q.analysis?.classification?.needsReview===true;
+// Ders bilinen ama konusu belirsiz kayıt ile ders yer tutucu olan kayıt kayıttan ayırt edilemez; ikisi de burada "tanınmamış" sayılır
+// ve "Kontrol bekleyenler" filtresinde birlikte görünür.
+export const PENDING_FILTER='Kontrol bekleyenler';
+export const UNSET_SUBJECT='Belirlenmedi';
+export const subjectCount=(rows:Question[],subject:string)=>rows.filter(q=>q.subject===subject&&!isUnrecognized(q)).length;
+export const matchesSubject=(q:Pick<Question,'subject'|'topic'|'analysis'>,filter:string)=>filter==='Tüm dersler'||(filter===PENDING_FILTER?isUnrecognized(q):q.subject===filter&&!isUnrecognized(q));
 export const unrecognizedCount=(rows:Question[],month:string)=>rows.filter(q=>q.date.startsWith(month)&&isUnrecognized(q)).length;
 // Çözüm denendi mi? (analysis tek başına çözüm değildir: yalnız classification içerebilir; okunamayan çözümde steps boş dizidir)
 export const hasSolution=(a:Partial<Analysis>|null|undefined)=>Array.isArray(a?.steps);
@@ -44,6 +50,6 @@ export function topicHistory(rows:Question[],subject:string,topic:string,exclude
 // Deneme bazında yanlış sayısı (grafik için)
 export function wrongsPerExam(rows:Question[]){const map=new Map<string,{exam:string;date:string;exam_type:string;count:number}>();for(const q of rows){const k=q.date+'|'+q.exam;const v=map.get(k)||{exam:q.exam,date:q.date,exam_type:q.exam_type,count:0};v.count++;map.set(k,v)}return [...map.values()].sort((a,b)=>a.date.localeCompare(b.date))}
 export const exportColumns=['Tarih','Deneme','Sınav','Ders','Konu','Hata türü','Soru','Cevabım','Cevap anahtarı','Çözüm sonucu','Çözüm','Kritik nokta','Tekrar notu','Video','Tekrar aşaması','Sıradaki tekrar','Durum'];
-export function exportRows(rows:Question[]):(string|number)[][]{return rows.map(q=>[q.date,q.exam,q.exam_type,q.subject,q.topic,q.mistake_type||'yanlış',q.question,q.my_answer,q.answer_key,q.analysis?.answer||'',q.analysis?.steps?.join('\n')||'',q.analysis?.pitfall||'',q.analysis?.note||'',q.analysis?.videos?.[0]?.url||'',reviewStageLabel(q),q.next_review||'',q.reviewed?'Tekrar edildi':'Tekrar bekliyor'])}
+export function exportRows(rows:Question[]):(string|number)[][]{return rows.map(q=>[q.date,q.exam,q.exam_type,isUnrecognized(q)?UNSET_SUBJECT:q.subject,q.topic,q.mistake_type||'yanlış',q.question,q.my_answer,q.answer_key,q.analysis?.answer||'',q.analysis?.steps?.join('\n')||'',q.analysis?.pitfall||'',q.analysis?.note||'',q.analysis?.videos?.[0]?.url||'',reviewStageLabel(q),q.next_review||'',q.reviewed?'Tekrar edildi':'Tekrar bekliyor'])}
 export function csv(rows:Question[]){const cell=(v:unknown)=>{let s=String(v??'');if(/^[\s]*[=+@-]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"'};return '\uFEFF'+[exportColumns,...exportRows(rows)].map(r=>r.map(cell).join(';')).join('\r\n')}
 export function daysUntil(date:string,from=today()){return Math.round((Date.parse(date+'T00:00:00Z')-Date.parse(from+'T00:00:00Z'))/86400000)}

@@ -11,7 +11,7 @@ function Layers({items,depth=0}:{items:NonNullable<VisualNote['layers']>;depth?:
 }
 function Diagram({d}:{d:NoteDiagram}){
  const title=d.title||(d.type==='flow'?'Adım adım akış':d.type==='compare'?'Karşılaştırma':'Döngü');
- return <figure className={'nv-fig nv-'+d.type}><figcaption>{title}</figcaption>
+ return <figure className={'nv-fig nv-t-'+d.type}><figcaption>{title}</figcaption>
   {d.type==='flow'?<ol className="nv-flow">{d.items.map((it,i)=><li key={i}><span className="nv-flow-n" aria-hidden="true">{i+1}</span><span className="nv-flow-b"><b>{it.label}</b>{it.text&&<small>{it.text}</small>}</span>{i<d.items.length-1&&<ArrowRight className="nv-flow-arrow" size={16} aria-hidden="true"/>}</li>)}</ol>
   :d.type==='compare'?<div className="nv-compare" style={{'--cols':d.items.length} as React.CSSProperties}>{d.items.map((it,i)=><div key={i} className={'nv-col c'+(i%3)}><b>{it.label}</b>{it.text&&<small>{it.text}</small>}{it.points&&<ul>{it.points.map((pt,k)=><li key={k}>{pt}</li>)}</ul>}</div>)}</div>
   :<div className="nv-cycle-wrap"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="31" fill="none" strokeDasharray="2.2 2.6"/><path d="M56.6 18.2l-5.8 1.2 3.4 4.6" fill="none"/></svg><span className="nv-cycle-core" aria-hidden="true">↻</span>
