@@ -51,6 +51,7 @@
 @media(max-width:767px){.dialog-actions{width:100%}.dialog-actions .primary{flex:1 1 100%}.dialog-actions .secondary{flex:1}}
 /* Dokunma hedefleri: görünüm seçici ve panel temizleme düğmesi masaüstünde de en az 44px */
 .defter-row .segmented button,.filters-foot .text-button{min-height:var(--h-btn)}
-/* Sabit alt çubuklar pencere iç boşluğuna kadar uzanır: altlarından içerik görünmez */
-.cap-foot,.tag-foot{bottom:calc(-1*(var(--s4) + env(safe-area-inset-bottom)));margin-bottom:calc(-1*(var(--s4) + env(safe-area-inset-bottom)));padding-bottom:calc(var(--s4) + env(safe-area-inset-bottom))}
-@media(min-width:768px){.cap-foot,.tag-foot{bottom:calc(-1*var(--s6));margin-bottom:calc(-1*var(--s6));padding-bottom:var(--s6)}}
+/* Sabit alt çubuklar: pencerenin alt iç boşluğu çubuğa devredilir (negatif bottom/margin yok); altlarından içerik görünmez */
+.upload-dialog:has(.cap-foot,.tag-foot){padding-bottom:0}
+.cap-foot,.tag-foot{bottom:0;padding-bottom:calc(var(--s4) + env(safe-area-inset-bottom))}
+@media(min-width:768px){.cap-foot,.tag-foot{padding-bottom:var(--s6)}}

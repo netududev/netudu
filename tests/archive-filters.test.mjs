@@ -18,10 +18,11 @@ test('Kontrol bekleyenler de ders filtresi olarak sayılır',()=>{
 test('ay seçenekleri: sorulardaki tarihlerden benzersiz YYYY-AA, yeniden eskiye',()=>{
   assert.deepEqual(monthValues(['2026-09-03','2026-11-01','2026-11-14','2026-10-30']),['2026-11','2026-10','2026-09']);
   assert.deepEqual(monthValues([]),[]);
+  assert.deepEqual(monthValues(['','bozuk','2026-1','2026-11-03']),['2026-11'],'boş ya da bozuk tarih ay seçeneği üretmez');
 });
 test('kontrol bekleyenler şeridi: yalnız sayı sıfırdan büyükken metin üretir',()=>{
   assert.equal(pendingStripText(0),null);
-  assert.equal(pendingStripText(3),'3 soruyu yapay zekâ tanıyamadı');
+  assert.equal(pendingStripText(3),'3 sorunun dersi ya da konusu belirlenmedi');
 });
 test('Filtreler düğmesi erişilebilir adı seçili sayıyı söyler',()=>{
   assert.equal(filtersButtonLabel(0),'Filtreler');

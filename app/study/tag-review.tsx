@@ -53,7 +53,7 @@ export function TagReview({items,busy,ai,hinted,onPatch,onRetry,onFinish}:{items
     </div></li>})}</ul>
   <div className="tag-foot">
    {failed>0&&!busy&&<p className="form-error" role="alert">{failed} soru kaydedilemedi. “Tekrar dene” ile yeniden gönder ya da bu haliyle bitir.</p>}
-   <button type="button" className="primary full cap-main" disabled={busy||saving} onClick={onFinish}>{busy?<><LoaderCircle className="spin" size={18}/> Tanınıyor</>:saved>0?`${saved} soruyu deftere ekle`:'Kapat'}</button>
-   <span className="tag-note">{hinted?'Ders ve konu programdan geldi.':ai?'Tekrar günleri kendiliğinden planlanır: 1, 3, 7, 14, 30 ve 60. gün. Çözümler arka planda sırayla hazırlanır.':'Tekrar günleri kendiliğinden planlanır: 1, 3, 7, 14, 30 ve 60. gün.'}</span>
+   <button type="button" className="primary full cap-main" disabled={busy||saving} onClick={onFinish}>{busy?<><LoaderCircle className="spin" size={18}/> Tanınıyor</>:saved>0?`Tamam, ${saved} soru defterde`:'Kapat'}</button>
+   <span className="tag-note">{hinted?'Sorular defterine kaydedildi. Ders ve konu programdan geldi.':ai?'Sorular defterine kaydedildi. Tekrar günleri kendiliğinden planlanır: 1, 3, 7, 14, 30 ve 60. gün. Çözümler arka planda sırayla hazırlanır.':'Sorular defterine kaydedildi. Tekrar günleri kendiliğinden planlanır: 1, 3, 7, 14, 30 ve 60. gün.'}</span>
   </div></div>}
 function Thumb({it,n}:{it:Item;n:number}){return <span className="tag-thumb"><img src={it.preview} alt={`${n}. soru fotoğrafı`}/><i aria-hidden="true">{n}</i></span>}

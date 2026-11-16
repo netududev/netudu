@@ -8,10 +8,12 @@ import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertD
 import {Tabs,TabsList,TabsTrigger,TabsContent} from '@/components/ui/tabs';
 import {subjects,mistakeTypes,reviewStageLabel,reviewIntervals,topicHistory,topicMeta,today,hasSolution,type Question} from '@/lib/study';
 import {describeQuestion} from '@/lib/classify';
+import {DEFAULT_TAB,syncTab,pickTab,type TabState} from '@/lib/dialog-tab';
 import {useStudy,Choice,TopicSelect,Empty,dates,videoId,formatViews,api,postJson,mistakeLabel,QuotaNote} from './shared';
 export function QuestionDialog({question,onClose,onPrint}:{question:Question|null;onClose:()=>void;onPrint:(q:Question)=>void}){const s=useStudy();const {ai,rows}=s;const q=question;const solving=q?s.solving.has(q.id):false;
- const [busy,setBusy]=useState(false),[deleting,setDeleting]=useState(false),[edit,setEdit]=useState({subject:'Matematik',topic:'',mistakeType:'yanlış',myAnswer:'',answerKey:''}),[videoBusy,setVideoBusy]=useState(''),[activeIdx,setActiveIdx]=useState(0),[tab,setTab]=useState('solution');
- useEffect(()=>{if(q){setEdit({subject:q.subject,topic:q.topic,mistakeType:q.mistake_type||'yanlış',myAnswer:q.my_answer||'',answerKey:q.answer_key||''});setActiveIdx(0);setTab('solution')}},[q]);
+ const [busy,setBusy]=useState(false),[deleting,setDeleting]=useState(false),[edit,setEdit]=useState({subject:'Matematik',topic:'',mistakeType:'yanlış',myAnswer:'',answerKey:''}),[videoBusy,setVideoBusy]=useState(''),[activeIdx,setActiveIdx]=useState(0),[tabState,setTabState]=useState<TabState>({id:null,tab:DEFAULT_TAB});
+ const synced=syncTab(tabState,q?.id??null);if(synced!==tabState)setTabState(synced);const tab=synced.tab;const setTab=(t:string)=>setTabState(pickTab(synced,t));
+ useEffect(()=>{if(q){setEdit({subject:q.subject,topic:q.topic,mistakeType:q.mistake_type||'yanlış',myAnswer:q.my_answer||'',answerKey:q.answer_key||''});setActiveIdx(0)}},[q]);
  if(!q)return null;
  const history=topicHistory(rows,q.subject,q.topic,q.id);const a=q.analysis;const vids=a?.videos||[];const currentVideo=vids[activeIdx]||vids[0]||null;
  const effectiveTopic=q.topic&&q.topic!=='Konu belirlenmedi'?q.topic:`${q.subject} Genel Tekrar`;

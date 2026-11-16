@@ -10,7 +10,7 @@ import {shell,rows,study} from './shell-entry';
 import {shots,tagItems,pendingRows} from './defter-entry-veri';
 export * from './shell-entry';
 export {pendingRows};
-export const defter=(o:any={})=>shell('archive',{...o,rows:o.rows??rows,study:{rows:o.rows??rows,...(o.study||{})},body:<ArchiveView subject="Tüm dersler" setSubject={()=>{}} filteredRef={{current:[]}} onPrint={()=>{}} filtersOpenInitially={!!o.filtersOpen}/>});
+export const defter=(o:any={})=>shell('archive',{...o,rows:o.rows??rows,study:{rows:o.rows??rows,...(o.study||{})},body:<ArchiveView subject={o.subject||"Tüm dersler"} setSubject={()=>{}} filteredRef={{current:[]}} onPrint={()=>{}} filtersOpenInitially={!!o.filtersOpen}/>});
 const dlg=(el:any,st:any={})=>R(<StudyContext.Provider value={{...study,...st}}><div className="dlg-frame"><div data-slot="dialog-content" className="upload-dialog cap-dialog">{el}</div></div></StudyContext.Provider>);
 export const pick=(n:number,ai=true)=>dlg(<PickStep items={shots(n) as any} ai={ai} onAdd={()=>{}} onRemove={()=>{}} onStart={()=>{}}/>,{ai});
 export const tag=(busy=false)=>dlg(<TagReview items={tagItems(busy)} busy={busy} ai={true} hinted={false} onPatch={()=>{}} onRetry={()=>{}} onFinish={()=>{}}/>);

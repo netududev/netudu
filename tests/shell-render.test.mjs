@@ -84,6 +84,13 @@ test('Filtre paneli açıkken: 5 alan; Ay boşken "Tüm aylar"; temizle düğmes
   assert.match(p,/Tüm aylar/);assert.match(p,/Filtreleri temizle/);
   assert.match(h,/aria-expanded="true"/);
 });
+test('Filtre aktif, panel kapalı ve sonuç boşken boş durumda "Filtreleri temizle" eylemi var; aria-controls yalnız panel açıkken',{skip},async()=>{
+  const m=await load();const h=m.defter({subject:'Olmayan ders'});
+  assert.match(h,/Bu filtrelerde soru yok/);assert.match(h,/<button[^>]*>Filtreleri temizle<\/button>/);
+  assert.ok(!h.includes('aria-controls'),'panel kapalıyken aria-controls olmamalı');
+  assert.match(m.defter({filtersOpen:true}),/aria-controls="archive-filters"/);
+  assert.equal(count(m.defter({subject:'Olmayan ders',filtersOpen:true}),/Filtreleri temizle/g),1,'panel açıkken tek temizle düğmesi');
+});
 test('Defter boşken: üç adımlı anlatım, tek birincil "İlk yanlışını ekle", üst çubuk düğmesi ikincil, araç çubuğu yok',{skip},async()=>{
   const h=(await load()).defter({rows:[]});
   assert.match(h,/class="primary"[^>]*>İlk yanlışını ekle</);
@@ -100,7 +107,7 @@ test('Kontrol bekleyenler şeridi: yalnız tanınamayan soru varken, sayı mevcu
   const m=await load();
   assert.ok(!m.defter().includes('pending-strip'));
   const h=m.defter({rows:m.pendingRows});
-  assert.match(h,/class="pending-strip"/);assert.match(h,/2 soruyu yapay zekâ tanıyamadı/);assert.match(h,/<b>Kontrol et<\/b>/);
+  assert.match(h,/class="pending-strip"/);assert.match(h,/2 sorunun dersi ya da konusu belirlenmedi/);assert.match(h,/<b>Kontrol et<\/b>/);
   assert.ok(h.indexOf('pending-strip')<h.indexOf('defter-bar'),'şerit araç çubuğunun üstünde');
 });
 test('Yanlış ekle penceresi: üstte kapat + ortada başlık; iki büyük kutu; 3 sütun ızgara; tek birincil "N soruyu tanı"',{skip},async()=>{
@@ -119,7 +126,7 @@ test('Yapay zekâ kapalıyken bilgi kutusu ayrıdır; açıkken yoktur',{skip},a
 test('Etiket ekranı: ilerleme çizgileri, "Kontrol et" kum kart, altta tek birincil "N soruyu deftere ekle"',{skip},async()=>{
   const m=await load();const h=m.tag(false);
   assert.match(h,/class="tag-progress"/);assert.match(h,/tag-card review/);assert.match(h,/Kontrol et/);
-  assert.match(h,/3 soruyu deftere ekle/);assert.equal(count(h,/class="primary full cap-main"/g),1);
+  assert.match(h,/Tamam, 3 soru defterde/);assert.ok(!/deftere ekle/.test(h));assert.equal(count(h,/class="primary full cap-main"/g),1);
   assert.ok(!/EMİN OLAMADIK|DÜZENLENİYOR/.test(h));
   assert.match(h,/Tekrar günleri kendiliğinden planlanır/);
 });

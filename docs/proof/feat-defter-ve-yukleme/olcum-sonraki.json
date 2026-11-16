@@ -787,15 +787,15 @@
   "tasan": 0,
   "dialog": {
    "w": 560,
-   "h": 605,
+   "h": 613,
    "x": 440,
-   "y": 148
+   "y": 144
   },
   "capBtn": {
    "w": 249,
    "h": 128,
    "x": 465,
-   "y": 298
+   "y": 294
   },
   "capShot": null,
   "filtersBtn": null,
@@ -814,15 +814,15 @@
   "tasan": 0,
   "dialog": {
    "w": 560,
-   "h": 605,
+   "h": 613,
    "x": 440,
-   "y": 148
+   "y": 144
   },
   "capBtn": {
    "w": 249,
    "h": 128,
    "x": 465,
-   "y": 298
+   "y": 294
   },
   "capShot": null,
   "filtersBtn": null,
@@ -1023,21 +1023,21 @@
   "tasan": 0,
   "dialog": {
    "w": 560,
-   "h": 813,
+   "h": 821,
    "x": 440,
-   "y": 43
+   "y": 39
   },
   "capBtn": {
    "w": 249,
    "h": 128,
    "x": 465,
-   "y": 194
+   "y": 190
   },
   "capShot": {
    "w": 163,
    "h": 218,
    "x": 465,
-   "y": 384
+   "y": 380
   },
   "filtersBtn": null,
   "exportBtn": null,
@@ -1055,21 +1055,21 @@
   "tasan": 0,
   "dialog": {
    "w": 560,
-   "h": 813,
+   "h": 821,
    "x": 440,
-   "y": 43
+   "y": 39
   },
   "capBtn": {
    "w": 249,
    "h": 128,
    "x": 465,
-   "y": 194
+   "y": 190
   },
   "capShot": {
    "w": 163,
    "h": 218,
    "x": 465,
-   "y": 384
+   "y": 380
   },
   "filtersBtn": null,
   "exportBtn": null,
@@ -1145,15 +1145,15 @@
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
-   "3 soruyu deftere ekle"
+   "Tamam, 3 soru defterde"
   ],
   "kucukHedef": [],
   "tasan": 0,
   "dialog": {
    "w": 560,
-   "h": 781,
+   "h": 789,
    "x": 440,
-   "y": 60
+   "y": 56
   },
   "capBtn": null,
   "capShot": null,
@@ -1167,15 +1167,15 @@
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
-   "3 soruyu deftere ekle"
+   "Tamam, 3 soru defterde"
   ],
   "kucukHedef": [],
   "tasan": 0,
   "dialog": {
    "w": 560,
-   "h": 781,
+   "h": 789,
    "x": 440,
-   "y": 60
+   "y": 56
   },
   "capBtn": null,
   "capShot": null,
@@ -1189,7 +1189,7 @@
   "sw": 390,
   "cw": 390,
   "kobalt": [
-   "3 soruyu deftere ekle"
+   "Tamam, 3 soru defterde"
   ],
   "kucukHedef": [],
   "tasan": 0,
@@ -1211,7 +1211,7 @@
   "sw": 390,
   "cw": 390,
   "kobalt": [
-   "3 soruyu deftere ekle"
+   "Tamam, 3 soru defterde"
   ],
   "kucukHedef": [],
   "tasan": 0,
