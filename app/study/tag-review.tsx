@@ -4,7 +4,7 @@ import {LoaderCircle,Check,AlertCircle} from '@/components/icons';
 import {toast} from 'sonner';
 import {DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
 import {subjects,examTypes,mistakeTypes,type Question} from '@/lib/study';
-import {describeQuestion,readClassification,difficulties,difficultyLabel,UNKNOWN_TOPIC} from '@/lib/classify';
+import {describeQuestion,readClassification,difficulties,difficultyLabel,hasTopic,UNKNOWN_TOPIC} from '@/lib/classify';
 import {useStudy,Choice,TopicSelect,postJson,mistakeLabel} from './shared';
 // Etiket ekranı: her soru için küçük resim, "Konu · Alt konu" ve "Ders · Sınav · Zorluk"; düşük güvenli olanlar "emin olamadık" kartıdır.
 export type Item={id:string;file:File;preview:string;status:'bekliyor'|'yükleniyor'|'tanınıyor'|'hazır'|'kontrol'|'hata';message?:string;question?:Question};
@@ -17,8 +17,8 @@ export function TagReview({items,busy,ai,hinted,onPatch,onRetry,onFinish}:{items
  const total=items.length,done=items.filter(i=>!working(i.status)).length,saved=items.filter(i=>i.question).length,failed=items.filter(i=>i.status==='hata'&&!i.question).length;
  function edit(it:Item){if(!it.question)return;setDraft(draftOf(it.question));setEditing(it.id)}
  async function save(it:Item){
-  if(!draft||!it.question)return;setSaving(true);
-  try{const body:Record<string,unknown>={subject:draft.subject,examType:draft.examType,subtopic:draft.subtopic,difficulty:draft.difficulty,mistakeType:draft.mistakeType,confirm:true};if(draft.topic)body.topic=draft.topic;
+  if(!draft||!it.question||!hasTopic(draft.topic))return;setSaving(true);
+  try{const body:Record<string,unknown>={subject:draft.subject,examType:draft.examType,subtopic:draft.subtopic,difficulty:draft.difficulty,mistakeType:draft.mistakeType,confirm:true,topic:draft.topic};
    const d=await postJson(`/api/questions/${it.question.id}`,body,'PATCH');onPatch(it.id,{question:d.question,status:'hazır',message:''});s.upsert(d.question);setEditing(null)}
   catch(e){toast.error((e as Error).message)}finally{setSaving(false)}}
  return <div className="tag-review">
@@ -35,7 +35,8 @@ export function TagReview({items,busy,ai,hinted,onPatch,onRetry,onFinish}:{items
     </div>
     <fieldset className="tag-fieldset"><legend>Zorluk</legend><div className="tag-seg three">{difficulties.map(x=><button type="button" key={x} aria-pressed={draft.difficulty===x} className={draft.difficulty===x?'on':''} onClick={()=>setDraft({...draft,difficulty:draft.difficulty===x?'':x})}>{difficultyLabel[x]}</button>)}</div></fieldset>
     <fieldset className="tag-fieldset"><legend>Ne oldu?</legend><div className="tag-seg three">{mistakeTypes.map(m=><button type="button" key={m} aria-pressed={draft.mistakeType===m} className={draft.mistakeType===m?'on':''} onClick={()=>setDraft({...draft,mistakeType:m})}>{m==='emin değildim'?'Emin değildim':m==='boş'?'Boş':'Yanlış'}</button>)}</div><small className="tag-help">{mistakeLabel[draft.mistakeType]}</small></fieldset>
-    <div className="tag-edit-actions"><button type="button" className="primary" disabled={saving} onClick={()=>void save(it)}>{saving?<LoaderCircle className="spin" size={16}/>:<Check size={16}/>} Kaydet</button><button type="button" className="secondary" disabled={saving} onClick={()=>setEditing(null)}>Vazgeç</button></div></li>;
+    {!hasTopic(draft.topic)&&<p className="tag-why" role="status">Konu seç; konu belirlenmeden etiket doğrulanmış sayılmaz.</p>}
+    <div className="tag-edit-actions"><button type="button" className="primary" disabled={saving||!hasTopic(draft.topic)} onClick={()=>void save(it)}>{saving?<LoaderCircle className="spin" size={16}/>:<Check size={16}/>} Kaydet</button><button type="button" className="secondary" disabled={saving} onClick={()=>setEditing(null)}>Vazgeç</button></div></li>;
    const review=it.status==='kontrol';
    return <li key={it.id} className={'tag-card'+(review?' review':'')+(it.status==='hata'?' error':'')} aria-busy={working(it.status)}>
     <div className="tag-row"><Thumb it={it} n={idx+1}/>

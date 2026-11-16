@@ -3,13 +3,14 @@
 // Önek yoksa içerik ESKİ düz metin/markdown nottur ve eskisi gibi gösterilir (geriye uyum).
 import {z} from 'zod';
 export const NOTE_PREFIX='ndnote1:';
-const s=(max:number)=>z.string().trim().min(1).max(max);
-const cap=(n:number)=>(v:unknown)=>Array.isArray(v)?v.slice(0,n):v;
-const list=<T extends z.ZodTypeAny>(item:T,max:number)=>z.preprocess(cap(max),z.array(item).min(1));
+// Uzunluk aşımı reddedilmez, kırpılır; boş metin geçersizdir.
+const s=(max:number)=>z.string().trim().min(1).transform(v=>v.slice(0,max).trim());
+// Liste: öğeler tek tek doğrulanır, yalnız bozuk öğe düşer; sınır geçerli öğelere uygulanır; hiç geçerli yoksa liste yok.
+const list=<T extends z.ZodTypeAny>(item:T,max:number)=>z.preprocess(v=>{if(!Array.isArray(v))return v;const ok:unknown[]=[];for(const x of v){const r=item.safeParse(x);if(r.success)ok.push(r.data);if(ok.length>=max)break}return ok},z.array(z.any()).min(1)) as unknown as z.ZodType<z.output<T>[],z.ZodTypeDef,unknown>;
 const layer=z.object({label:s(80),text:s(200)});
 const step=z.object({title:s(80),body:s(240)});
 const pattern=z.object({q:s(140),a:s(200)});
-const item=z.object({label:s(60),text:s(160).optional().catch(undefined),points:z.preprocess(cap(5),z.array(s(120)).min(1)).optional().catch(undefined)});
+const item=z.object({label:s(60),text:s(160).optional().catch(undefined),points:list(s(120),5).optional().catch(undefined)});
 const diagram=z.object({type:z.enum(['flow','compare','cycle']),title:s(80).optional().catch(undefined),items:z.array(item).min(2)}).superRefine((d,ctx)=>{
  const n=d.items.length;const bad=d.type==='flow'?n>7:d.type==='cycle'?n<3||n>6:n>3;
  if(bad)ctx.addIssue({code:'custom',message:'Öğe sayısı bu diyagram türü için uygun değil'})});
@@ -34,8 +35,11 @@ export function parseNoteContent(content:string):ParsedContent{
 }
 // Yapay zekâ yanıtı (JSON metin, kod çitli olabilir) → doğrulanmış not ya da null.
 export function parseModelNote(raw:string):VisualNote|null{
- try{const r=noteSchema.safeParse(JSON.parse(raw.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,'').trim()));return r.success?r.data:null}catch{return null}
+ const a=raw.indexOf('{'),b=raw.lastIndexOf('}');if(a<0||b<a)return null;
+ try{const r=noteSchema.safeParse(JSON.parse(raw.slice(a,b+1)));return r.success?r.data:null}catch{return null}
 }
+// Modele söylenen kısa uzunluk sınırları (şema fazlasını kırpar; model yine de kısa yazsın).
+export const noteLimitsPrompt=()=>'Uzunluk sınırları (karakter): title 120, oneLiner 240, layers.label 80 ve text 200, rule.formula 200 ve plain 260, steps.title 80 ve body 240, mistakes öğesi 200, patterns.q 140 ve a 200, memory 240, diagram.title 80, öğe label 60, text 160, points öğesi 120. Boş öğe yazma.';
 export function noteToText(n:VisualNote){
  const out=[n.title,n.oneLiner];
  if(n.layers)out.push('',...n.layers.map(l=>`${l.label}: ${l.text}`));

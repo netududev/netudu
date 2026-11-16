@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+const R=process.env.ND_ROOT+'/lib/';
+const S=await import(R+'study.ts');
+let n=0;const t=(name,f)=>Promise.resolve().then(f).then(()=>{n++;console.log('ok  ',name)},e=>{console.log('FAIL',name,'\n',e.stack?.split('\n').slice(0,4).join('\n'));process.exitCode=1});
+const q=(id,subject,topic,needs,over={})=>({id,exam:'x',exam_type:'TYT',date:'2026-11-05',subject,topic,question:'',my_answer:'',answer_key:'',analysis:needs===null?null:{classification:{subtopic:'',difficulty:'',confidence:0,needsReview:needs,source:'none'}},reviewed:0,created_at:'',mistake_type:'yanlış',review_stage:0,next_review:null,review_log:[],...over});
+const rows=[q('1','Matematik','Türev',false),q('2','Matematik','Türev',null),q('3','Matematik','Konu belirlenmedi',true),q('4','Matematik','Konu belirlenmedi',true),q('5','Fizik','Konu belirlenmedi',false),q('6','Matematik','Konu belirlenmedi',true,{date:'2026-10-05'})];
+await t('isUnrecognized: yalnız needsReview + Konu belirlenmedi',()=>{assert.equal(S.isUnrecognized(rows[2]),true);assert.equal(S.isUnrecognized(rows[4]),false);assert.equal(S.isUnrecognized(rows[0]),false);assert.equal(S.isUnrecognized(rows[1]),false)});
+await t('monthlyTopics: tanınmayan sorular ilk derse sayılmaz; bilinçli "konu belirlenmedi" (kontrol yok) kalır',()=>{const m=S.monthlyTopics(rows,'2026-11');assert.equal(m.find(x=>x.subject==='Matematik'&&x.topic==='Konu belirlenmedi'),undefined);assert.equal(m.find(x=>x.topic==='Türev').count,2);assert.equal(m.find(x=>x.subject==='Fizik').count,1)});
+await t('unrecognizedCount: ay içindeki tanınmamış sayısı',()=>{assert.equal(S.unrecognizedCount(rows,'2026-11'),2);assert.equal(S.unrecognizedCount(rows,'2026-10'),1);assert.equal(S.unrecognizedCount(rows,'2026-09'),0)});
+await t('hasSolution: yalnız adımları olan analysis çözüm sayılır (classification tek başına değil)',()=>{assert.equal(S.hasSolution(null),false);assert.equal(S.hasSolution({classification:{}}),false);assert.equal(S.hasSolution({readable:false,steps:[]}),true);assert.equal(S.hasSolution({readable:true,steps:['a']}),true);assert.equal(S.hasSolution({readable:false,steps:['a'],pitfall:'bulanık'}),true)});
+console.log(n+' test geçti');

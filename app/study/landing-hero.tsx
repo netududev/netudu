@@ -13,11 +13,11 @@ export function HeroVisual(){
   <div className="lp-float lp-recog">
    <div className="lp-recog-top"><span>SORU TANINDI</span><span className="lp-tick"><Check size={14} strokeWidth={2.4}/></span></div>
    <div className="lp-recog-main"><b>Türev</b><span>Matematik · Zincir kuralı</span></div>
-   <div className="lp-pills"><span className="champ">AYT</span><span>Orta zorluk</span><span className="brand">Tekrar: 3 gün sonra</span></div>
+   <div className="lp-pills"><span className="champ">AYT</span><span>Orta zorluk</span><span className="brand">Tekrar: yarın</span></div>
   </div>
   <div className="lp-float lp-cal">
    <span>TEKRAR TAKVİMİ</span>
-   <ol aria-label="Tekrar günleri">{[1,3,7,14,30,60].map(d=><li key={d} className={d===3?'on':''}>{d}</li>)}</ol>
+   <ol aria-label="Tekrar günleri">{[1,3,7,14,30,60].map(d=><li key={d} className={d===1?'on':''}>{d}</li>)}</ol>
    <small>gün sonra, sırayla</small>
   </div>
   <div className="lp-float lp-noentry">

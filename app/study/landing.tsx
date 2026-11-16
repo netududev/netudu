@@ -24,7 +24,7 @@ export function useScrollFx(root:RefObject<HTMLElement|null>){
   const el=root.current;if(!el)return;
   const calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const nav=el.querySelector('.lp-nav');let raf=0;
-  const tick=()=>{raf=0;const y=scrollY;nav?.toggleAttribute('data-scrolled',y>8);if(calm)return;const max=document.documentElement.scrollHeight-innerHeight;el.style.setProperty('--sy',String(Math.min(y,900)));el.style.setProperty('--sp',String(max>0?y/max:0))};
+  const tick=()=>{raf=0;const y=scrollY;nav?.toggleAttribute('data-scrolled',y>8);if(calm)return;const max=document.documentElement.scrollHeight-innerHeight;el.style.setProperty('--sp',String(max>0?y/max:0))};
   const onScroll=()=>{if(!raf)raf=requestAnimationFrame(tick)};
   addEventListener('scroll',onScroll,{passive:true});tick();
   const links=[...el.querySelectorAll<HTMLAnchorElement>('.lp-nav nav a')];

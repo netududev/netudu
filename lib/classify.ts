@@ -35,6 +35,22 @@ export const initialClassification=(reason:string):Classification=>({subtopic:''
 export function manualClassification(prev:Classification|null,edit:{subtopic?:string;difficulty?:string}):Classification{
  return {subtopic:edit.subtopic!==undefined?text(edit.subtopic,80):prev?.subtopic||'',difficulty:edit.difficulty!==undefined?parseDifficulty(edit.difficulty):prev?.difficulty||'',confidence:1,needsReview:false,source:'manual'};
 }
+// Konu gerçekten seçilmiş mi? ("Konu belirlenmedi" ve boş değil)
+export const hasTopic=(t:string)=>!!t&&t!==UNKNOWN_TOPIC;
+// Ders değişince eski dersin konusu yeni dersin altında kalmasın.
+export const carryTopic=(prevSubject:string,prevTopic:string,subject:string)=>subject===prevSubject?prevTopic:UNKNOWN_TOPIC;
+// Öğrenci düzenlemesinden sonraki etiket: konu belirsizse "elle doğrulandı" denmez, kontrol bayrağı kalır.
+export function editedClassification(prev:Classification|null,edit:{subtopic?:string;difficulty?:string},topic:string):Classification{
+ const base=manualClassification(prev,edit);
+ if(hasTopic(topic))return base;
+ return {...base,confidence:prev?.confidence||0,needsReview:true,source:prev?.source==='ai'?'ai':'none',reason:'Konu seçilmedi'};
+}
+// Çözüm okunabilir sonuç verip ders/konu yazdıysa (elle olmayan etiket) kontrol bayrağı kalkar; ders değiştiyse alt konu boşalır.
+export function solvedClassification(c:Classification|null,r:{prevSubject:string;subject:string;topic:string}):Classification|null{
+ if(!c||c.source==='manual'||!hasTopic(r.topic))return c;
+ const {reason,...rest}=c;void reason;
+ return {...rest,needsReview:false,subtopic:r.subject===r.prevSubject?c.subtopic:''};
+}
 export function readClassification(analysis:unknown):Classification|null{
  const c=isObject(analysis)?analysis.classification:null;
  if(!isObject(c)||typeof c.needsReview!=='boolean'||!['ai','manual','none'].includes(c.source as string))return null;

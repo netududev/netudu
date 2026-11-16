@@ -19,10 +19,13 @@ export function UploadDialog({open,files,preset,onClose}:{open:boolean;files:Fil
  const fileInput=useRef<HTMLInputElement>(null),cameraInput=useRef<HTMLInputElement>(null);
  const [items,setItems]=useState<Item[]>([]),[step,setStep]=useState<'pick'|'tag'>('pick'),[busy,setBusy]=useState(false);
  const hinted=!!(preset?.subject&&preset?.topic);
- useEffect(()=>{if(open){setItems([]);setStep('pick');setBusy(false);addFiles(files)}
+ useEffect(()=>{if(open){finished.current=false;setItems([]);setStep('pick');setBusy(false);addFiles(files)}
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[open]);
  useEffect(()=>{if(!open)setItems(cur=>{cur.forEach(i=>{if(i.preview)URL.revokeObjectURL(i.preview)});return []})},[open]);
+ const live=useRef<Item[]>([]);live.current=items;
+ useEffect(()=>()=>{live.current.forEach(i=>{if(i.preview)URL.revokeObjectURL(i.preview)})},[]);
+ const finished=useRef(false);
  function addFiles(list:File[]){
   const ok=list.filter(f=>{if(!validImage(f)){toast.error(`${f.name||'Dosya'}: JPG, PNG veya WEBP olmalı.`);return false}return true});
   if(!ok.length)return;
@@ -34,7 +37,7 @@ export function UploadDialog({open,files,preset,onClose}:{open:boolean;files:Fil
    if(!q){
     patch(it.id,{status:'yükleniyor',message:''});
     const data=new FormData();data.set('id',it.id);
-    if(hinted){data.set('subject',preset!.subject!);data.set('topic',preset!.topic!);if(preset?.examType)data.set('examType',preset.examType);if(preset?.exam)data.set('exam',preset.exam)}
+    if(preset?.subject){data.set('subject',preset.subject);if(preset.topic)data.set('topic',preset.topic);if(preset?.examType)data.set('examType',preset.examType);if(preset?.exam)data.set('exam',preset.exam)}
     const img=await compressImage(it.file);if(img.size>maxUploadBytes)throw new Error('Fotoğraf küçültülemedi; 8 MB altında bir fotoğraf dene.');
     data.set('image',img);
     const d=await api('/api/questions',{method:'POST',body:data});q=d.question;s.upsert(q);patch(it.id,{question:q})}
@@ -49,12 +52,13 @@ export function UploadDialog({open,files,preset,onClose}:{open:boolean;files:Fil
   await pool(items,POOL,run);setBusy(false)}
  async function retry(it:Item){setBusy(true);await run(it);setBusy(false)}
  function finish(){
+  if(finished.current)return;finished.current=true;
   const queue=items.map(i=>i.question).filter((q):q is Question=>!!q&&!q.analysis?.readable);
   const saved=items.filter(i=>i.question).length;
   if(saved)toast.success(saved===1?'Yanlış defterine eklendi.':`${saved} soru yanlış defterine eklendi.`);
   if(ai&&queue.length)void (async()=>{for(const q of queue)await s.solve(q)})();
   onClose()}
- return <Dialog open={open} onOpenChange={v=>{if(!busy&&!v)onClose()}}><DialogContent className="upload-dialog cap-dialog">
+ return <Dialog open={open} onOpenChange={v=>{if(!busy&&!v){if(step==='tag')finish();else onClose()}}}><DialogContent className="upload-dialog cap-dialog">
   {step==='pick'?<>
    <DialogHeader><DialogTitle>Soruyu göster, gerisi bizde.</DialogTitle><DialogDescription>Ders ve konu yazmana gerek yok. Yapay zekâ her soruyu tanır, sen yalnız yanlışsa düzeltirsin.</DialogDescription></DialogHeader>
    <input ref={fileInput} type="file" multiple accept="image/jpeg,image/png,image/webp" className="sr-only" aria-label="Galeriden soru fotoğrafları seç" tabIndex={-1} onChange={e=>{addFiles([...(e.target.files||[])]);e.target.value=''}}/>

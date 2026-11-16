@@ -25,5 +25,5 @@ export type CreateInput=z.infer<typeof createSchema>;
 export function resolveCreate(p:CreateInput,ctx:{grade?:string|null;today:string}){
  const named=!!p.subject;const subject=p.subject||subjects[0];
  const topic=named&&p.topic?normalizeTopic(subject,p.topic):UNKNOWN_TOPIC;
- return {id:p.id,exam:p.exam||DEFAULT_EXAM,examType:p.examType||examTypeForGrade(ctx.grade),date:p.date||ctx.today,subject,topic,question:p.question,myAnswer:p.myAnswer,answerKey:p.answerKey,mistakeType:p.mistakeType||'yanlış',needsReview:!named}
+ return {id:p.id,exam:p.exam||DEFAULT_EXAM,examType:p.examType||examTypeForGrade(ctx.grade),date:p.date||ctx.today,subject,topic,question:p.question,myAnswer:p.myAnswer,answerKey:p.answerKey,mistakeType:p.mistakeType||'yanlış',needsReview:!named||topic===UNKNOWN_TOPIC}
 }
