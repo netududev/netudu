@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+const R=new URL('../lib/',import.meta.url).href;
+const D=await import(R+'question-defaults.ts');const S=await import(R+'study.ts');
+let n=0;const t=(name,f)=>Promise.resolve().then(f).then(()=>{n++;console.log('ok  ',name)},e=>{console.log('FAIL',name,'\n',e.stack?.split('\n').slice(0,4).join('\n'));process.exitCode=1});
+const id='3f2b8a40-6c1e-4d2b-9a77-0123456789ab';const TODAY='2026-11-16';
+const parse=o=>D.createSchema.safeParse(o);
+const resolve=(o,grade)=>D.resolveCreate(parse(o).data,{grade,today:TODAY});
+await t('yalnız id ile geçerli: deneme adı, tarih, ders, sınav artık zorunlu değil',()=>{assert.ok(parse({id}).success);assert.ok(parse({id,exam:'',date:'',subject:'',examType:'',topic:'',mistakeType:''}).success,'boş form alanları yok sayılır')});
+await t('varsayılanlar: tarih=bugün, sınav adı=Yanlış defteri, sınav=profil sınıfı, hata türü=yanlış',()=>{const r=resolve({id},'11');assert.equal(r.date,TODAY);assert.equal(r.exam,'Yanlış defteri');assert.equal(r.examType,'11. Sınıf');assert.equal(r.mistakeType,'yanlış');assert.equal(D.DEFAULT_EXAM,'Yanlış defteri')});
+await t('sınav türü: Mezun/profilsiz -> TYT; 12 -> 12. Sınıf; geçersiz not -> TYT',()=>{assert.equal(D.examTypeForGrade('Mezun'),'TYT');assert.equal(D.examTypeForGrade(undefined),'TYT');assert.equal(D.examTypeForGrade(null),'TYT');assert.equal(D.examTypeForGrade('12'),'12. Sınıf');assert.equal(D.examTypeForGrade('9'),'9. Sınıf');assert.equal(D.examTypeForGrade('13'),'TYT');assert.ok(S.examTypes.includes(D.examTypeForGrade('10')))});
+await t('ders verilmediyse: ilk ders + konu belirlenmedi + kontrol gerekir (veritabanı enum\'u bozulmaz)',()=>{const r=resolve({id},'12');assert.ok(S.subjects.includes(r.subject));assert.equal(r.subject,S.subjects[0]);assert.equal(r.topic,'Konu belirlenmedi');assert.equal(r.needsReview,true)});
+await t('ders ve konu verildiyse (program ön ayarı): olduğu gibi, kontrol gerekmez, konu normalleşir',()=>{const r=resolve({id,subject:'Fizik',topic:'elektrik'},'12');assert.equal(r.subject,'Fizik');assert.equal(r.needsReview,false);assert.notEqual(r.topic,'Konu belirlenmedi');assert.equal(resolve({id,subject:'Fizik'},'12').topic,'Konu belirlenmedi')});
+await t('açık değerler korunur: deneme adı, sınav, geçerli tarih',()=>{const r=resolve({id,exam:'  TYT 3  ',examType:'AYT',date:'2026-10-01'},'12');assert.equal(r.exam,'TYT 3');assert.equal(r.examType,'AYT');assert.equal(r.date,'2026-10-01')});
+await t('geçersiz değerler reddedilir: tarih biçimi, olmayan gün, ders, sınav, id, uzun ad',()=>{for(const bad of [{id,date:'2026-13-40'},{id,date:'bugün'},{id,date:'2026-02-30'},{id,subject:'Astroloji'},{id,examType:'LGS'},{id:'abc'},{id,exam:'x'.repeat(121)},{id,mistakeType:'belki'}])assert.equal(parse(bad).success,false,JSON.stringify(bad))});
+await t('metin alanları varsayılan boş; fotoğrafsız ve metinsiz kayıt kontrolü için question alanı sunulur',()=>{const r=resolve({id},'12');assert.equal(r.question,'');assert.equal(r.myAnswer,'');assert.equal(r.answerKey,'')});
+await t('ders var ama konu çözülemedi (program ön ayarı): ders korunur, konu belirlenmedi ve kontrol gerekir',()=>{const r=resolve({id,subject:'Fizik',exam:'Deneme 4'},'12');assert.equal(r.subject,'Fizik');assert.equal(r.exam,'Deneme 4');assert.equal(r.topic,'Konu belirlenmedi');assert.equal(r.needsReview,true)});
+console.log(n+' test geçti');
