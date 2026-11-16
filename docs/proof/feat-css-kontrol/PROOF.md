@@ -51,16 +51,15 @@ screens.mjs, aynı sahte sunucuya karşı (`NODE_PATH=/opt/npm-tools/node_module
 
 ## Orkestratör doğrulaması
 
-- `npm test` worktree'de yeniden koşuldu: 17/17 geçti, çıkış 0.
-- `git diff --stat`: yalnız package.json (+1); app/, components/, globals.css, next.config.ts değişmedi.
-- Canlı adres bu ortamdan (proxy 403) denetlenemedi; birleştirme sonrası kullanıcı `node scripts/check-css.mjs https://netudu-kohl.vercel.app` koşacak.
-
+- Tur 2 sonrası `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` worktree'de yeniden koşuldu: 25/25 geçti, çıkış 0.
+- Mevcut dosyalardan yalnız package.json değişti; app/, components/, globals.css, next.config.ts değişmedi.
+- Canlı adres bu ortamdan (proxy 403) denetlenemedi; birleştirmeden sonra kullanıcı `node scripts/check-css.mjs https://netudu-kohl.vercel.app` koşacak.
 
 ## Kapsam dışı / bilinen eksikler
 - Ekran içi sekme tıklaması yok (PR 2).
 - CI iş akışı (`.github/workflows`) eklenmedi; yetki yok. Kullanım yorumu `scripts/check-css.mjs` başında.
 - Canlı adres bu ortamdan erişilemedi.
-- `tests/hook.mjs` zod'u önce normal çözer, bulamazsa `/opt/npm-tools/node_modules/zod`'a düşer (bu ortamda `node_modules` yok); `ND_ROOT` kullanılmıyor, testler `import.meta.url` ile repo köküne bağlanır.
+- `tests/hook.mjs` zod'u önce normal çözer, bulamazsa `ND_ZOD_PATH` (zod/index.js yolu) ya da `NODE_PATH` altından dener, yoksa açık hata verir (sabit yol kaldırıldı; bu ortamda `node_modules` yok, `npm test` `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js` ile koşuldu); `ND_ROOT` kullanılmıyor, testler `import.meta.url` ile repo köküne bağlanır.
 - docs/proof altındaki eski kopyalar silinmedi.
 
 ## Yeniden üretme

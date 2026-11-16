@@ -16,7 +16,7 @@ export const REQUIRED=['lp-sheet','tag-card','nv-flow'];
 export const FORBIDDEN=['--glow-a','ndDrift'];
 
 export function analyzeCss(cssText,{required=REQUIRED,forbidden=FORBIDDEN}={}){
-  const missing=required.filter(s=>!cssText.includes(s));
+  const missing=required.filter(s=>!cssText.includes('.'+s));
   const forbiddenFound=forbidden.filter(s=>cssText.includes(s));
   return {ok:missing.length===0&&forbiddenFound.length===0,missing,forbiddenFound};
 }
@@ -24,9 +24,11 @@ export function analyzeCss(cssText,{required=REQUIRED,forbidden=FORBIDDEN}={}){
 export function extractStylesheetHrefs(html,baseUrl){
   const hrefs=[];
   for(const [tag] of html.matchAll(/<link\b[^>]*>/gi)){
-    if(!/\brel\s*=\s*["']?stylesheet\b/i.test(tag))continue;
+    const rm=tag.match(/\brel\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+    const rel=(rm&&(rm[1]??rm[2]??rm[3])||'').toLowerCase().split(/\s+/);
+    if(!rel.includes('stylesheet')||rel.includes('alternate'))continue;
     const m=tag.match(/\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
-    const href=m&&(m[1]??m[2]??m[3]);
+    const href=m&&(m[1]??m[2]??m[3])?.replaceAll('&amp;','&');
     if(!href)continue;
     const abs=new URL(href,baseUrl).href;
     if(!hrefs.includes(abs))hrefs.push(abs);
@@ -35,7 +37,7 @@ export function extractStylesheetHrefs(html,baseUrl){
 }
 
 async function fetchText(url){
-  const res=await fetch(url);
+  const res=await fetch(url,{signal:AbortSignal.timeout(15000)});
   if(!res.ok)throw new Error(`${url} -> HTTP ${res.status}`);
   return res.text();
 }

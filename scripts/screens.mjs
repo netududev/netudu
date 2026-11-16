@@ -21,12 +21,25 @@ export function slugFromPath(path){
   const clean=path.split(/[?#]/)[0].replace(/^\/+|\/+$/g,'');
   return clean?clean.replace(/\/+/g,'-'):'ana';
 }
-export const outputName=(path,width,theme)=>`${slugFromPath(path)}-${width}-${theme}.png`;
+// Aynı slug'a düşen yollar (örn. "/" ve "/ana") benzersizleşir: ana, ana-2, ...
+export function uniqueSlugs(paths){
+  const seen=new Map();
+  return paths.map(p=>{
+    const base=slugFromPath(p);
+    const n=(seen.get(base)||0)+1;
+    seen.set(base,n);
+    return n===1?base:`${base}-${n}`;
+  });
+}
+export const outputName=(path,width,theme,slug=slugFromPath(path))=>`${slug}-${width}-${theme}.png`;
 
 export function parseArgs(argv){
   const pos=[];let cookie;let paths=['/'];
   for(let i=0;i<argv.length;i++){
-    if(argv[i]==='--cookie')cookie=argv[++i];
+    if(argv[i]==='--cookie'){
+      cookie=argv[++i];
+      if(!cookie||!cookie.includes('='))throw Object.assign(new Error('--cookie değeri "ad=değer" biçiminde olmalı'),{exitCode:2});
+    }
     else if(argv[i]==='--paths')paths=(argv[++i]||'').split(',').map(s=>s.trim()).filter(Boolean);
     else pos.push(argv[i]);
   }
@@ -43,6 +56,7 @@ function loadPlaywright(){
 
 async function main(argv){
   const {base,outDir,cookie,paths}=parseArgs(argv);
+  const slugs=uniqueSlugs(paths);
   const {chromium}=loadPlaywright();
   mkdirSync(outDir,{recursive:true});
   const browser=await chromium.launch();
@@ -55,9 +69,9 @@ async function main(argv){
         await ctx.addCookies([{name:cookie.slice(0,i),value:cookie.slice(i+1),url:base}]);
       }
       const page=await ctx.newPage();
-      for(const path of paths){
+      for(const [pi,path] of paths.entries()){
         await page.goto(new URL(path,base).href,{waitUntil:'networkidle'});
-        const file=join(outDir,outputName(path,viewport.width,theme));
+        const file=join(outDir,outputName(path,viewport.width,theme,slugs[pi]));
         await page.screenshot({path:file});
         console.log(file);
       }
@@ -67,5 +81,5 @@ async function main(argv){
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  main(process.argv.slice(2)).catch(e=>{console.error('HATA: '+e.message);process.exitCode=1});
+  main(process.argv.slice(2)).catch(e=>{console.error('HATA: '+e.message);process.exitCode=e.exitCode||1});
 }

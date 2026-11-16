@@ -28,3 +28,15 @@ test('extractStylesheetHrefs: tekrarları eler, href yoksa atlar',()=>{
   const html='<link rel="stylesheet" href="/a.css"><link rel="stylesheet" href="/a.css"><link rel="stylesheet">';
   assert.deepEqual(extractStylesheetHrefs(html,'https://ex.com/'),['https://ex.com/a.css']);
 });
+test('extractStylesheetHrefs: href içindeki &amp; çözülür',()=>{
+  const html='<link rel="stylesheet" href="/a.css?x=1&amp;y=2">';
+  assert.deepEqual(extractStylesheetHrefs(html,'https://ex.com/'),['https://ex.com/a.css?x=1&y=2']);
+});
+test('extractStylesheetHrefs: rel bölünür; preload stylesheet alınır, alternate stylesheet atlanır',()=>{
+  const html='<link rel="preload stylesheet" href="/p.css"><link rel="alternate stylesheet" href="/alt.css"><link rel="stylesheet alternate" href="/alt2.css">';
+  assert.deepEqual(extractStylesheetHrefs(html,'https://ex.com/'),['https://ex.com/p.css']);
+});
+test('analyzeCss: işaret sınıf adı .önekli aranır (yorum/değer içindeki ad sayılmaz)',()=>{
+  const r=analyzeCss('a{content:"lp-sheet tag-card nv-flow"}',opts);
+  assert.equal(r.ok,false);assert.deepEqual(r.missing,['lp-sheet','tag-card','nv-flow']);
+});
