@@ -1,34 +1,73 @@
 "use client";
 import {useEffect,useRef,useState} from 'react';
-import {Plus,ImagePlus,X,LoaderCircle,Check,AlertCircle,Images,Camera} from '@/components/icons';
+import {Camera,Images,X,Sparkles} from '@/components/icons';
 import {toast} from 'sonner';
 import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription} from '@/components/ui/dialog';
-import {subjects,examTypes,today,mistakeTypes,type Question} from '@/lib/study';
 import {compressImage,validImage,maxUploadBytes} from '@/lib/image';
-import {useStudy,Choice,TopicSelect,api,mistakeLabel,readSetting,writeSetting,QuotaNote,type UploadPreset} from './shared';
-type Item={id:string;file:File;preview:string;status:'bekliyor'|'yükleniyor'|'kaydedildi'|'çözülüyor'|'hazır'|'hata';message?:string;question?:Question};
+import {readClassification} from '@/lib/classify';
+import type {Question} from '@/lib/study';
+import {useStudy,api,QuotaNote,type UploadPreset} from './shared';
+import {TagReview,type Item} from './tag-review';
+// Yanlış ekle: 1) fotoğraf çek / galeriden seç, 2) yapay zekâ her soruyu tanır, öğrenci yalnız yanlışsa düzeltir.
+// Deneme adı, tarih, sınav, ders, konu, soru metni ve cevap alanları yoktur; sunucu varsayılanlar ve /classify ile doldurur.
+export const MAX_PER_BATCH=30;
+const POOL=2;
 const fmt=(b:number)=>b>1024*1024?(b/1024/1024).toFixed(1)+' MB':Math.round(b/1024)+' KB';
-export function UploadDialog({open,files,preset,onClose}:{open:boolean;files:File[];preset?:UploadPreset|null;onClose:()=>void}){const s=useStudy();const {ai}=s;const fileInput=useRef<HTMLInputElement>(null);const cameraInput=useRef<HTMLInputElement>(null);
- const [items,setItems]=useState<Item[]>([]),[busy,setBusy]=useState(false),[done,setDone]=useState(false);
- const [form,setForm]=useState(()=>({exam:readSetting('lastExam',''),examType:readSetting('lastExamType',!s.profile||s.profile.grade==='Mezun'?'TYT':s.profile.grade+'. Sınıf'),date:today(),subject:'Matematik',topic:'',question:'',myAnswer:'',answerKey:'',mistakeType:'yanlış' as string}));
- useEffect(()=>{if(open){setItems([]);setDone(false);setBusy(false);addFiles(files);setForm(f=>({...f,question:preset?.question||'',topic:preset?.topic||'',myAnswer:'',answerKey:'',date:today(),...(preset?.subject?{subject:preset.subject}:{}),...(preset?.examType?{examType:preset.examType}:{}),...(preset?.exam?{exam:preset.exam}:{})}))}
+async function pool<T>(list:T[],n:number,fn:(x:T)=>Promise<void>){let i=0;await Promise.all(Array.from({length:Math.min(n,list.length)},async()=>{while(i<list.length){const x=list[i++];await fn(x)}}))}
+export function UploadDialog({open,files,preset,onClose}:{open:boolean;files:File[];preset?:UploadPreset|null;onClose:()=>void}){
+ const s=useStudy();const {ai}=s;
+ const fileInput=useRef<HTMLInputElement>(null),cameraInput=useRef<HTMLInputElement>(null);
+ const [items,setItems]=useState<Item[]>([]),[step,setStep]=useState<'pick'|'tag'>('pick'),[busy,setBusy]=useState(false);
+ const hinted=!!(preset?.subject&&preset?.topic);
+ useEffect(()=>{if(open){setItems([]);setStep('pick');setBusy(false);addFiles(files)}
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[open]);
  useEffect(()=>{if(!open)setItems(cur=>{cur.forEach(i=>{if(i.preview)URL.revokeObjectURL(i.preview)});return []})},[open]);
- function addFiles(list:File[]){const ok=list.filter(f=>{if(!validImage(f)){toast.error(`${f.name}: JPG, PNG veya WEBP olmalı (en fazla ${fmt(maxUploadBytes*3)}).`);return false}return true});if(!ok.length)return;setItems(cur=>[...cur,...ok.map(file=>({id:crypto.randomUUID(),file,preview:URL.createObjectURL(file),status:'bekliyor' as const}))])}
- const single=items.length<=1;
- async function submit(e:React.FormEvent){e.preventDefault();if(busy)return;if(!items.length&&!form.question.trim()){toast.error('Soru fotoğrafı ekle ya da soru metnini yaz.');return}setBusy(true);writeSetting('lastExam',form.exam);writeSetting('lastExamType',form.examType);
-  const queue:Item[]=items.length?items:[{id:crypto.randomUUID(),file:null as unknown as File,preview:'',status:'bekliyor'}];let okCount=0;const saved:Question[]=[];
-  for(const it of queue){setItems(cur=>cur.map(x=>x.id===it.id?{...x,status:'yükleniyor'}:x));try{const data=new FormData();data.set('id',it.id);data.set('exam',form.exam);data.set('examType',form.examType);data.set('date',form.date);data.set('subject',form.subject);data.set('mistakeType',form.mistakeType);if(single){data.set('topic',form.topic);data.set('question',form.question);data.set('myAnswer',form.myAnswer);data.set('answerKey',form.answerKey)}if(it.file){const before=it.file.size;const img=await compressImage(it.file);if(img.size>maxUploadBytes)throw new Error('Fotoğraf küçültülemedi; 8 MB altında bir fotoğraf dene.');data.set('image',img);if(img.size<before)setItems(cur=>cur.map(x=>x.id===it.id?{...x,message:`${fmt(before)} → ${fmt(img.size)}`}:x))}const d=await api('/api/questions',{method:'POST',body:data});s.upsert(d.question);saved.push(d.question);okCount++;setItems(cur=>cur.map(x=>x.id===it.id?{...x,status:'kaydedildi',question:d.question}:x))}catch(err){setItems(cur=>cur.map(x=>x.id===it.id?{...x,status:'hata',message:(err as Error).message}:x))}}
-  setBusy(false);setDone(true);if(okCount)toast.success(okCount===1?'Yanlış defterine kaydedildi.':`${okCount} soru yanlış defterine kaydedildi.`);
-  if(ai&&saved.length){void (async()=>{for(const q of saved){setItems(cur=>cur.map(x=>x.id===q.id?{...x,status:'çözülüyor'}:x));await s.solve(q);setItems(cur=>cur.map(x=>x.id===q.id?{...x,status:'hazır'}:x))}})()}
-  if(okCount&&(okCount===1||!ai))onClose()}
- return <Dialog open={open} onOpenChange={v=>{if(!busy&&!v)onClose()}}><DialogContent className="upload-dialog"><DialogHeader><DialogTitle>{items.length>1?`${items.length} yanlış soru`:'Yeni yanlış soru'}</DialogTitle><DialogDescription>{items.length>1?'Aynı denemeden birden fazla soru. Konu, her soru için Maarif Modeli ders programından ayrı belirlenir.':'Yanlışın deneme adı ve tarihiyle defterinde saklanır. Fotoğraflar yüklenmeden önce küçültülür.'}</DialogDescription></DialogHeader>
- <form onSubmit={submit}><div className="form-grid"><label>Deneme adı<input required maxLength={120} placeholder="TYT denemesi 1" value={form.exam} onChange={e=>setForm({...form,exam:e.target.value})}/></label><label>Deneme tarihi<input type="date" required value={form.date} max={today()} onChange={e=>setForm({...form,date:e.target.value})}/></label><label>Sınav<Choice label="Sınav türü" value={form.examType} onChange={v=>setForm({...form,examType:v})} values={[...examTypes]}/></label><label>Ders {!single&&<small>otomatik düzeltilir</small>}<Choice label="Sorunun dersi" value={form.subject} onChange={v=>setForm({...form,subject:v,topic:''})} values={subjects}/></label></div>
- <label className="field-label">Ne oldu?<div className="segmented full" role="group">{mistakeTypes.map(m=><button type="button" key={m} className={form.mistakeType===m?'on':''} onClick={()=>setForm({...form,mistakeType:m})}>{mistakeLabel[m]}</button>)}</div></label>
- <input ref={fileInput} type="file" multiple accept="image/jpeg,image/png,image/webp" className="sr-only" aria-label="Soru fotoğrafları" onChange={e=>{addFiles([...(e.target.files||[])]);e.target.value=''}}/><input ref={cameraInput} type="file" accept="image/*" capture="environment" className="sr-only" aria-label="Kamerayla çek" onChange={e=>{addFiles([...(e.target.files||[])]);e.target.value=''}}/>
- {items.length?<ul className="upload-list">{items.map(it=><li key={it.id} className={it.status}><img src={it.preview} alt=""/><div><strong>{it.file?.name}</strong><small>{it.message||fmt(it.file?.size||0)}</small></div><span className="upload-state">{it.status==='bekliyor'&&!busy?<button type="button" className="icon-button" aria-label="Kaldır" onClick={()=>setItems(cur=>cur.filter(x=>x.id!==it.id))}><X size={15}/></button>:it.status==='yükleniyor'||it.status==='çözülüyor'?<><LoaderCircle className="spin" size={16}/> {it.status==='yükleniyor'?'Yükleniyor':'Çözülüyor'}</>:it.status==='hata'?<><AlertCircle size={16}/> Hata</>:<><Check size={16}/> {it.status==='hazır'?'Çözüm hazır':'Kaydedildi'}</>}</span></li>)}</ul>:null}
- {!done&&<button type="button" className="dropzone compact" onClick={()=>fileInput.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();addFiles([...e.dataTransfer.files])}}>{items.length?<Images size={22}/>:<ImagePlus size={26}/>}<strong>{items.length?'Başka fotoğraf ekle':'Fotoğraf seç ya da buraya bırak'}</strong><span>Birden fazla seçebilirsin. JPG, PNG veya WEBP</span></button>}{!done&&<button type="button" className="secondary full camera-button" onClick={()=>cameraInput.current?.click()}><Camera size={17}/> Kamerayla çek</button>}
- {single&&!done&&<><label className="field-label">Soru metni {!items.length&&'(fotoğraf yoksa gerekli)'}<textarea required={!items.length} maxLength={20000} rows={3} placeholder="Soruyu buraya yazabilirsin. Şıkları da ekle." value={form.question} onChange={e=>setForm({...form,question:e.target.value})}/></label><div className="form-grid"><label>Benim cevabım <small>isteğe bağlı</small><input maxLength={500} placeholder="B" value={form.myAnswer} onChange={e=>setForm({...form,myAnswer:e.target.value})}/></label><label>Cevap anahtarı <small>isteğe bağlı</small><input maxLength={500} placeholder="D" value={form.answerKey} onChange={e=>setForm({...form,answerKey:e.target.value})}/></label></div><label className="field-label">Konu <small>Maarif Modeli ders programından seç. Boş bırakırsan konu otomatik belirlenir</small><TopicSelect subject={form.subject} examType={form.examType} value={form.topic} onChange={v=>setForm({...form,topic:v})}/></label></>}
- {!done?<><QuotaNote kind="solve"/><p className="inline-note">{ai?'Kaydettikten sonra sorular sırayla çözülür. Cevap anahtarı yazarsan çözüm onunla doğrulanır.':'Sorular yanlış defterine kaydedilir. Çözüm hazırlama şu an kapalı.'}</p><button type="submit" className="primary full" disabled={busy}>{busy?<LoaderCircle className="spin" size={18}/>:<Plus size={18}/>} {busy?'Kaydediliyor':ai?(items.length>1?`${items.length} soruyu kaydet ve çöz`:'Kaydet ve çözümü hazırla'):(items.length>1?`${items.length} soruyu kaydet`:'Kaydet')}</button></>:<div className="actions wrap"><button type="button" className="primary full" onClick={onClose}>Kapat {items.some(i=>i.status==='çözülüyor')?'· çözümler arka planda hazırlanıyor':''}</button></div>}
- </form></DialogContent></Dialog>}
+ function addFiles(list:File[]){
+  const ok=list.filter(f=>{if(!validImage(f)){toast.error(`${f.name||'Dosya'}: JPG, PNG veya WEBP olmalı.`);return false}return true});
+  if(!ok.length)return;
+  setItems(cur=>{const room=MAX_PER_BATCH-cur.length;if(ok.length>room)toast.message(`Bir seferde en fazla ${MAX_PER_BATCH} soru eklenir.`);return [...cur,...ok.slice(0,Math.max(room,0)).map(file=>({id:crypto.randomUUID(),file,preview:URL.createObjectURL(file),status:'bekliyor' as const}))]})}
+ const patch=(id:string,p:Partial<Item>)=>setItems(cur=>cur.map(x=>x.id===id?{...x,...p}:x));
+ async function run(it:Item){
+  let q:Question|undefined=it.question;
+  try{
+   if(!q){
+    patch(it.id,{status:'yükleniyor',message:''});
+    const data=new FormData();data.set('id',it.id);
+    if(hinted){data.set('subject',preset!.subject!);data.set('topic',preset!.topic!);if(preset?.examType)data.set('examType',preset.examType);if(preset?.exam)data.set('exam',preset.exam)}
+    const img=await compressImage(it.file);if(img.size>maxUploadBytes)throw new Error('Fotoğraf küçültülemedi; 8 MB altında bir fotoğraf dene.');
+    data.set('image',img);
+    const d=await api('/api/questions',{method:'POST',body:data});q=d.question;s.upsert(q);patch(it.id,{question:q})}
+   if(!hinted&&readClassification(q.analysis)?.source==='none'){
+    patch(it.id,{status:'tanınıyor',message:''});
+    const d=await api(`/api/questions/${q.id}/classify`,{method:'POST'});q=d.question;s.upsert(q);if(d.status!=='skipped')s.bumpUsage('classify');patch(it.id,{question:q,message:d.status==='skipped'?d.reason:''})}
+   patch(it.id,{status:readClassification(q.analysis)?.needsReview?'kontrol':'hazır'})
+  }catch(err){patch(it.id,{status:'hata',message:(err as Error).message})}
+ }
+ async function start(){
+  if(busy||!items.length)return;setStep('tag');setBusy(true);
+  await pool(items,POOL,run);setBusy(false)}
+ async function retry(it:Item){setBusy(true);await run(it);setBusy(false)}
+ function finish(){
+  const queue=items.map(i=>i.question).filter((q):q is Question=>!!q&&!q.analysis?.readable);
+  const saved=items.filter(i=>i.question).length;
+  if(saved)toast.success(saved===1?'Yanlış defterine eklendi.':`${saved} soru yanlış defterine eklendi.`);
+  if(ai&&queue.length)void (async()=>{for(const q of queue)await s.solve(q)})();
+  onClose()}
+ return <Dialog open={open} onOpenChange={v=>{if(!busy&&!v)onClose()}}><DialogContent className="upload-dialog cap-dialog">
+  {step==='pick'?<>
+   <DialogHeader><DialogTitle>Soruyu göster, gerisi bizde.</DialogTitle><DialogDescription>Ders ve konu yazmana gerek yok. Yapay zekâ her soruyu tanır, sen yalnız yanlışsa düzeltirsin.</DialogDescription></DialogHeader>
+   <input ref={fileInput} type="file" multiple accept="image/jpeg,image/png,image/webp" className="sr-only" aria-label="Galeriden soru fotoğrafları seç" tabIndex={-1} onChange={e=>{addFiles([...(e.target.files||[])]);e.target.value=''}}/>
+   <input ref={cameraInput} type="file" accept="image/*" capture="environment" className="sr-only" aria-label="Kamerayla soru fotoğrafı çek" tabIndex={-1} onChange={e=>{addFiles([...(e.target.files||[])]);e.target.value=''}}/>
+   <div className="cap-actions">
+    <button type="button" className="cap-btn dark" onClick={()=>cameraInput.current?.click()}><Camera size={28}/><span><b>Fotoğraf çek</b><small>Arka arkaya çekebilirsin</small></span></button>
+    <button type="button" className="cap-btn soft" onClick={()=>fileInput.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();addFiles([...e.dataTransfer.files])}}><Images size={28}/><span><b>Galeriden seç</b><small>İstediğin kadar soru</small></span></button>
+   </div>
+   <div className="cap-list-head"><h3>Seçilen sorular</h3><span aria-live="polite"><b>{items.length}</b> soru</span></div>
+   {items.length?<ol className="cap-grid" aria-label="Seçilen soru fotoğrafları">{items.map((it,i)=><li key={it.id} className="cap-shot"><img src={it.preview} alt={`${i+1}. soru fotoğrafı (${it.file.name||'fotoğraf'}, ${fmt(it.file.size)})`}/><span className="cap-num" aria-hidden="true">{i+1}</span><button type="button" className="cap-remove" aria-label={`${i+1}. soruyu kaldır`} onClick={()=>{URL.revokeObjectURL(it.preview);setItems(cur=>cur.filter(x=>x.id!==it.id))}}><X size={14}/></button></li>)}</ol>
+   :<p className="cap-empty">Henüz soru seçmedin. Çek ya da galeriden seç; fotoğraflar burada numaralanır.</p>}
+   <p className="cap-hint">Bir fotoğrafta tek soru olsun; bulanık çekimde “emin olamadık” diye işaretleriz. En fazla {MAX_PER_BATCH} soru bir seferde.{!ai&&' Yapay zekâ şu an kapalı: sorular kaydedilir, ders ve konuyu sen seçersin.'}</p>
+   <QuotaNote kind="classify"/>
+   <div className="cap-foot"><button type="button" className="primary full cap-main" disabled={!items.length} onClick={()=>void start()}><Sparkles size={20}/> {items.length?`${items.length} soruyu tanı`:'Önce soru seç'}</button></div>
+  </>:<TagReview items={items} busy={busy} ai={ai} hinted={hinted} onPatch={patch} onRetry={it=>void retry(it)} onFinish={finish}/>}
+ </DialogContent></Dialog>}

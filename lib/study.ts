@@ -16,7 +16,7 @@ export type ExamType=typeof examTypes[number];
 export const gradeOfExam=(t:string)=>{const m=/^(\d+)\. Sınıf$/.exec(t);return m?m[1]:''};
 export const subjects=subjectList;
 export type Video={title:string;url:string;reason:string;channel?:string;duration?:string;views?:number;source?:'youtube-api'|'web-search'};
-export type Analysis={readable:boolean;subject:string;topic:string;transcription:string;answer:string;steps:string[];pitfall:string;note:string;confidence:string;answerKeyMatch:boolean|null;videos:Video[];videoNotice?:string;verification?:string;errorType?:string};
+export type Analysis={readable:boolean;subject:string;topic:string;transcription:string;answer:string;steps:string[];pitfall:string;note:string;confidence:string;answerKeyMatch:boolean|null;videos:Video[];videoNotice?:string;verification?:string;errorType?:string;classification?:{subtopic:string;difficulty:string;confidence:number;needsReview:boolean;source:'ai'|'manual'|'none';reason?:string}};// Çözümsüz kayıtta analysis yalnız classification içerir (lib/classify.ts)
 export type ReviewEntry={date:string;result:'doğru'|'yanlış'};
 export type Question={id:string;exam:string;exam_type:string;date:string;subject:string;topic:string;question:string;my_answer:string;answer_key:string;image_key?:string|null;analysis:Analysis|null;reviewed:number;created_at:string;mistake_type:MistakeType|string;review_stage:number;next_review:string|null;review_log:ReviewEntry[]};
 export type Exam={id:string;name:string;exam_type:string;date:string;net:number;correct:number|null;wrong:number|null;blank:number|null;notes:string;created_at:string};
