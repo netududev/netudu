@@ -77,3 +77,22 @@ Testler (önce kırmızı): `tests/dialog-tab.test.mjs` (4, modül yokken kırm�
 
 - `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` yeniden koşuldu: 66/66, çıkış 0 (Tur 1: 61/61).
 - Gerçek Radix Tabs/DropdownMenu/AlertDialog davranışı bu ortamda denenemedi; Vercel önizlemesinde teyit edilecek (Tekrar sekmesinde işaretleme sonrası sekmenin kalması, ⋯ menüsünden silme onayı).
+
+## Tur 3 (inceleme bulguları: 560px kuralı sızıntısı + küçükler)
+
+- [x] `90-defter-yukleme.css` 560px masaüstü kuralı `.upload-dialog` yerine `.cap-dialog`'a bağlandı; `.cap-dialog` hem Yanlış ekle (soru seçme) hem etiket adımında aynı `DialogContent`'te (`upload-dialog.tsx:81`) olduğundan ek seçici gerekmedi. Ölçüm (1440px, gerçek CSS, `.upload-dialog` + `alarm-dialog` / yalın / `onboarding`): 660px (00-tokens.css); `upload-dialog cap-dialog`: 560px. `olcum-sonraki.json`: yukle-bos/yukle-fotolu/yukle-ai-kapali/etiket 1440'ta 560px.
+- [x] Ölü `.cap-foot{padding-bottom:var(--s1)}` bildirimi silindi.
+- [x] `shell-render` etiket testi başlığı "Tamam, N soru defterde" oldu.
+- [x] `monthValues` regex'i `/^\d{4}-(0[1-9]|1[0-2])/`; `2026-13`, `2026-00` süzülür (yeni test).
+- [x] `css-split.test.mjs`: 560px kuralının `.cap-dialog`'a bağlı olduğunu, `.upload-dialog{…560px}` içermediğini denetleyen test eklendi.
+
+Testler: `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` 68/68, çıkış 0. Önizleme PNG'leri ve `olcum-sonraki.json` yeniden üretildi.
+
+## Orkestratör doğrulaması (Tur 3)
+
+
+## Orkestratör doğrulaması (Tur 3)
+
+- `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` yeniden koşuldu: 68/68, çıkış 0.
+- 560px kuralı yalnız `.cap-dialog`'a bağlı; alarm/Kaydırılan günler/onboarding pencereleri 660px'te kalıyor (yazar ölçümü, geçici betik).
+- Yeni testlerin kırmızı hâli ayrıca koşulmadı (yazar bildirdi).

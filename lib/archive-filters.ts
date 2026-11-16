@@ -12,7 +12,7 @@ export function activeFilterCount(f:ArchiveFilters):number{
 export const filtersButtonLabel=(count:number)=>count>0?`Filtreler, ${count} seçili`:'Filtreler';
 
 // Ay seçenekleri: yalnız defterde gerçekten soru olan aylar, yeniden eskiye
-export const monthValues=(dates:string[]):string[]=>[...new Set(dates.filter(d=>/^\d{4}-\d{2}/.test(d)).map(d=>d.slice(0,7)))].sort().reverse();
+export const monthValues=(dates:string[]):string[]=>[...new Set(dates.filter(d=>/^\d{4}-(0[1-9]|1[0-2])/.test(d)).map(d=>d.slice(0,7)))].sort().reverse();
 
 // Kontrol bekleyenler şeridi: sayı mevcut isUnrecognized sayımından gelir; sıfırsa şerit yok
 export const pendingStripText=(n:number):string|null=>n>0?`${n} sorunun dersi ya da konusu belirlenmedi`:null;

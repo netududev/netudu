@@ -123,7 +123,7 @@ test('Yapay zekâ kapalıyken bilgi kutusu ayrıdır; açıkken yoktur',{skip},a
   assert.ok(!/class="cap-hint"[^>]*>[^<]*Yapay zekâ şu an kapalı/.test(off));
   assert.ok(!m.pick(1,true).includes('cap-info'));
 });
-test('Etiket ekranı: ilerleme çizgileri, "Kontrol et" kum kart, altta tek birincil "N soruyu deftere ekle"',{skip},async()=>{
+test('Etiket ekranı: ilerleme çizgileri, "Kontrol et" kum kart, altta tek birincil "Tamam, N soru defterde"',{skip},async()=>{
   const m=await load();const h=m.tag(false);
   assert.match(h,/class="tag-progress"/);assert.match(h,/tag-card review/);assert.match(h,/Kontrol et/);
   assert.match(h,/Tamam, 3 soru defterde/);assert.ok(!/deftere ekle/.test(h));assert.equal(count(h,/class="primary full cap-main"/g),1);

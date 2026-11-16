@@ -26,12 +26,12 @@
 .dlg-bar [data-slot=dialog-title]{font-size:1.0625rem;font-weight:700;letter-spacing:-.01em;line-height:1.2;text-align:center}
 .dlg-close{display:grid;place-items:center;width:var(--h-btn);height:var(--h-btn);border:0;border-radius:50%;background:transparent;color:var(--fg)}.dlg-close:hover{background:var(--inner2)}
 /* Yanlış ekle: masaüstünde 560px, mobilde tam ekran (mobil kural 20-mobil-ve-tema.css'te); 3 sütun ızgara */
-@media(min-width:768px){.upload-dialog{width:min(560px,calc(100vw - 32px))!important;max-width:560px!important;max-height:calc(100dvh - 48px);overflow-y:auto}}
+@media(min-width:768px){.cap-dialog{width:min(560px,calc(100vw - 32px))!important;max-width:560px!important;max-height:calc(100dvh - 48px);overflow-y:auto}}
 .cap-lead{font-size:.9375rem;line-height:1.5;color:var(--fg2)}.cap-lead b{color:var(--fg);font-weight:700}
 @media(min-width:768px){.cap-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .cap-info{display:flex;align-items:flex-start;gap:var(--s3);padding:12px 14px;border:1px solid var(--champ-line);border-radius:var(--r-ctl);background:var(--champ-bg);color:var(--champ-ink)}
 .cap-info svg{flex:none;margin-top:1px}.cap-info p{margin:0;font-size:.875rem;line-height:1.5}
-.cap-foot{border-top:1px solid var(--line);padding-bottom:var(--s1)}
+.cap-foot{border-top:1px solid var(--line)}
 /* Etiket ekranı */
 .tag-eyebrow{letter-spacing:0}
 .tag-save{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);min-height:var(--h-btn);padding:0 var(--s5);border:1px solid var(--fg);border-radius:999px;background:var(--fg);color:var(--bg);font:inherit;font-size:.9375rem;font-weight:600}

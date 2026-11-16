@@ -28,3 +28,7 @@ test('Filtreler düğmesi erişilebilir adı seçili sayıyı söyler',()=>{
   assert.equal(filtersButtonLabel(0),'Filtreler');
   assert.equal(filtersButtonLabel(2),'Filtreler, 2 seçili');
 });
+
+test('monthValues: geçersiz ay (2026-13, 2026-00) süzülür',()=>{
+  assert.deepEqual(monthValues(['2026-13-01','2026-00-10','2026-12-05','2026-01-02']),['2026-12','2026-01']);
+});
