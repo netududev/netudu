@@ -16,7 +16,6 @@ for(const d of dirs){try{const r=createRequire(join(d,'x.cjs'));esbuild=r('esbui
 test('önizleme araçları (esbuild + react-dom) bulunabilir; bulunamazsa açık hata',()=>{
   assert.ok(NM&&esbuild,'esbuild/react-dom bulunamadı; aranan yollar: '+dirs.join(', '));
 });
-const skip=false;
 let S=null;
 async function load(){
   if(S)return S;

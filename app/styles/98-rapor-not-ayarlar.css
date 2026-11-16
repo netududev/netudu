@@ -2,6 +2,8 @@
 /* Başlık eylemleri: ay seçici (ikincil) + Yazdır / PDF; Denemeler'de tek birincil "Deneme ekle" (mobilde de görünür) */
 .page-heading .month-select{display:inline-flex;align-items:center;gap:var(--s2);min-height:var(--h-btn);padding:0 var(--s3);border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--fg)}
 .page-heading .actions .month-select input{min-height:var(--h-btn);border:0;background-color:transparent;box-shadow:none;color:inherit;font:inherit;padding:0}
+.page-heading .actions .secondary{white-space:nowrap}
+.page-heading .month-select{min-width:0}
 .page-heading .actions .primary.heading-add{display:inline-flex;min-height:var(--h-btn);flex:0 0 auto}
 @media(max-width:767px){.page-heading .actions .primary.heading-add{flex:1 1 100%}.page-heading .month-select{flex:1 1 auto}}
 /* dokunma hedefi en az 44px */
@@ -34,6 +36,7 @@
 .view[data-view=notes] .note-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}
 .view[data-view=notes] .note-actions>*{width:100%}
 @media(max-width:1000px){.view[data-view=notes] .notes-layout{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:480px){.view[data-view=notes] .note-actions{grid-template-columns:minmax(0,1fr)}.page-heading .month-select,.page-heading .actions .secondary{flex:1 1 100%;min-width:0}.settings-tablist [role=tab]{padding:0 var(--s3)}}
 .view[data-view=notes] .nv-memory{background:var(--champ-bg);color:var(--champ-ink)}
 /* Ayarlar: sekmeler + bölüm yığını; Kaydet bölümün sağ altında */
 .settings-tabs [data-slot=tabs]{display:flex;flex-direction:column;gap:var(--s4)}

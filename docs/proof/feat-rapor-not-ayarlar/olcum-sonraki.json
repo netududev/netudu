@@ -12,6 +12,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "",
@@ -51,6 +52,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "",
@@ -90,16 +92,17 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "",
     "x": 16,
-    "w": 244
+    "w": 358
    },
    {
     "t": "Yazdır / PDF",
-    "x": 272,
-    "w": 102
+    "x": 16,
+    "w": 358
    }
   ],
   "sekmeler": [],
@@ -111,7 +114,7 @@
    "w": 358,
    "h": 2064,
    "x": 16,
-   "y": 240
+   "y": 298
   },
   "denemeKart": [],
   "taşan": []
@@ -129,16 +132,17 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "",
     "x": 16,
-    "w": 244
+    "w": 358
    },
    {
     "t": "Yazdır / PDF",
-    "x": 272,
-    "w": 102
+    "x": 16,
+    "w": 358
    }
   ],
   "sekmeler": [],
@@ -150,7 +154,7 @@
    "w": 358,
    "h": 2064,
    "x": 16,
-   "y": 240
+   "y": 298
   },
   "denemeKart": [],
   "taşan": []
@@ -168,6 +172,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "",
@@ -207,6 +212,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "",
@@ -246,16 +252,17 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "",
     "x": 16,
-    "w": 244
+    "w": 358
    },
    {
     "t": "Yazdır / PDF",
-    "x": 272,
-    "w": 102
+    "x": 16,
+    "w": 358
    }
   ],
   "sekmeler": [],
@@ -267,7 +274,7 @@
    "w": 358,
    "h": 2021,
    "x": 16,
-   "y": 240
+   "y": 298
   },
   "denemeKart": [],
   "taşan": []
@@ -285,16 +292,17 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "",
     "x": 16,
-    "w": 244
+    "w": 358
    },
    {
     "t": "Yazdır / PDF",
-    "x": 272,
-    "w": 102
+    "x": 16,
+    "w": 358
    }
   ],
   "sekmeler": [],
@@ -306,7 +314,7 @@
    "w": 358,
    "h": 2021,
    "x": 16,
-   "y": 240
+   "y": 298
   },
   "denemeKart": [],
   "taşan": []
@@ -324,6 +332,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "Deneme ekle",
@@ -361,6 +370,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "Deneme ekle",
@@ -398,6 +408,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "Deneme ekle",
@@ -435,6 +446,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "Deneme ekle",
@@ -472,6 +484,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "Deneme ekle",
@@ -506,6 +519,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "Deneme ekle",
@@ -540,6 +554,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "Deneme ekle",
@@ -574,6 +589,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [
    {
     "t": "Deneme ekle",
@@ -608,6 +624,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [],
   "kaydet": [],
@@ -649,6 +666,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [],
   "kaydet": [],
@@ -690,12 +708,13 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [],
   "kaydet": [],
   "notEylemGenislik": [
-   135,
-   135
+   282,
+   282
   ],
   "nv": {
    "w": 320,
@@ -705,13 +724,13 @@
   },
   "noteView": {
    "w": 358,
-   "h": 1626,
+   "h": 1659,
    "x": 16,
    "y": 1040
   },
   "view": {
    "w": 358,
-   "h": 2474,
+   "h": 2507,
    "x": 16,
    "y": 192
   },
@@ -731,12 +750,13 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [],
   "kaydet": [],
   "notEylemGenislik": [
-   135,
-   135
+   282,
+   282
   ],
   "nv": {
    "w": 320,
@@ -746,13 +766,13 @@
   },
   "noteView": {
    "w": 358,
-   "h": 1626,
+   "h": 1659,
    "x": 16,
    "y": 1040
   },
   "view": {
    "w": 358,
-   "h": 2474,
+   "h": 2507,
    "x": 16,
    "y": 192
   },
@@ -772,6 +792,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [],
   "kaydet": [],
@@ -805,6 +826,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [],
   "kaydet": [],
@@ -838,6 +860,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [],
   "kaydet": [],
@@ -871,6 +894,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [],
   "kaydet": [],
@@ -904,6 +928,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil*",
@@ -945,6 +970,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil*",
@@ -986,6 +1012,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil*",
@@ -1027,6 +1054,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil*",
@@ -1068,6 +1096,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil*",
@@ -1110,6 +1139,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil*",
@@ -1152,6 +1182,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil*",
@@ -1194,6 +1225,7 @@
   ],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil*",
@@ -1232,6 +1264,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1261,6 +1294,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1290,6 +1324,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1319,6 +1354,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1348,6 +1384,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1378,6 +1415,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1408,6 +1446,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1438,6 +1477,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1468,6 +1508,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1497,6 +1538,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1526,6 +1568,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1555,6 +1598,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1584,6 +1628,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1614,6 +1659,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1644,6 +1690,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1674,6 +1721,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1704,6 +1752,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1740,6 +1789,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1776,6 +1826,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1812,6 +1863,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1848,6 +1900,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1885,6 +1938,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1922,6 +1976,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1959,6 +2014,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -1996,6 +2052,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -2040,6 +2097,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -2084,6 +2142,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",
@@ -2128,6 +2187,7 @@
   "kobalt": [],
   "kucukHedef": [],
   "kirpilan": [],
+  "kirikDugme": [],
   "baslikEylem": [],
   "sekmeler": [
    "Profil",

@@ -24,7 +24,7 @@ export const sampleNote=serializeNote({title:'Üslü sayılar',oneLiner:'Üs, ta
  mistakes:['Tabanları da toplamak: 2³ · 2⁴ ≠ 4⁷'],patterns:[{q:'3² · 3⁵',a:'3⁷'}],memory:'Aynı taban, üsler toplanır.'} as any);
 export const sampleNotes=[{id:'n1',subject:'Matematik',topic:'Üslü sayılar',exam_type:'TYT',content:sampleNote,prompt:'',updated_at:'2026-11-10T10:00:00Z'},{id:'n2',subject:'Fizik',topic:'Elektrik',exam_type:'AYT',content:'Düz metin not.',prompt:'',updated_at:'2026-11-08T10:00:00Z'}] as any[];
 const goals=[{text:'Paragrafta günde 10 soru',done:true},{text:'Hafta sonu bir TYT denemesi',done:false}];
-export const rapor=(o:any={})=>frame('report',<ReportView month="2026-11" setMonth={()=>{}} notes={o.empty?'':'Türev ve limitte işlem hatası yaptım; haftada iki kez tekrar edeceğim.'} setNotes={()=>{}} goals={o.empty?[]:goals} setGoals={()=>{}} onPrint={()=>{}}/>,{month:'2026-11',setMonth(){},onAddExam(){}});
+export const rapor=(o:any={})=>frame('report',<ReportView month="2026-11" notes={o.empty?'':'Türev ve limitte işlem hatası yaptım; haftada iki kez tekrar edeceğim.'} setNotes={()=>{}} goals={o.empty?[]:goals} setGoals={()=>{}} onPrint={()=>{}}/>,{month:'2026-11',setMonth(){},onAddExam(){}});
 export const denemeler=(o:any={})=>frame('exams',<ExamsView/>,{study:{exams:o.empty?[]:exams},month:'2026-11',setMonth(){},onAddExam(){}});
 export const notlar=(o:any={})=>frame('notes',<NotesView preset={null} initialNotes={o.empty?[]:sampleNotes} initialSelected={o.empty?null:sampleNotes[0]}/>);
 export const ayarlar=(tab:string,dev:boolean)=>frame('settings',<SettingsView initialTab={tab}/>,{dev});

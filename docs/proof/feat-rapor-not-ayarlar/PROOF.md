@@ -31,13 +31,6 @@ Tam ölçüm: `olcum-sonraki.json` (60 ekran: rapor, rapor-bos, denemeler, denem
 | `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` | tümü yeşil, atlanan yok | 99 test, 99 geçti, 0 kaldı, 0 atlandı (85 + 14 yeni) | 0 | PASS |
 | `node scripts/rapor-preview.mjs` (MODE=sonraki) | 60 ekranda sw==cw, kırpılan/küçük hedef yok, birincil ≤1 | 60/60 temiz | 0 | PASS |
 
-## Orkestratör doğrulaması
-- Test komutu tekrar çalıştırıldı:
-- `git diff --stat` kapsam kontrolü:
-- Aralık/Yeniden üretme:
-- Görseller:
-- Süreç/port temizliği:
-
 ## Kapsam dışı / bilinen eksikler
 - Radix Tabs/menüleri gerçek tarayıcıda doğrulanamadı; önizleme düz karşılık kullanır (ui-stubs). Sekme tıklaması, klavye gezinmesi, odak halkası ve `[role=tab]` stilinin Radix çıktısında tutması Vercel önizlemesinde teyit edilmeli.
 - recharts önizlemede düz kutu: çizgi/çubuk renkleri yalnız kaynak testiyle doğrulandı, gerçek çizim görülmedi.
@@ -56,3 +49,15 @@ Tam ölçüm: `olcum-sonraki.json` (60 ekran: rapor, rapor-bos, denemeler, denem
 
 - `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` yeniden koşuldu: 99/99, çıkış 0.
 - Radix sekmeleri/menüleri, recharts ve `tsc` bu ortamda doğrulanamadı; Vercel önizlemesinde teyit gerekir.
+
+## Tur 2 (inceleme 1, SKOR 4 bulguları)
+- Kök neden: eşit genişlikli 2 sütunlu `.note-actions` grid'i ve `flex:1 1 auto` ay seçici 390px'te düğmeleri daraltıp metni 2-3 satıra kırdı.
+- Düzeltme (yalnız CSS, `@media(max-width:480px)`): `.note-actions` tek sütun; rapor başlığında ay seçici ve "Yazdır / PDF" tam genişlikte alt alta, `white-space:nowrap`, `min-width:0`. Ayarlar sekmelerinin iç boşluğu 480 altında `--s3`'e düşürüldü (geliştirici hesabında 5. sekme hâlâ yatay kaydırmayla ulaşılır, kısmen kırpık görünür).
+- Küçükler: `ReportView`'dan ölü `setMonth` parametresi kaldırıldı; önizleme betiği (aynı iki dal, boş `extra`, yarım yorum) ve testteki `const skip=false` temizlendi; ölü `.report-toolbar>.text-button` kuralı ve 20-mobil-ve-tema.css'teki `.settings-grid` seçici öğesi kaldırıldı (50-v10-v11.css ve 68. satırdaki `.settings-grid` kuralları başka dosyalarda olduğu için dokunulmadı).
+- Ölçüm: `scripts/rapor-preview.mjs`'e `kirikDugme` (düğme yüksekliği > 56px; `.note-list` kartları ve `.segmented` düğmeleri, tasarım gereği çok satırlı/ikonlu olduğundan hariç) denetimi eklendi: 60/60 ekranda kırık düğme 0, taşma 0, kırpılan 0, küçük hedef 0. notlar-390 eylem genişlikleri 282/282, rapor-390 başlık eylemleri 358/358.
+- Test: `npm test` 99/99 yeşil, çıkış 0. PNG'ler yenilendi; notlar-390, rapor-390, ayarlar-developer-gelistirici-390 gözle kontrol edildi.
+- Bilinen küçük sapmalar (kod değiştirilmedi): Supabase bölüm kaydetme sırası planla birebir değil; ayarlar form kırılma noktası 650px, notlar yerleşimi 1000px (planlanan tek değerden farklı).
+
+## Orkestratör doğrulaması (Tur 2)
+
+- `npm test` yeniden koşuldu: 99/99, çıkış 0; 60 ekranda kirikDugme/taşma/küçük hedef boş (yazar ölçümü).

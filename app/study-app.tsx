@@ -101,7 +101,7 @@ export default function StudyApp(){
  {view==='program'&&<ProgramView/>}
  {view==='resources'&&<ResourcesView/>}
  {view==='archive'&&<ArchiveView subject={subject} setSubject={setSubject} filteredRef={filteredRef} onPrint={()=>print()}/>}
- {view==='report'&&<ReportView month={month} setMonth={setMonth} notes={notes} setNotes={setNotes} goals={goals} setGoals={setGoals} onPrint={()=>print()}/>}
+ {view==='report'&&<ReportView month={month} notes={notes} setNotes={setNotes} goals={goals} setGoals={setGoals} onPrint={()=>print()}/>}
  {view==='exams'&&<ExamsView/>}
  {view==='notes'&&<NotesView preset={notesPreset}/>}
  {view==='settings'&&<SettingsView/>}

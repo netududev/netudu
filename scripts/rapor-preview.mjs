@@ -7,7 +7,7 @@ import fs from 'node:fs';import {createRequire} from 'node:module';
 const NM='/opt/npm-tools/node_modules';const require=createRequire(NM+'/x.cjs');const {chromium}=require('playwright');const esbuild=require('esbuild');
 const MODE=process.env.MODE||'sonraki',W=process.env.ND_ROOT+'/',SRC=(process.env.SRC_ROOT||process.env.ND_ROOT)+'/',OUT=process.env.OUT;
 const tmp=fs.mkdtempSync('/tmp/nd-rapor-');const STUB=SRC+'scripts/preview/ui-stubs.tsx';
-await esbuild.build({entryPoints:[SRC+'scripts/preview/'+(MODE==='onceki'?'rapor-entry.tsx':'rapor-entry.tsx')],bundle:true,platform:'node',format:'cjs',outfile:tmp+'/ssr.cjs',jsx:'automatic',logLevel:'error',define:{'process.env.NODE_ENV':'"production"'},nodePaths:[NM],
+await esbuild.build({entryPoints:[SRC+'scripts/preview/'+'rapor-entry.tsx'],bundle:true,platform:'node',format:'cjs',outfile:tmp+'/ssr.cjs',jsx:'automatic',logLevel:'error',define:{'process.env.NODE_ENV':'"production"'},nodePaths:[NM],
  alias:{'@':W.replace(/\/$/,''),'sonner':STUB},plugins:[{name:'stubs',setup(b){b.onResolve({filter:/^@\/components\/ui\/(dialog|select|alert-dialog|table|sidebar|sonner|dropdown-menu|tabs)$/},()=>({path:STUB}));b.onResolve({filter:/^recharts$/},()=>({path:STUB}));b.onResolve({filter:/^react(-dom)?(\/.*)?$/},a=>({path:require.resolve(a.path,{paths:[NM]})}))}}]});
 const S=require(tmp+'/ssr.cjs');
 const css=fs.readdirSync(W+'app/styles').sort().map(f=>fs.readFileSync(W+'app/styles/'+f,'utf8')).join('').replace(/@import[^;]*;/g,'').replace(/@theme inline\{[^\n]*\n/,'');
@@ -25,14 +25,12 @@ const screens={
  ...Object.fromEntries(['profile','membership','data','account'].flatMap(t=>[[`ayarlar-${t}-normal`,()=>S.ayarlar(t,false)],[`ayarlar-${t}-gelistirici`,()=>S.ayarlar(t,true)]])),
  'ayarlar-developer-gelistirici':()=>S.ayarlar('developer',true),
 };
-const extra={};
 const b=await chromium.launch();const meas={};
 for(const [name,mk] of Object.entries(screens)){if(only&&!name.includes(only))continue;
- for(const [w,h] of [...sizes,...(extra[name]||[])])for(const dark of [false,true]){
+ for(const [w,h] of sizes)for(const dark of [false,true]){
   if(dark&&![1440,390].includes(w))continue;
   const th=dark?'koyu':'acik';const p=await b.newPage({viewport:{width:w,height:h}});await p.setContent(wrap(mk(),dark));
   // Önizleme düz Dialog karşılığı kapalı pencereleri de çizer; sayfa ekranlarında pencere içerikleri kaldırılır (yalnız sihirbaz ekranında pencere gösterilir)
-  
   if(process.env.INSPECT){console.log(name,w,JSON.stringify(await p.evaluate(sel=>[...document.querySelectorAll(sel)].slice(0,12).map(e=>{const r=e.getBoundingClientRect(),c=getComputedStyle(e);return [e.tagName+'.'+String(e.className).slice(0,24),Math.round(r.x),Math.round(r.width),c.display,c.margin,c.padding,c.alignSelf]}),process.env.INSPECT)))}
   const file=`${name}-${w}-${th}-${MODE}.png`;
   await p.screenshot({path:OUT+'/'+file,fullPage:true});
@@ -45,11 +43,12 @@ for(const [name,mk] of Object.entries(screens)){if(only&&!name.includes(only))co
    const clip=[...main.querySelectorAll('button,a,[role=tab]')].filter(e=>vis(e)&&(e.scrollWidth>e.clientWidth+1||[...e.children].some(c=>{const x=c.getBoundingClientRect(),b=e.getBoundingClientRect();return x.left<b.left-0.5||x.right>b.right+0.5}))).map(e=>(e.textContent||'').trim().slice(0,24));
    const r=s=>{const e=document.querySelector(s);if(!e||!vis(e))return null;const x=e.getBoundingClientRect();return {w:Math.round(x.width),h:Math.round(x.height),x:Math.round(x.x),y:Math.round(x.y)}};
    const cw=document.documentElement.clientWidth;
+   const kirik=[...main.querySelectorAll('button,a,[role=tab]')].filter(e=>vis(e)&&!e.closest('.note-list,.segmented')&&e.getBoundingClientRect().height>56).map(e=>(e.textContent||'').trim().slice(0,24));
    const hd=[...document.querySelectorAll('.page-heading .actions > *')].filter(vis).map(e=>({t:(e.textContent||e.getAttribute('aria-label')||'').trim().slice(0,16),x:Math.round(e.getBoundingClientRect().x),w:Math.round(e.getBoundingClientRect().width)}));
    const na=[...document.querySelectorAll('.note-actions > *')].filter(vis).map(e=>Math.round(e.getBoundingClientRect().width));
    const tabs=[...document.querySelectorAll('[role=tab]')].filter(vis).map(e=>(e.textContent||'').trim()+(e.getAttribute('aria-selected')==='true'?'*':''));
    const sv=[...document.querySelectorAll('.section-save')].filter(vis).map(e=>{const b=e.getBoundingClientRect(),pa=e.closest('article').getBoundingClientRect();return {sagBosluk:Math.round(pa.right-b.right),btn:[...e.querySelectorAll('button')].map(x=>x.textContent.trim().slice(0,18)+(x.disabled?'(pasif)':''))}});
    const cards=[...document.querySelectorAll('.exam-list li')].filter(vis).map(e=>{const b=e.getBoundingClientRect();return Math.round(b.width)});
-   return {sw:document.documentElement.scrollWidth,cw,tasma:document.documentElement.scrollWidth>cw,birincil:prim,birincilSayi:prim.length,kobalt:cobalt,kucukHedef:small,kirpilan:clip,baslikEylem:hd,sekmeler:tabs,kaydet:sv,notEylemGenislik:na,nv:r('.nv'),noteView:r('.note-view'),view:r('.view'),denemeKart:cards.slice(0,2),taşan:[...document.querySelectorAll('.view *')].filter(e=>vis(e)&&e.getBoundingClientRect().right>cw+1&&!e.closest('.table-scroll,.detail-tabs')).slice(0,4).map(e=>e.tagName+'.'+String(e.className).slice(0,30))}});
+   return {sw:document.documentElement.scrollWidth,cw,tasma:document.documentElement.scrollWidth>cw,birincil:prim,birincilSayi:prim.length,kobalt:cobalt,kucukHedef:small,kirpilan:clip,kirikDugme:kirik,baslikEylem:hd,sekmeler:tabs,kaydet:sv,notEylemGenislik:na,nv:r('.nv'),noteView:r('.note-view'),view:r('.view'),denemeKart:cards.slice(0,2),taşan:[...document.querySelectorAll('.view *')].filter(e=>vis(e)&&e.getBoundingClientRect().right>cw+1&&!e.closest('.table-scroll,.detail-tabs')).slice(0,4).map(e=>e.tagName+'.'+String(e.className).slice(0,30))}});
   console.log(file,JSON.stringify(meas[`${name}-${w}-${th}`]).slice(0,420));await p.close()}}
 fs.writeFileSync(OUT+`/olcum-${MODE}.json`,JSON.stringify(meas,null,1));await b.close();fs.rmSync(tmp,{recursive:true,force:true});
