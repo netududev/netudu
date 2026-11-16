@@ -1,0 +1,52 @@
+/* PR 6: Aylık rapor, Denemeler, Ders notları ve Ayarlar (sekmeli). Seçiciler [data-view] ya da bu ekranlara özgü sınıflar altındadır. */
+/* Başlık eylemleri: ay seçici (ikincil) + Yazdır / PDF; Denemeler'de tek birincil "Deneme ekle" (mobilde de görünür) */
+.page-heading .month-select{display:inline-flex;align-items:center;gap:var(--s2);min-height:var(--h-btn);padding:0 var(--s3);border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--fg)}
+.page-heading .actions .month-select input{min-height:var(--h-btn);border:0;background-color:transparent;box-shadow:none;color:inherit;font:inherit;padding:0}
+.page-heading .actions .primary.heading-add{display:inline-flex;min-height:var(--h-btn);flex:0 0 auto}
+@media(max-width:767px){.page-heading .actions .primary.heading-add{flex:1 1 100%}.page-heading .month-select{flex:1 1 auto}}
+/* dokunma hedefi en az 44px */
+.view:is([data-view=report],[data-view=exams],[data-view=notes],[data-view=settings]) :is(.secondary,.primary,.text-button,.danger-button,.choice,.choice-native,input:not([type=checkbox]):not([type=file]),select){min-height:var(--h-btn)}
+.view[data-view=settings] .segmented button{min-height:var(--h-btn)}
+.view:is([data-view=report],[data-view=exams],[data-view=notes]) .icon-button{min-width:var(--h-btn);min-height:var(--h-btn)}
+@media(max-width:767px){.view:is([data-view=report],[data-view=exams],[data-view=notes],[data-view=settings]) :is(.secondary,.primary){min-height:48px}}
+/* Aylık rapor: yalnız kobalt ve nötr gri; özet satırı sade */
+.view[data-view=report] .report-toolbar{margin-bottom:var(--s4);color:var(--fg2)}
+.view[data-view=report] .bar i,.view[data-view=report] .rank:first-child .bar i{background:var(--brand)}
+.view[data-view=report] .notification-strip .secondary{flex:none;white-space:nowrap}
+.view[data-view=report] .report-actions{justify-content:flex-end}
+.view[data-view=report] .goal-add{display:flex;gap:var(--s2)}.view[data-view=report] .goal-add input{flex:1;min-width:0}
+/* Denemeler: tek birincil başlıkta; liste tablo gibi satır, mobilde kart */
+.view[data-view=exams] .exam-save{justify-content:flex-end}
+.view[data-view=exams] .exam-list li{background:var(--surface);border-color:var(--line);border-radius:var(--r-ctl);padding:var(--s3) var(--s4)}
+.view[data-view=exams] .exam-list b{color:var(--fg)}
+@media(max-width:767px){
+ .view[data-view=exams] .exam-list li{display:grid;grid-template-columns:minmax(0,1fr) var(--h-btn);grid-template-areas:"ad sil" "net sil";gap:var(--s2) var(--s3);align-items:start;padding:var(--s4)}
+ .view[data-view=exams] .exam-list li>div{grid-area:ad}
+ .view[data-view=exams] .exam-list li>b{grid-area:net;font-size:1.125rem}
+ .view[data-view=exams] .exam-list li>.icon-button{grid-area:sil;align-self:center}
+ .view[data-view=exams] .exam-list small{white-space:normal;overflow:visible}
+}
+/* Ders notları: okuma genişliği en çok 760px; alttaki iki eylem eşit genişlikte */
+.view[data-view=notes] .notes-layout{grid-template-columns:minmax(280px,380px) minmax(0,760px);align-items:start}
+.view[data-view=notes] .note-view{min-width:0;max-width:760px}
+.view[data-view=notes] .nv,.view[data-view=notes] .note-content{max-width:760px}
+.view[data-view=notes] .nv{margin-inline:0}
+.view[data-view=notes] .note-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}
+.view[data-view=notes] .note-actions>*{width:100%}
+@media(max-width:1000px){.view[data-view=notes] .notes-layout{grid-template-columns:minmax(0,1fr)}}
+.view[data-view=notes] .nv-memory{background:var(--champ-bg);color:var(--champ-ink)}
+/* Ayarlar: sekmeler + bölüm yığını; Kaydet bölümün sağ altında */
+.settings-tabs [data-slot=tabs]{display:flex;flex-direction:column;gap:var(--s4)}
+.settings-tablist{display:flex;width:100%;height:auto;overflow-x:auto;justify-content:flex-start;gap:var(--s1);padding:var(--s1);border-radius:var(--r-ctl)}
+.settings-tablist [role=tab]{flex:0 0 auto;min-height:var(--h-btn);padding:0 var(--s4);font-weight:650}
+.settings-panels{display:grid;gap:var(--s4);min-width:0}
+.settings-panels>.panel{margin:0;min-width:0}
+.view[data-view=settings] .settings-panels .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.view[data-view=settings] .section-save{justify-content:flex-end;margin-top:var(--s4)}
+.view[data-view=settings] .section-save>.primary,.view[data-view=settings] .section-save>.secondary{flex:0 1 auto}
+.view[data-view=settings] .table-scroll table{min-width:640px}
+.view[data-view=settings] .table-scroll{overflow-x:auto}
+@media(max-width:650px){.view[data-view=settings] .settings-panels .form-grid{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.view:is([data-view=report],[data-view=exams],[data-view=notes],[data-view=settings]) *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* Denemeler: üç özet kartı mobilde alt alta (metin kırpılmaz) */
+@media(max-width:767px){.view[data-view=exams] .stats.three{grid-template-columns:minmax(0,1fr)}}
