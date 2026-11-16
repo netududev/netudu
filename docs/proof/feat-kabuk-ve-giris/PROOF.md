@@ -41,9 +41,9 @@ Komut: `ND_ROOT=$PWD MODE=onceki|sonraki PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browse
 | `scripts/shell-preview.mjs` ölçümü (1440/390/1568) | sw==cw (yatay kaydırma yok), tetikleyici 44, boşluk 16, FAB 56, üstte tek kobalt | tümü `olcum-sonraki.json`'da; kobalt: masaüstü 1, mobil Bugün-boş 2 (birincil + FAB, bkz. kapsam dışı) | 0 | PASS (not var) |
 
 ## Tur 2 (inceleme SKOR 3 bulguları)
-- [ ] Ekran başına en fazla bir kobalt birincil (üst çubuk "Yanlış ekle" yalnız Defter'de birincil).
-- [ ] Landing h1 clamp korunuyor; 520/521px sıçraması yok; üst çubuk hedefleri 44px.
-- [ ] Render testi esbuild/react yoksa BAŞARISIZ; test paketi docs/proof'a bağımlı değil.
+- [x] Ekran başına en fazla bir kobalt birincil (üst çubuk "Yanlış ekle" yalnız Defter'de birincil).
+- [x] Landing h1 clamp korunuyor; 520/521px sıçraması yok; üst çubuk hedefleri 44px.
+- [x] Render testi esbuild/react yoksa BAŞARISIZ; test paketi docs/proof'a bağımlı değil.
 
 **Karar/kod:** `topbarAddVariant(view)`: yalnız `archive` -> primary, diğer tüm ekranlar secondary (Bugün'ün plan varken "Tamamla" ve plan yokken "Programı oluştur" birincili var, bu yüzden Bugün de ikincil). Kullanılmayan `sidebarNavLabels`, `'add-wrong'`, `mobileBarItems` silindi, totolojik testler düzeltildi. Ayarlar'da `.error-banner` 760px kuralına eklendi.
 
@@ -90,3 +90,9 @@ Yatay kaydırma yok (sw==cw hepsinde). Not: 50-v10-v11.css:355'teki `max-width:3
 1. Bu turun commit'ini checkout et (SHA: REVIEW-<n>.md başlığı / PR head'i).
 2. `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test`
 3. `ND_ROOT=$PWD MODE=sonraki PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node scripts/shell-preview.mjs`
+
+## Orkestratör doğrulaması (Tur 2)
+
+- `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` yeniden koşuldu: 43/43, çıkış 0 (yukarıdaki 41/41 Tur 1 sayısıdır).
+- İnceleyici 2. turda kobalt tablosunu yeniden üretti; olcum-tablo.json ile aynı. `olcum-sonraki.json`'daki Ayarlar 0, geliştirici kullanıcıyla alınmış ölçümdür; olcum-tablo.json geliştirici olmayan kullanıcıdır.
+- PR 5/6'ya kalanlar: Program ekranındaki çoklu kobalt "Tamamla"lar, Ayarlar katlama altı çoklu primary, ölü CSS temizliği.
