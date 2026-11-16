@@ -2,7 +2,7 @@
 
 | Görev | Tür | Aralık | Tur | Yazar modeli |
 |---|---|---|---|---|
-| PR 5: Bugün, Program, sihirbaz, Kaynaklar | görsel / karma | 5db9145..bu turun commit'i | 2 | sonnet |
+| PR 5: Bugün, Program, sihirbaz, Kaynaklar | görsel / karma | 5db9145..bu turun commit'i | 3 | sonnet |
 
 ## İddia
 - [x] Bugün: başlık eylemi yalnız "Programı düzenle" (ikincil/hayalet; "Yanlış ekle" üst çubukta). Odak kartında tek birincil "Tamamla". Geniş ekranda (>=1280px) "Bugünün akışı" 2fr, yanında 1fr sütunda "Bugünkü tekrarların" + "Günün cümlesi"; dar ekranda alt alta. `.td-focus.is-done::before` kum gradyanı değişmedi.
@@ -56,7 +56,7 @@ Küçük hedef (<44px) sayısı, sonra: bütün ekranlarda 0 (`olcum-sonraki.jso
 ## Test / Ölçüm
 | Komut | Beklenen | Gerçek | Çıkış kodu | Sonuç |
 |---|---|---|---|---|
-| `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` | tümü yeşil | tests 83, pass 83, fail 0, skipped 0 | 0 | PASS |
+| `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` | tümü yeşil | tests 85, pass 85 (güncel; Tur 1: 83), fail 0, skipped 0 | 0 | PASS |
 | `scripts/program-preview.mjs` (1440/390 açık+koyu; program 768/1024) | sw==cw, küçük hedef yok | tüm ekranlarda sw==cw, `kucukHedef` boş | 0 | PASS |
 Yeni testler: `tests/week-view.test.mjs` (5; modül yokken kırmızı koşuldu: ERR_MODULE_NOT_FOUND), `tests/program-render.test.mjs` (9 SSR; bileşen/CSS sonrası yazıldı, ama taban dalda çalıştırıldığında 6'sı kırmızı: pass 3 / fail 6), `tests/css-split.test.mjs` (+1, son parça artık 95). Kırmızı-önce yalnız saf mantıkta; SSR/CSS testleri işaretleme sonrası eklendi.
 
