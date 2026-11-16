@@ -1,17 +1,12 @@
-// globals.css bölme testi: parçaların birleşimi orijinal tek dosyayla bayt bayt aynı mı
+// globals.css bölme testi: yapı (import listesi, başlık yorumları), analyzeCss ve ölü sınıf denetimi; sabit SHA-256 özeti yeni CSS parçalarıyla kırıldığı için kaldırıldı
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createHash} from 'node:crypto';
 import {readFileSync,readdirSync} from 'node:fs';
 import {join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {analyzeCss} from '../scripts/check-css.mjs';
 
 const appDir=join(dirname(fileURLToPath(import.meta.url)),'..','app');
-// Bölme adımında orijinal tek dosyanın (3183fde:app/globals.css) @import satırları çıkarılmış hâlinin özeti buydu (bayt eşitliği bu değerle kanıtlandı):
-//   39a80afe3cabd91f1b65eccd63ee1ce85797ffbc8671d728931650983ed1be2e
-// Ardından yalnız .dropzone ve .camera-button kuralları (hiçbir bileşende geçmeyen ölü kurallar) silindi; güncel beklenen özet:
-const EXPECTED_SHA256='8ca411a5b59483f64e0ab5ab5bc75db1078965d2c55569f40c5fef67d6ddd429';
-const sha=s=>createHash('sha256').update(s).digest('hex');
 const imports=()=>[...readFileSync(join(appDir,'globals.css'),'utf8').matchAll(/^@import\s+"([^"]+)";$/gm)].map(m=>m[1]);
 const partImports=()=>imports().filter(p=>p.startsWith('./styles/'));
 
@@ -37,7 +32,13 @@ test('styles/: her dosya tek satırlık açıklama yorumuyla başlar',()=>{
   }
 });
 
-test('styles/: birleşim (başlık yorumları hariç) beklenen içerikle bayt bayt aynı (orijinal - ölü kurallar)',()=>{
-  const joined=partImports().map(p=>readFileSync(join(appDir,p),'utf8').split('\n').slice(1).join('\n')).join('');
-  assert.equal(sha(joined),EXPECTED_SHA256);
+test('styles/: birleşik CSS analyzeCss denetiminden geçer (gerekli sınıflar var, yasaklı dizeler yok)',()=>{
+  const joined=partImports().map(p=>readFileSync(join(appDir,p),'utf8')).join('\n');
+  const r=analyzeCss(joined);
+  assert.equal(r.ok,true,JSON.stringify(r));
+});
+
+test('styles/: silinen ölü sınıflar geri gelmedi',()=>{
+  const joined=partImports().map(p=>readFileSync(join(appDir,p),'utf8')).join('\n');
+  for(const dead of ['dropzone','camera-button'])assert.ok(!new RegExp('\\.'+dead+'(?![\\w-])').test(joined),dead);
 });

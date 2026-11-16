@@ -42,7 +42,7 @@ export function Landing({onAuth}:{onAuth:(m:AuthMode)=>void}){
   <header className="lp-nav"><span className="lp-progress" aria-hidden="true"/><div className="lp-wrap lp-nav-in">
    <a href="#top" className="lp-logo" aria-label="netudu"><Logo size={32}/></a>
    <nav aria-label="Sayfa bölümleri"><a href="#nasil">Nasıl çalışır</a><a href="#faydalar">Ne kazanırsın</a><a href="#fiyat">Fiyat</a></nav>
-   <div className="lp-nav-actions"><button type="button" className="lp-link" onClick={()=>onAuth('login')}>Giriş yap</button><button type="button" className="lp-btn solid" onClick={start}>{CTA}</button></div>
+   <div className="lp-nav-actions"><button type="button" className="lp-link" onClick={()=>onAuth('login')}>Giriş yap</button><button type="button" className="lp-btn ink" onClick={start}>{CTA}</button></div>
   </div></header>
   <main id="top">
    <section className="lp-hero lp-wrap" aria-labelledby="lp-hero-title">
@@ -59,7 +59,7 @@ export function Landing({onAuth}:{onAuth:(m:AuthMode)=>void}){
    <Steps/>
    <Benefits/>
    <Pricing onStart={start}/>
-   <section className="lp-wrap lp-close" data-rv><h2>Programını bugün kur.</h2><button type="button" className="lp-btn solid lg" onClick={start}>{CTA} <ArrowRight size={18}/></button><p className="lp-micro">{priceSummary()}</p></section>
+   <section className="lp-wrap lp-close" data-rv><h2>Programını bugün kur.</h2><button type="button" className="lp-btn ink lg" onClick={start}>{CTA} <ArrowRight size={18}/></button><p className="lp-micro">{priceSummary()}</p></section>
   </main>
   <footer className="lp-foot"><div className="lp-wrap"><Logo size={22}/><span>Created by Yusuf Kaya &amp; Kerem Batur Kanbak</span></div></footer>
  </div>

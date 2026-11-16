@@ -1,10 +1,9 @@
 "use client";
 import {useCallback,useEffect,useMemo,useRef,useState} from 'react';
-import {Plus,LayoutDashboard,Table2,ChartNoAxesCombined,Settings,CalendarClock,AlertCircle,Printer,TrendingUp,NotebookPen,Menu,Sun,CalendarDays,Wand2,List} from '@/components/icons';
-import {SidebarProvider,Sidebar,SidebarContent,SidebarHeader,SidebarFooter,SidebarMenu,SidebarMenuItem,SidebarMenuButton,SidebarInset,SidebarTrigger,useSidebar} from '@/components/ui/sidebar';
+import {AppFrame} from './study/shell';
 import {Toaster} from '@/components/ui/sonner';
 import {toast} from 'sonner';
-import {subjects,subjectCount,isUnrecognized,PENDING_FILTER,today,daysUntil,monthlyTopics,dueQuestions,defaultProfile,initials,genitive,type Question,type Exam,type Goal,type Profile} from '@/lib/study';
+import {today,daysUntil,monthlyTopics,dueQuestions,defaultProfile,type Question,type Exam,type Goal,type Profile} from '@/lib/study';
 import {StudyContext,api,postJson,readSetting,writeSetting,ApiError,dates,monthLabel,type View,type Study,type Usage,type Account,type AiKind,type UploadPreset} from './study/shared';
 import type {PlanState,Lesson} from '@/lib/plan/scheduler';
 import {makeQueue} from '@/lib/plan/queue';
@@ -16,7 +15,7 @@ import {AlarmCenter} from './study/plan/alarm';
 import {LessonVideoDialog} from './study/plan/ui';
 import {AuthScreen,Onboarding} from './study/auth';
 import {Landing,type AuthMode} from './study/landing';
-import {Logo,BootScreen} from './study/logo';
+import {BootScreen} from './study/logo';
 import {ArchiveView} from './study/archive';
 import {ReportView} from './study/report';
 import {ExamsView} from './study/exams';
@@ -24,15 +23,8 @@ import {SettingsView} from './study/settings';
 import {NotesView} from './study/notes';
 import {UploadDialog} from './study/upload-dialog';
 import {QuestionDialog} from './study/question-dialog';
-const planNav:{icon:typeof LayoutDashboard;label:string;id:View}[]=[{icon:Sun,label:'Bugün',id:'home'},{icon:CalendarDays,label:'Program',id:'program'},{icon:List,label:'Kaynaklar',id:'resources'}];
-const bookNav:{icon:typeof LayoutDashboard;label:string;id:View}[]=[{icon:Table2,label:'Yanlış defteri',id:'archive'},{icon:ChartNoAxesCombined,label:'Aylık rapor',id:'report'},{icon:TrendingUp,label:'Denemeler',id:'exams'},{icon:NotebookPen,label:'Ders notları',id:'notes'}];
 // Açılış kapısı: logo animasyonunun bitişi (.logo-anim wordmark .86s+.3s=1.16s; .boot .1s+.25s=.35s) + ~250ms nefes payı (globals.css ile birlikte güncelle)
 const BOOT_MIN_MS=1410;
-const nav=[...planNav,...bookNav,{icon:Settings,label:'Ayarlar',id:'settings' as View}];
-const headings:Record<View,[string,string,string]>={home:['BUGÜN','Bugün.','Günün işi, saatlik planın ve tekrarların tek ekranda.'],program:['PROGRAM','Program.','Okul ve sabit saatlerinle çakışmayan haftalık çalışma planın.'],resources:['KAYNAKLAR','Kaynaklar.','Soru bankaların ve oynatma listelerin; ilerlemen programına yerleşir.'],archive:['YANLIŞ DEFTERİ','Yanlış defteri.','Yanlışların ders ve konuya göre tek yerde.'],report:['AYLIK RAPOR','Aylık rapor.','Yanlışların hangi konulara çalışman gerektiğini gösterir.'],exams:['DENEME VE NET','Denemeler.','Her denemeden sonra netini gir, gelişimini izle.'],notes:['DERS NOTLARI','Ders notları.','Konuyu seç, sınava dönük notunu hazırlat, sonra düzenle.'],settings:['AYARLAR','Ayarlar.','Profilin, üyeliğin, programın ve yedeğin.']};
-function LessonItem({name,count,onClick}:{name:string;count:number;onClick:()=>void}){const {setOpenMobile,isMobile}=useSidebar();return <SidebarMenuItem><SidebarMenuButton onClick={()=>{onClick();if(isMobile)setOpenMobile(false)}}><span className={'lesson-dot dot-'+subjects.indexOf(name)%4}/><span>{name}</span><span className="lesson-count">{count}</span></SidebarMenuButton></SidebarMenuItem>}
-function MobileBar({view,setView,due,openUpload}:{view:View;setView:(v:View)=>void;due:number;openUpload:()=>void}){const {setOpenMobile}=useSidebar();const go=(v:View)=>{setView(v);setOpenMobile(false);window.scrollTo({top:0})};return <nav className="mobile-bar" aria-label="Alt menü"><button className={view==='home'?'on':''} onClick={()=>go('home')}><span className="ico"><Sun size={22}/>{due>0&&<i className="dot">{due}</i>}</span><small>Bugün</small></button><button className={view==='program'?'on':''} onClick={()=>go('program')}><span className="ico"><CalendarDays size={22}/></span><small>Program</small></button><button className="fab" onClick={openUpload} aria-label="Yanlış ekle"><Plus size={26}/></button><button className={view==='archive'?'on':''} onClick={()=>go('archive')}><span className="ico"><Table2 size={22}/></span><small>Defter</small></button><button className={['resources','report','exams','notes','settings'].includes(view)?'on':''} onClick={()=>setOpenMobile(true)}><span className="ico"><Menu size={22}/></span><small>Diğer</small></button></nav>}
-function NavItem({icon:Icon,label,active,badge,onClick}:{icon:typeof LayoutDashboard;label:string;active:boolean;badge?:number;onClick:()=>void}){const {setOpenMobile,isMobile}=useSidebar();return <SidebarMenuItem><SidebarMenuButton onClick={()=>{onClick();if(isMobile)setOpenMobile(false)}} isActive={active}><Icon size={19}/><span>{label}</span>{badge?<span className="lesson-count due">{badge}</span>:null}</SidebarMenuButton></SidebarMenuItem>}
 export default function StudyApp(){
  const [view,setView]=useState<View>('home'),[rows,setRows]=useState<Question[]>([]),[exams,setExams]=useState<Exam[]>([]),[loading,setLoading]=useState(true),[error,setError]=useState(''),[authed,setAuthed]=useState<boolean|null>(null),[ai,setAi]=useState(false),[youtube,setYoutube]=useState(false),[supabase,setSupabase]=useState(false),[user,setUser]=useState<Account|null>(null),[usage,setUsage]=useState<Usage|null>(null),[profileSet,setProfileSet]=useState(true),[plan,setPlan]=useState<PlanState|null>(null),[wizard,setWizard]=useState(false),[uploadPreset,setUploadPreset]=useState<UploadPreset|null>(null),[authMode,setAuthMode]=useState<AuthMode|null>(null),[bootDone,setBootDone]=useState(false);
  const [upload,setUpload]=useState(false),[uploadFiles,setUploadFiles]=useState<File[]>([]),[selected,setSelected]=useState<Question|null>(null),[lessonVideo,setLessonVideo]=useState<Lesson|null>(null),[solving,setSolving]=useState<Set<string>>(new Set()),[busy]=useState(false);
@@ -102,12 +94,9 @@ export default function StudyApp(){
  const due=dueQuestions(rows).length;const topics=monthlyTopics(rows,month);
  if(authed===null||!bootDone)return <BootScreen/>;
  if(authed===false)return <><Toaster position="top-center"/>{authMode?<AuthScreen initialMode={authMode} onBack={()=>setAuthMode(null)} onDone={()=>{setAuthed(null);setAuthMode(null);void load()}}/>:<Landing onAuth={setAuthMode}/>}</>;
- const firstName=profile.name.split(' ')[0]||'';const examDays=daysUntil(profile.examDate);
- return <StudyContext.Provider value={study}><Toaster position="top-center"/><SidebarProvider><Sidebar className="app-sidebar"><SidebarHeader><button className="brand" onClick={()=>setView('home')}><Logo size={28}/><small>YKS {profile.examYear}</small></button></SidebarHeader><SidebarContent><p className="nav-label">PROGRAM</p><SidebarMenu>{planNav.map(({icon,label,id})=><NavItem key={id} icon={icon} label={label} active={view===id} badge={id==='home'?due:0} onClick={()=>{setView(id);window.scrollTo({top:0})}}/>)}{!plan&&<NavItem icon={Wand2} label="Programı oluştur" active={false} onClick={()=>setWizard(true)}/>}</SidebarMenu><p className="nav-label lesson-label">DEFTER</p><SidebarMenu>{bookNav.map(({icon,label,id})=><NavItem key={id} icon={icon} label={label} active={view===id} onClick={()=>{setView(id);window.scrollTo({top:0})}}/>)}<NavItem icon={Settings} label="Ayarlar" active={view==='settings'} onClick={()=>{setView('settings');window.scrollTo({top:0})}}/></SidebarMenu>{rows.length>0&&<><p className="nav-label lesson-label">DERSLER</p><SidebarMenu>{subjects.filter(s=>subjectCount(rows,s)>0).map(s=><LessonItem key={s} name={s} count={subjectCount(rows,s)} onClick={()=>{setSubject(s);setView('archive');window.scrollTo({top:0})}}/>)}{rows.some(isUnrecognized)&&<LessonItem name={PENDING_FILTER} count={rows.filter(isUnrecognized).length} onClick={()=>{setSubject(PENDING_FILTER);setView('archive');window.scrollTo({top:0})}}/>}</SidebarMenu></>}</SidebarContent><SidebarFooter><div className="target-card"><span className="eyebrow">HEDEF · YKS {profile.examYear}{profile.target?` · ${profile.target}`:''}</span>{examDays>0?<strong><CalendarClock size={18} aria-hidden="true"/> {examDays} gün kaldı</strong>:<strong>{examDays===0?'Sınav günü. Başarılar.':'Sınav tarihini güncelle'}</strong>}{profile.motto&&<p>{profile.motto}</p>}</div><button className="profile" onClick={()=>setView('settings')} title="Profili düzenle"><span>{initials(profile.name||user?.name||'?')}</span><div>{profile.name||user?.name}<small>{profile.grade==='Mezun'?'Mezun':profile.grade+'. sınıf'}{profile.school?` · ${profile.school}`:''} · YKS {profile.examYear}</small></div></button></SidebarFooter></Sidebar>
- <SidebarInset><header className="topbar"><SidebarTrigger/><span className="crumb"><span className="crumb-root">{planNav.some(n=>n.id===view)?'Program':'Defter'} / </span><b>{nav.find(n=>n.id===view)?.label}</b></span><div className="topbar-end">{user?.developer&&<><button type="button" onClick={()=>setView('settings')} className={'status '+(supabase?'good':'pending')} title="Supabase Bağlantı Durumu">{supabase?'Supabase Bağlı':'Supabase Bağlanmadı'}</button><button type="button" onClick={()=>setView('settings')} className={'status '+(ai?'good':'pending')} title="OpenAI API Bağlantı Durumu">{ai?'OpenAI API Bağlı':'OpenAI API Bağlanmadı'}</button></>}<span className="private-label">{firstName?`${genitive(firstName)} programı`:'Programın'}</span></div></header><main className="workspace">
- {error&&<div className="error-banner" role="alert"><AlertCircle size={20}/><span>{error}</span><button onClick={()=>void load()}>Tekrar dene</button></div>}
- <div className={'page-heading'+(view==='home'?' compact':'')}>{view!=='home'&&<div><p className="eyebrow">{headings[view][0]}</p><h1>{headings[view][1]}</h1><p>{headings[view][2]}</p></div>}<div className="actions">{(view==='archive'||view==='report')&&<button className="secondary" onClick={()=>print()}><Printer size={17}/> Yazdır / PDF</button>}{view==='home'&&plan&&<button className="secondary" onClick={()=>setWizard(true)}><Wand2 size={17}/> Programı düzenle</button>}{view==='home'&&(plan||rows.length>0)&&<button className="secondary" onClick={()=>openUpload()}><Plus size={17}/> Yanlış ekle</button>}{view!=='home'&&view!=='settings'&&view!=='notes'&&view!=='resources'&&<button className="primary" onClick={()=>openUpload()}><Plus size={18}/> Yanlış ekle</button>}</div></div>
- <div className="view" key={view}>
+ const examDays=daysUntil(profile.examDate);
+ return <StudyContext.Provider value={study}><Toaster position="top-center"/>
+ <AppFrame view={view} setView={setView} plan={plan} due={due} rows={rows} profile={profile} user={user} examDays={examDays} error={error} onRetry={()=>void load()} openUpload={()=>openUpload()} openWizard={()=>setWizard(true)} onPrint={()=>print()} setSubject={setSubject}>
  {view==='home'&&<TodayView/>}
  {view==='program'&&<ProgramView/>}
  {view==='resources'&&<ResourcesView/>}
@@ -116,8 +105,7 @@ export default function StudyApp(){
  {view==='exams'&&<ExamsView/>}
  {view==='notes'&&<NotesView preset={notesPreset}/>}
  {view==='settings'&&<SettingsView/>}
- </div>
- </main><MobileBar view={view} setView={setView} due={due} openUpload={()=>openUpload()}/></SidebarInset></SidebarProvider>
+ </AppFrame>
  <UploadDialog open={upload} files={uploadFiles} preset={uploadPreset} onClose={()=>setUpload(false)}/>
  <PlanWizard open={wizard} onClose={()=>setWizard(false)}/>
  <AlarmCenter/>
