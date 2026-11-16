@@ -3,26 +3,11 @@ import {TriangleAlert,Check,ArrowRight} from '@/components/icons';
 import {monthlyPriceLabel,priceSummary,trialLabel,PAYMENT_NOTE} from '@/lib/pricing';
 
 // Bu dosyadaki tüm örnek ekranlar ve sayılar gösterim amaçlıdır (gerçek kullanıcı verisi değil)
-export const netSeries=[28,42,52,60,68,84,92,108];
-
-export function NetChart(){
- const w=330,h=104,top=12,max=120,x=(i:number)=>12+i*((w-24)/(netSeries.length-1)),y=(v:number)=>top+h-(v/max)*h;
- const pts=netSeries.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`);
- return <svg viewBox={`0 0 ${w} ${top+h+22}`} role="img" aria-label="Son 8 haftada net gelişimi: 28 netten 108 nete yükseliyor" className="lp-chart">
-  {netSeries.map((_,i)=><line key={i} x1={x(i)} x2={x(i)} y1={top} y2={top+h} className="lp-vgrid"/>)}
-  {[0,40,80,120].map(g=><g key={g}><line x1="0" x2={w} y1={y(g)} y2={y(g)} className="lp-grid"/><text x="0" y={y(g)-3} className="lp-axis">{g}</text></g>)}
-  <polygon points={`${x(0)},${top+h} ${pts.join(' ')} ${x(netSeries.length-1)},${top+h}`} className="lp-area"/>
-  <polyline points={pts.join(' ')} fill="none" pathLength="1" className="lp-line"/>
-  {netSeries.map((v,i)=><circle key={i} cx={x(i)} cy={y(v)} r="3" className="lp-dot"/>)}
-  {netSeries.map((_,i)=><text key={i} x={x(i)} y={top+h+16} textAnchor="middle" className="lp-axis">{i+1}. hf</text>)}
- </svg>
-}
-
 /* ───────── ÜÇ ADIM ───────── */
 const steps=[
- {title:'Saatlerini gir.',text:'Okul ve dershane saatlerini yaz, temponu seç.'},
- {title:'Programın hazır.',text:'Konular boş saatlerine çakışmadan yerleşir.'},
- {title:'Her gün tek işe bak.',text:'Bugün ekranı sıradaki işi gösterir. Tamamladıkça ilerlemen dolar.'},
+ {title:'Soruyu çek.',text:'Fotoğraf çek ya da galeriden istediğin kadar soru seç.'},
+ {title:'Konusunu netudu bulsun.',text:'Ders, konu ve alt konu otomatik belirlenir. Yanlışsa tek dokunuşla düzeltirsin.'},
+ {title:'Tekrarı gününde önüne gelsin.',text:'Sorular 1, 3, 7, 14, 30 ve 60. günlerde tekrar sırasına girer.'},
 ];
 export function Steps(){
  return <section id="nasil" className="lp-wrap lp-how" aria-labelledby="lp-how-title">
@@ -57,7 +42,7 @@ function ExamVisual(){
 }
 const benefits=[
  {id:'program',tag:'Program',title:'Her günün işi hazır.',text:'Okul ve dershaneyle çakışmayan saatlik plan. Çalışamadığın günde dersler bir gün ileri kayar.',visual:<DayVisual/>},
- {id:'defter',tag:'Yanlış defteri',title:'Yanlışın çözümüyle saklansın.',text:'Soru fotoğrafını yükle. Çözüm, Maarif Modeli ders programındaki konu ve tekrar günleri hazır gelir.',visual:<NoteVisual/>},
+ {id:'defter',tag:'Yanlış defteri',title:'Yanlışın çözümüyle saklansın.',text:'Soruyu çek ya da galeriden seç. Ders, konu ve alt konu otomatik bulunur; çözüm ve tekrar günleri hazır gelir.',visual:<NoteVisual/>},
  {id:'deneme',tag:'Deneme ve net',title:'Netlerinin yönünü gör.',text:'Denemelerini gir. Gelişimin ve en çok zorlandığın konular tek yerde toplanır.',visual:<ExamVisual/>},
 ];
 export function Benefits(){
@@ -73,10 +58,10 @@ export function Benefits(){
 // Yalnız kodda var olan özellikler listelenir.
 const planFeatures=[
  'Okul ve dershane saatlerine göre günlük program',
- 'Yanlışlarını fotoğrafla, konuya göre sakla',
+ 'Yanlışını fotoğrafla; ders ve konusu otomatik bulunur',
  'Aralıklı tekrar: 1, 3, 7, 14, 30 ve 60. gün',
  'Deneme ve net takibi',
- 'Aylık rapor ve ders notları',
+ 'Aylık rapor ve görsel ders notları',
  'Excel, PDF çıktısı ve yedek',
 ];
 export function Pricing({onStart}:{onStart:()=>void}){

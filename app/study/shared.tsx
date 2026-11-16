@@ -6,7 +6,7 @@ import {topicOptions,mebGrades,gradeOfExam,type Question,type Exam,type Report,t
 import type {PlanState,Lesson} from '@/lib/plan/scheduler';
 import type {PlaylistItem} from '@/lib/plan/resources';
 export type View='home'|'program'|'resources'|'archive'|'report'|'exams'|'notes'|'settings';
-export type AiKind='solve'|'note'|'report'|'video'|'quote'|'playlist';
+export type AiKind='solve'|'note'|'report'|'video'|'quote'|'playlist'|'classify';
 export type Usage=Record<AiKind,{used:number;limit:number}>&{unlimited:boolean};
 export type Account={
  id?:string;
@@ -22,7 +22,7 @@ export type Account={
  authProvider?:'supabase'|'local';
  createdAt?:string;
 };
-export type ApiResponse={error?:string;sessionToken?:string;questions:Question[];question:Question;exams:Exam[];exam:Exam;aiReady:boolean;youtubeReady:boolean;supabaseReady?:boolean;user:Account|null;usage:Usage;profileSet:boolean;plan:PlanState|null;report:Report|null;previous:Report|null;videos:Video[];notice:string;added:number;received:number;notes:StudyNote[];note:StudyNote|null;profile:Profile;playlist?:{listId:string;total:number;items:PlaylistItem[]}};
+export type ApiResponse={error?:string;sessionToken?:string;questions:Question[];question:Question;exams:Exam[];exam:Exam;aiReady:boolean;youtubeReady:boolean;supabaseReady?:boolean;user:Account|null;usage:Usage;profileSet:boolean;plan:PlanState|null;report:Report|null;previous:Report|null;videos:Video[];notice:string;added:number;received:number;notes:StudyNote[];note:StudyNote|null;profile:Profile;playlist?:{listId:string;total:number;items:PlaylistItem[]};status?:'ok'|'review'|'skipped';reason?:string};
 export type UploadPreset={subject?:string;topic?:string;examType?:string;exam?:string;question?:string};
 export class ApiError extends Error{constructor(message:string,public status:number){super(message)}}
 export function authHeaders(extra?:Record<string,string>):Record<string,string>{
@@ -105,7 +105,7 @@ export function TopicSelect({subject,value,onChange,examType,allowEmpty=true,lab
  return <select className="choice-native" aria-label={label} value={known||!value?value:'__custom'} onChange={e=>onChange(e.target.value==='__custom'?value:e.target.value)}>{allowEmpty&&<option value="">Konu seç{prefer?` (${mebGrades[prefer]} önde)`:''}</option>}{!known&&value&&<option value="__custom">{value} (listede yok)</option>}{grades.map(g=>{const units=[...new Set(opts.filter(o=>o.grade===g).map(o=>o.unit))];return units.map(u=><optgroup key={g+u} label={`${mebGrades[g]||g} · ${u}`}>{opts.filter(o=>o.grade===g&&o.unit===u).map(o=><option key={o.grade+o.unit+o.value} value={o.value}>{o.value}</option>)}</optgroup>)})}</select>}
 // Günlük yapay zekâ hakkı: kalan sayı (sınırsızsa null)
 export const remaining=(u:Usage|null,k:AiKind)=>!u||u.unlimited?null:Math.max(0,u[k].limit-u[k].used);
-export const kindLabel:Record<AiKind,string>={solve:'Soru çözümü',note:'Ders notu',report:'Aylık rapor',video:'Video yenileme',quote:'Günün cümlesi',playlist:'Liste getirme'};
+export const kindLabel:Record<AiKind,string>={solve:'Soru çözümü',note:'Ders notu',report:'Aylık rapor',video:'Video yenileme',quote:'Günün cümlesi',playlist:'Liste getirme',classify:'Soru tanıma'};
 export function QuotaNote({kind}:{kind:AiKind}){const s=useStudy();const left=remaining(s.usage,kind);if(left===null||!s.ai)return null;return <span className={'quota-note'+(left===0?' empty':'')}>{left===0?`Bugünkü ${kindLabel[kind].toLocaleLowerCase('tr')} hakkın bitti. Gece yarısı yenilenir`:`Bugün kalan: ${left}/${s.usage![kind].limit} ${kindLabel[kind].toLocaleLowerCase('tr')}`}</span>}
 
 // Sayıların sayarak artması: yalnız gerçek değerlerle çalışır. Hareket azaltma tercihinde ve ilk çizimde kayma olmaması için

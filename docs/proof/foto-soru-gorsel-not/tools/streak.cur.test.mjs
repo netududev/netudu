@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+const {studyStreak}=await import((process.env.ND_ROOT||process.cwd())+'/lib/plan/streak.ts');
+const m=(...d)=>Object.fromEntries(d.map((x,i)=>[String(i),x]));
+assert.equal(studyStreak({},'2026-11-12'),0);
+assert.equal(studyStreak(m('2026-11-12'),'2026-11-12'),1);
+assert.equal(studyStreak(m('2026-11-10','2026-11-11','2026-11-12'),'2026-11-12'),3);
+assert.equal(studyStreak(m('2026-11-10','2026-11-11'),'2026-11-12'),2,'bugün yapılmadıysa dünden sayılır');
+assert.equal(studyStreak(m('2026-11-09','2026-11-11','2026-11-12'),'2026-11-12'),2,'boşluk seriyi keser');
+assert.equal(studyStreak(m('2026-11-08'),'2026-11-12'),0,'iki gün önce: seri bitti');
+assert.equal(studyStreak(m('2026-11-12','2026-11-12','2026-11-11'),'2026-11-12'),2,'aynı güne iki ders tek gün sayılır');
+assert.equal(studyStreak(m('2026-02-28','2026-03-01'),'2026-03-01'),2,'ay sınırı');
+assert.equal(studyStreak({a:'bozuk'},'2026-11-12'),0);
+console.log('streak: 9/9 PASS');
