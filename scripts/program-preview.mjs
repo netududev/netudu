@@ -28,7 +28,7 @@ const screens={
  'kaynaklar':()=>S.kaynaklar(),
  'kaynaklar-bos':()=>S.kaynaklar({resources:[]}),
 };
-const extra={'program':[[768,900],[1024,900]],'kaynaklar':[[768,900]]};
+const extra={'program':[[768,900],[900,900],[1024,900],[1280,900]],'kaynaklar':[[768,900]]};
 const b=await chromium.launch();const meas={};
 for(const [name,mk] of Object.entries(screens)){if(only&&!name.includes(only))continue;
  for(const [w,h] of [...sizes,...(extra[name]||[])])for(const dark of [false,true]){
@@ -45,6 +45,8 @@ for(const [name,mk] of Object.entries(screens)){if(only&&!name.includes(only))co
    const cobalt=[...document.querySelectorAll('button,a')].filter(e=>vis(e)&&getComputedStyle(e).backgroundColor==='rgb(52, 84, 209)').map(e=>(e.textContent||e.getAttribute('aria-label')||'').trim().slice(0,28));
    const r=s=>{const e=document.querySelector(s);if(!e||!vis(e))return null;const x=e.getBoundingClientRect();return {w:Math.round(x.width),h:Math.round(x.height),x:Math.round(x.x),y:Math.round(x.y)}};
    const cols=s=>{const e=document.querySelector(s);return e?getComputedStyle(e).gridTemplateColumns:null};
-   return {sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,kobalt:cobalt,kobaltSayi:cobalt.length,kucukHedef:small,dayGrid:r('.day-grid'),dayGridCols:cols('.day-grid'),view:r('.view'),dashCols:cols('.dashboard-grid'),tdCols:cols('.td-columns'),resStats:r('.res-stats'),dialog:r('[data-slot=dialog-content]'),wizardNav:r('.wizard-nav'),taşan:[...document.querySelectorAll('.view *')].filter(e=>vis(e)&&e.getBoundingClientRect().right>document.documentElement.clientWidth+1).slice(0,4).map(e=>e.tagName+'.'+String(e.className).slice(0,30)),pageActions:[...document.querySelectorAll('.page-heading .actions button')].map(e=>e.textContent.trim())}});
+   const dugme=[...document.querySelectorAll('.day-card .lesson-actions.compact :is(button,a)')].filter(vis).map(e=>{const b=e.getBoundingClientRect();const k=[...e.children].map(c=>c.getBoundingClientRect());return {t:e.textContent.trim().slice(0,16),w:Math.round(b.width),h:Math.round(b.height),kirpik:e.scrollWidth>e.clientWidth,tasan:k.some(x=>x.left<b.left-0.5||x.right>b.right+0.5)}});
+   const la=document.querySelector('.day-card .lesson-actions.compact');const bt=la?[...la.children].map(c=>c.getBoundingClientRect()):[];
+   return {dugmeKirpma:{n:dugme.length,kirpik:dugme.filter(d=>d.kirpik||d.tasan).length,enDar:dugme.length?Math.min(...dugme.map(d=>d.w)):null,satirAraligi:bt.length>1?Math.round(bt[1].top-bt[0].bottom):null,ornek:dugme.slice(0,3)},sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth,kobalt:cobalt,kobaltSayi:cobalt.length,kucukHedef:small,dayGrid:r('.day-grid'),dayGridCols:cols('.day-grid'),view:r('.view'),dashCols:cols('.dashboard-grid'),tdCols:cols('.td-columns'),resStats:r('.res-stats'),dialog:r('[data-slot=dialog-content]'),wizardNav:r('.wizard-nav'),taşan:[...document.querySelectorAll('.view *')].filter(e=>vis(e)&&e.getBoundingClientRect().right>document.documentElement.clientWidth+1).slice(0,4).map(e=>e.tagName+'.'+String(e.className).slice(0,30)),pageActions:[...document.querySelectorAll('.page-heading .actions button')].map(e=>e.textContent.trim())}});
   console.log(file,JSON.stringify(meas[`${name}-${w}-${th}`]).slice(0,360));await p.close()}}
 fs.writeFileSync(OUT+`/olcum-${MODE}.json`,JSON.stringify(meas,null,1));await b.close();fs.rmSync(tmp,{recursive:true,force:true});

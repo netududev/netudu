@@ -1,6 +1,8 @@
 /* PR 5: Bugün (iki sütun), Program (gün sekmeleri, ikincil Tamamla), sihirbaz penceresi ve Kaynaklar kartı yerleşimi */
 /* Dokunma hedefleri: bu ekranlarda ikincil / metin düğmeleri en az 44px */
 .view:is([data-view=home],[data-view=program],[data-view=resources]) :is(.secondary,.text-button,.primary){min-height:var(--h-btn)}
+/* mobilde genel kural (50-v10-v11.css) birincil/ikincil düğmeyi 48px yapar; yukarıdaki özgüllük onu 44'e indirmesin */
+@media(max-width:767px){.view:is([data-view=home],[data-view=program],[data-view=resources]) :is(.secondary,.primary){min-height:48px}}
 .view[data-view=resources] .rc-more,.view[data-view=resources] .res-step .icon-button{min-width:var(--h-btn);min-height:var(--h-btn)}
 /* Bugün: akış 2fr, tekrarlar + günün cümlesi 1fr (geniş ekranda); dar ekranda alt alta */
 .td-columns{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s5);align-items:start;margin-bottom:var(--s5)}
@@ -14,9 +16,11 @@
 .week-chips button.on{background:var(--fg);border-color:var(--fg);color:var(--bg)}
 .week-chips button.on.cur{border-color:var(--fg)}
 /* Gün kartı eylemleri: Tamamla ikincil ve tam satır; kaydır + video yan yana */
-.day-card .lesson-actions.compact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);margin-top:var(--s3)}
-.day-card .lesson-actions.compact>:first-child{grid-column:1/-1}
-.day-card .lesson-actions.compact :is(.primary,.secondary){width:100%;min-height:var(--h-btn);padding:6px 8px;font-size:.8125rem}
+/* Tamamla tam satır; Günü kaydır + Video yan yana, kart ikisine yetecek kadar geniş değilse alt alta (etiket kırpılmaz, sarar) */
+.day-card .lesson-actions.compact{display:flex;flex-wrap:wrap;align-content:flex-start;gap:var(--s2);margin:var(--s3) 0 0;width:100%;padding:0}
+.day-card .lesson-actions.compact>:is(.primary,.secondary):first-child{flex:1 1 100%}
+.day-card .lesson-actions.compact :is(.primary,.secondary){flex:1 1 124px;min-width:0;min-height:var(--h-btn);padding:6px 8px;font-size:.8125rem;gap:4px;line-height:1.25;text-align:center}
+@media(max-width:767px){.day-card .lesson-actions.compact :is(.primary,.secondary){min-height:48px}}
 /* Gün sekmeleri: yalnız 768px altında; tek sütun, seçili gün kartı görünür */
 .day-tabs{display:none}
 @media(max-width:767px){
@@ -48,14 +52,12 @@
 .week-chips button,.week-picker .icon-button{min-height:var(--h-btn)}
 .week-picker .icon-button{min-width:var(--h-btn)}
 .day-card>div{align-self:stretch}
-.day-card .lesson-actions.compact{width:100%;padding:0;gap:var(--s2)}
-.day-card .lesson-actions.compact :is(.primary,.secondary){gap:4px;white-space:nowrap}
 .day-card .dc-meta{display:flex;align-items:flex-start;gap:6px;line-height:1.4}
 .day-card .dc-meta svg{flex:none;margin-top:2px}
-/* Sihirbaz gün seçicisi: seçili gün kobalt dolgu değil, açık zemin + kobalt çerçeve (ekranın birincili "Devam") */
-.wizard .day-pills button.on{background:var(--brand-soft);border-color:var(--brand);color:var(--brand-ink)}
+/* Sihirbaz ve kaynak penceresi gün seçicisi: seçili gün kobalt dolgu değil, açık zemin + kobalt çerçeve (pencerenin birincili "Devam" / "Ekle") */
+:is(.wizard,.res-dialog) .day-pills button.on{background:var(--brand-soft);border-color:var(--brand);color:var(--brand-ink)}
 /* 40-v5-v9.css'teki scale(.96) bildirimi seçicilerin yalnız :active hâli içindi; hareketsizken çipler küçülüp 44px'in altına iniyordu */
 .week-chips button,.day-pills button{transform:none}
 .week-chips button:active,.day-pills button:active{transform:scale(.96)}
 .view:is([data-view=home],[data-view=resources]) :is(.la-more summary,.res-videos summary,.focus-actions button){min-height:var(--h-btn)}
-.wizard .day-pills button{min-height:var(--h-btn)}
+:is(.wizard,.res-dialog) .day-pills button{min-height:var(--h-btn)}

@@ -2,7 +2,7 @@
 
 | Görev | Tür | Aralık | Tur | Yazar modeli |
 |---|---|---|---|---|
-| PR 5: Bugün, Program, sihirbaz, Kaynaklar | görsel / karma | 5db9145..bu turun commit'i | 1 | sonnet |
+| PR 5: Bugün, Program, sihirbaz, Kaynaklar | görsel / karma | 5db9145..bu turun commit'i | 2 | sonnet |
 
 ## İddia
 - [x] Bugün: başlık eylemi yalnız "Programı düzenle" (ikincil/hayalet; "Yanlış ekle" üst çubukta). Odak kartında tek birincil "Tamamla". Geniş ekranda (>=1280px) "Bugünün akışı" 2fr, yanında 1fr sütunda "Bugünkü tekrarların" + "Günün cümlesi"; dar ekranda alt alta. `.td-focus.is-done::before` kum gradyanı değişmedi.
@@ -10,7 +10,7 @@
 - [x] Program 768px altında gün sekmeli tek sütun (7 sekme, seçili günün kartı), yatay kaydırma yok (390/768/1024/1440'ta sw == cw).
 - [x] Sihirbaz: kapat + başlık üstte, "Adım n / 3" göstergesi, sabit alt çubuk (solda hayalet "Geri", sağda birincil "Devam" / son adımda "Programı oluştur" ya da "Programı kaydet"); masaüstü 720px, mobil tam ekran, birincil kalan genişliği doldurur; seçili gün düğmeleri kobalt dolgu değil (önce 7 kobalt, sonra 1).
 - [x] Kaynaklar: özet şeridi üç kutu (tek kalan kutu tam satır kuralı korundu); kartta ilerleme çubuğu ve "12/40 video" aynı satırda (çubuk kobalt, veri `done/total`); ⋯ menüsünde Düzenle + Sil (sil kırmızı, onaylı); sayfada tek kobalt birincil (ilk bitmemiş kaynak), diğer kartların eylemleri ikincil; oynatma listesinde "Devam et" bağlantısı.
-- [x] Davranış korunur: planlama mantığı (lib/plan/*), ilerleme işaretleme, alarm, kaynak ekleme/düzenleme/silme, kuyruk/limit kodu değişmedi; yalnız yerleşim.
+- [x] Davranış korunur: planlama mantığı (lib/plan/resources.ts), ilerleme işaretleme, alarm, kaynak ekleme/düzenleme/silme, kuyruk/limit kodu değişmedi. Yerleşim dışındaki farklar kopya/sıra değişiklikleridir: kaynak kartında "YouTube'da devam et" yerine "Devam et" (erişilebilir ad: "Devam et: N. video, YouTube'da açılır"), gün kartında "Videoyu izle" yerine "Video" (kompakt kip), sihirbazda "Devam et" yerine "Devam"; kaynak kartında eylem sırası (bağlantı "Devam et" önce, sonra Geri al / bitirdim) ve lead belirleme (`lib/plan/resource-view.ts`, yeni saf yardımcı).
 - [x] Dokunma hedefleri: ölçülen bütün ekranlarda (1440/390) kontrollerin yüksekliği >=44px; palet jetonlardan (yeni CSS'te düz hex yok).
 
 ## Önce
@@ -65,10 +65,28 @@ Yeni testler: `tests/week-view.test.mjs` (5; modül yokken kırmızı koşuldu: 
 - Sihirbaz: mevcut `useEffect(...,[open])` yalnız pencere açılınca sıfırlar (adım/cfg); dokunulmadı, başka bağımlılık eklenmedi.
 - Program `open` günü `[plan]` efektiyle tazelenir (mevcut, dokunulmadı); Kaynaklar'da ⋯ menüsü Silme onayını kart düzeyindeki `del` durumuyla açar (menü içinde AlertDialog yok).
 
+## Tur 2 (inceleme SKOR 4 bulguları)
+- ÖNEMLİ, "Günü kaydır" kırpılması: gün kartı eylemleri `flex-wrap` oldu; "Tamamla" tam satır, "Günü kaydır" + "Video" her biri `flex:1 1 124px`, `nowrap` kaldırıldı; kart ikisine yetmiyorsa alt alta düşer. Kopya değişmedi. `align-content:flex-start` ile Tamamla ile alt satır arası 8px (önce ~30px: kart yüksekliği satırlara dağıtılıyordu; `.lesson-actions` margin sızıntısı değil). `.day-card .lesson-actions.compact` seçicisi iki yerden tek kurala birleştirildi.
+- Ölçüm (`olcum-sonraki.json` `dugmeKirpma`; scrollWidth>clientWidth ya da ikon/etiket düğme dışına taşma = kırpık; 21 düğme/genişlik, 390'da 3):
+
+| Genişlik | En dar düğme (px) | Kırpık | Tamamla–alt satır boşluğu | sw==cw |
+|---|---|---|---|---|
+| 768 | 212 | 0 | 8 | evet |
+| 900 | 126 | 0 | 8 | evet |
+| 1024 | 199 (tek sütun) | 0 | 8 | evet |
+| 1280 | 130 | 0 | 8 | evet |
+| 1440 | 214 (tek sütun) | 0 | 8 | evet |
+| 390 (ek) | 159 | 0 | 8 | evet |
+- Yeniden üretilen ve gözle bakılan: `program-1024-acik-sonraki.png`, `program-1440-acik-sonraki.png` (üç düğme alt alta, kırpma yok); diğer tüm `*-sonraki.png` dosyaları yeniden üretildi, ayrıca `program-900-*`, `program-1280-*` eklendi.
+- Lead kaynak: `leadResourceId(list, today, todayOff)` artık `Resource[]` alır (`as Resource` yok; oynatma listesi bitişi `watched` ile). Sıra: bugün işi bekleyen (`unitsFor` var ve `done` değil) ilk kaynak (kitaplar önce); yoksa ilk bitmemiş; hepsi bitmiş/boş liste null. "Bugünkü pay tamamlandı" ölçütü `resources.ts` `unitsFor(...).done`. Testler: `tests/week-view.test.mjs` (4 test; kod önce yazıldı, kırmızı-önce koşulmadı).
+- Bilinçli seçim: lead oynatma listesinde birincil kobalt eylem "Devam et" dış bağlantısıdır; ilerleme işaretleme ("Bugünkünü bitirdim") ikincile düşer.
+- Dokunma hedefi: `95-program-kaynaklar.css` (0,3,0) kuralı mobilde genel 48px'i 44'e indiriyordu; <768px'te `.primary,.secondary` 48px'e geri alındı (gün kartı düğmeleri dahil; ölçüm: 390'da 48). Masaüstü 44px.
+- Kaynak penceresi (`.res-dialog`, `resource-dialog.tsx`) gün seçici seçili günü sihirbazdaki gibi açık zemin + kobalt çerçeve yapar (`:is(.wizard,.res-dialog)`); önizleme bu pencereyi çizmediği için yalnız CSS ve kod incelemesiyle; Vercel önizlemesinde teyit gerekir.
+- `sihirbaz-390-*.png`: önizleme düz `Dialog` karşılığı `sr-only` açıklamayı ("Okul ve sabit saatlerinle...") görünür çiziyor; gerçek uygulamada `sr-only` ile gizlidir (önizleme artefaktı).
+- Test: `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` -> tests 85, pass 85, fail 0, çıkış 0. Önizleme betiği genişletildi (`dugmeKirpma` ölçümü, program 900/1280).
+
 ## Orkestratör doğrulaması
 
-- `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` yeniden koşuldu: 83/83, çıkış 0.
-- Gerçek Radix (⋯ menüsü, silme onayı, sihirbaz) bu ortamda denenemedi; Vercel önizlemesinde teyit gerekir.
 
 ## Kapsam dışı / bilinen eksikler
 - Önizleme: Next/Tailwind yok; Radix bileşenleri düz karşılık; yazı tipi Manrope değil; açık/kapalı pencere ve DropdownMenu/AlertDialog gerçek tarayıcıda denenmedi (⋯ menüsü, Sil onayı, sihirbaz adım 2-3 ekran görüntüsü yok: SSR yalnız adım 1'i çizer). Mobil alt çubuk tam sayfa ekran görüntüsünde ortada görünür (önizleme artefaktı).
@@ -81,3 +99,8 @@ Yeni testler: `tests/week-view.test.mjs` (5; modül yokken kırmızı koşuldu: 
 1. Bu turun commit'ini checkout et (SHA: REVIEW-<n>.md başlığı / PR head'i).
 2. `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test`
 3. `ND_ROOT=$PWD SRC_ROOT=$PWD MODE=sonraki OUT=$PWD/docs/proof/feat-program-ve-kaynaklar PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node scripts/program-preview.mjs`
+
+## Orkestratör doğrulaması (Tur 2)
+
+- `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` yeniden koşuldu: 85/85, çıkış 0 (Tur 1: 83/83).
+- Kaynak penceresindeki seçili gün biçimi önizlemede görünmüyor (res-dialog çizilmiyor); Vercel önizlemesinde teyit gerekir.

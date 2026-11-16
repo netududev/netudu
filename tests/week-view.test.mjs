@@ -18,13 +18,27 @@ test('dayIndexFor: aralık dışı seçim yok sayılır',()=>{
   assert.equal(W.dayIndexFor(week,'2026-11-16',{week:1,idx:-1},1),0);
   assert.equal(W.dayIndexFor([],'2026-11-16',null,1),0);
 });
-const r=(id,kind,done,total)=>({id,kind,done,total});
-test('leadResourceId: ekrandaki sırada (önce kitaplar, sonra listeler) ilk bitmemiş kaynak',()=>{
-  assert.equal(V.leadResourceId([r('p1','playlist',1,10),r('b1','book',3,5)]),'b1');
-  assert.equal(V.leadResourceId([r('b0','book',5,5),r('p1','playlist',1,10),r('b1','book',3,5)]),'b1');
-  assert.equal(V.leadResourceId([r('b0','book',5,5),r('p1','playlist',1,10)]),'p1');
+const TODAY='2026-11-16';
+const r=(id,kind,done,total,extra={})=>({id,kind,name:id,subject:'',unit:kind==='book'?'test':'video',total,done,perDay:2,minPerUnit:10,days:['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'],...(kind==='playlist'?{watched:Array.from({length:done},(_,i)=>i+1)}:{}),...extra});
+test('leadResourceId: ekrandaki sırada (önce kitaplar, sonra listeler) bugün işi bekleyen ilk kaynak',()=>{
+  assert.equal(V.leadResourceId([r('p1','playlist',1,10),r('b1','book',3,9)],TODAY),'b1');
+  assert.equal(V.leadResourceId([r('b0','book',5,5),r('p1','playlist',1,10),r('b1','book',3,9)],TODAY),'b1');
+  assert.equal(V.leadResourceId([r('b0','book',5,5),r('p1','playlist',1,10)],TODAY),'p1');
 });
-test('leadResourceId: hepsi bitti ya da liste boşsa null',()=>{
-  assert.equal(V.leadResourceId([r('b0','book',5,5)]),null);
-  assert.equal(V.leadResourceId([]),null);
+test('leadResourceId: bugünkü payı tamamlanan kitap lead olmaz; iş bekleyen sonraki kaynak olur',()=>{
+  const b1=r('b1','book',5,9,{log:{date:TODAY,units:[4,5]}});
+  assert.equal(V.leadResourceId([b1,r('b2','book',0,9)],TODAY),'b2');
+  assert.equal(V.leadResourceId([b1,r('p1','playlist',0,10)],TODAY),'p1');
+});
+test('leadResourceId: bugün işi kalmadıysa ilk bitmemiş kaynak (kobalt kaybolmaz)',()=>{
+  const b1=r('b1','book',5,9,{log:{date:TODAY,units:[4,5]}});
+  assert.equal(V.leadResourceId([b1],TODAY),'b1');
+  assert.equal(V.leadResourceId([b1,r('b2','book',1,9,{days:['Sal']})],TODAY),'b1');
+  assert.equal(V.leadResourceId([r('b1','book',1,9),r('b2','book',1,9)],TODAY,true),'b1');
+});
+test('leadResourceId: oynatma listesi bitişi watched ile; hepsi bitti ya da liste boşsa null',()=>{
+  assert.equal(V.leadResourceId([r('p0','playlist',10,10)],TODAY),null);
+  assert.equal(V.leadResourceId([r('p0','playlist',10,10),r('b1','book',9,9)],TODAY),null);
+  assert.equal(V.leadResourceId([r('p1','playlist',0,10,{done:10})],TODAY),'p1');
+  assert.equal(V.leadResourceId([],TODAY),null);
 });

@@ -1,5 +1,12 @@
 {
  "bugun-1440-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -26,6 +33,13 @@
   ]
  },
  "bugun-1440-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -52,6 +66,13 @@
   ]
  },
  "bugun-390-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -64,7 +85,7 @@
   "dayGridCols": null,
   "view": {
    "w": 358,
-   "h": 3074,
+   "h": 3094,
    "x": 16,
    "y": 233
   },
@@ -79,6 +100,13 @@
   ]
  },
  "bugun-390-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -91,7 +119,7 @@
   "dayGridCols": null,
   "view": {
    "w": 358,
-   "h": 3074,
+   "h": 3094,
    "x": 16,
    "y": 233
   },
@@ -106,6 +134,13 @@
   ]
  },
  "bugun-bitti-1440-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -117,7 +152,7 @@
   "dayGridCols": null,
   "view": {
    "w": 1024,
-   "h": 1774,
+   "h": 1744,
    "x": 336,
    "y": 276
   },
@@ -132,6 +167,13 @@
   ]
  },
  "bugun-bitti-1440-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -158,6 +200,13 @@
   ]
  },
  "bugun-bitti-390-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -170,7 +219,7 @@
   "dayGridCols": null,
   "view": {
    "w": 358,
-   "h": 2526,
+   "h": 2538,
    "x": 16,
    "y": 233
   },
@@ -185,6 +234,13 @@
   ]
  },
  "bugun-bitti-390-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -197,7 +253,7 @@
   "dayGridCols": null,
   "view": {
    "w": 358,
-   "h": 2526,
+   "h": 2538,
    "x": 16,
    "y": 233
   },
@@ -212,6 +268,13 @@
   ]
  },
  "bugun-bos-1440-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -236,6 +299,13 @@
   "pageActions": []
  },
  "bugun-bos-1440-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -260,6 +330,13 @@
   "pageActions": []
  },
  "bugun-bos-390-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -272,7 +349,7 @@
   "dayGridCols": null,
   "view": {
    "w": 358,
-   "h": 1642,
+   "h": 1646,
    "x": 16,
    "y": 77
   },
@@ -285,6 +362,13 @@
   "pageActions": []
  },
  "bugun-bos-390-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -297,7 +381,7 @@
   "dayGridCols": null,
   "view": {
    "w": 358,
-   "h": 1642,
+   "h": 1646,
    "x": 16,
    "y": 77
   },
@@ -310,6 +394,35 @@
   "pageActions": []
  },
  "program-1440-acik": {
+  "dugmeKirpma": {
+   "n": 21,
+   "kirpik": 0,
+   "enDar": 214,
+   "satirAraligi": 8,
+   "ornek": [
+    {
+     "t": "Tamamla",
+     "w": 214,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Günü kaydır",
+     "w": 214,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Video",
+     "w": 214,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    }
+   ]
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [],
@@ -317,14 +430,14 @@
   "kucukHedef": [],
   "dayGrid": {
    "w": 1024,
-   "h": 991,
+   "h": 1007,
    "x": 336,
    "y": 607
   },
   "dayGridCols": "245.5px 245.5px 245.5px 245.5px",
   "view": {
    "w": 1024,
-   "h": 1366,
+   "h": 1382,
    "x": 336,
    "y": 232
   },
@@ -342,6 +455,35 @@
   "pageActions": []
  },
  "program-1440-koyu": {
+  "dugmeKirpma": {
+   "n": 21,
+   "kirpik": 0,
+   "enDar": 214,
+   "satirAraligi": 8,
+   "ornek": [
+    {
+     "t": "Tamamla",
+     "w": 214,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Günü kaydır",
+     "w": 214,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Video",
+     "w": 214,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    }
+   ]
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [],
@@ -349,14 +491,14 @@
   "kucukHedef": [],
   "dayGrid": {
    "w": 1024,
-   "h": 991,
+   "h": 1007,
    "x": 336,
    "y": 607
   },
   "dayGridCols": "245.5px 245.5px 245.5px 245.5px",
   "view": {
    "w": 1024,
-   "h": 1366,
+   "h": 1382,
    "x": 336,
    "y": 232
   },
@@ -374,6 +516,35 @@
   "pageActions": []
  },
  "program-390-acik": {
+  "dugmeKirpma": {
+   "n": 3,
+   "kirpik": 0,
+   "enDar": 159,
+   "satirAraligi": 8,
+   "ornek": [
+    {
+     "t": "Tamamla",
+     "w": 326,
+     "h": 48,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Günü kaydır",
+     "w": 159,
+     "h": 48,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Video",
+     "w": 159,
+     "h": 48,
+     "kirpik": false,
+     "tasan": false
+    }
+   ]
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -385,12 +556,12 @@
    "w": 358,
    "h": 467,
    "x": 16,
-   "y": 886
+   "y": 902
   },
   "dayGridCols": "358px",
   "view": {
    "w": 358,
-   "h": 1161,
+   "h": 1177,
    "x": 16,
    "y": 192
   },
@@ -408,6 +579,35 @@
   "pageActions": []
  },
  "program-390-koyu": {
+  "dugmeKirpma": {
+   "n": 3,
+   "kirpik": 0,
+   "enDar": 159,
+   "satirAraligi": 8,
+   "ornek": [
+    {
+     "t": "Tamamla",
+     "w": 326,
+     "h": 48,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Günü kaydır",
+     "w": 159,
+     "h": 48,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Video",
+     "w": 159,
+     "h": 48,
+     "kirpik": false,
+     "tasan": false
+    }
+   ]
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -419,12 +619,12 @@
    "w": 358,
    "h": 467,
    "x": 16,
-   "y": 886
+   "y": 902
   },
   "dayGridCols": "358px",
   "view": {
    "w": 358,
-   "h": 1161,
+   "h": 1177,
    "x": 16,
    "y": 192
   },
@@ -442,6 +642,35 @@
   "pageActions": []
  },
  "program-768-acik": {
+  "dugmeKirpma": {
+   "n": 21,
+   "kirpik": 0,
+   "enDar": 212,
+   "satirAraligi": 8,
+   "ornek": [
+    {
+     "t": "Tamamla",
+     "w": 432,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Günü kaydır",
+     "w": 212,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Video",
+     "w": 212,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    }
+   ]
+  },
   "sw": 768,
   "cw": 768,
   "kobalt": [],
@@ -473,7 +702,97 @@
   ],
   "pageActions": []
  },
+ "program-900-acik": {
+  "dugmeKirpma": {
+   "n": 21,
+   "kirpik": 0,
+   "enDar": 126,
+   "satirAraligi": 8,
+   "ornek": [
+    {
+     "t": "Tamamla",
+     "w": 259,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Günü kaydır",
+     "w": 126,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Video",
+     "w": 126,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    }
+   ]
+  },
+  "sw": 900,
+  "cw": 900,
+  "kobalt": [],
+  "kobaltSayi": 0,
+  "kucukHedef": [],
+  "dayGrid": {
+   "w": 596,
+   "h": 1829,
+   "x": 280,
+   "y": 792
+  },
+  "dayGridCols": "291px 291px",
+  "view": {
+   "w": 596,
+   "h": 2382,
+   "x": 280,
+   "y": 240
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON."
+  ],
+  "pageActions": []
+ },
  "program-1024-acik": {
+  "dugmeKirpma": {
+   "n": 21,
+   "kirpik": 0,
+   "enDar": 199,
+   "satirAraligi": 8,
+   "ornek": [
+    {
+     "t": "Tamamla",
+     "w": 199,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Günü kaydır",
+     "w": 199,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Video",
+     "w": 199,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    }
+   ]
+  },
   "sw": 1024,
   "cw": 1024,
   "kobalt": [],
@@ -481,14 +800,14 @@
   "kucukHedef": [],
   "dayGrid": {
    "w": 720,
-   "h": 1580,
+   "h": 1604,
    "x": 280,
    "y": 710
   },
   "dayGridCols": "230.656px 230.672px 230.672px",
   "view": {
    "w": 720,
-   "h": 2075,
+   "h": 2099,
    "x": 280,
    "y": 216
   },
@@ -505,7 +824,75 @@
   ],
   "pageActions": []
  },
+ "program-1280-acik": {
+  "dugmeKirpma": {
+   "n": 21,
+   "kirpik": 0,
+   "enDar": 130,
+   "satirAraligi": 8,
+   "ornek": [
+    {
+     "t": "Tamamla",
+     "w": 268,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Günü kaydır",
+     "w": 130,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    },
+    {
+     "t": "Video",
+     "w": 130,
+     "h": 44,
+     "kirpik": false,
+     "tasan": false
+    }
+   ]
+  },
+  "sw": 1280,
+  "cw": 1280,
+  "kobalt": [],
+  "kobaltSayi": 0,
+  "kucukHedef": [],
+  "dayGrid": {
+   "w": 928,
+   "h": 1401,
+   "x": 304,
+   "y": 624
+  },
+  "dayGridCols": "300px 300px 300px",
+  "view": {
+   "w": 928,
+   "h": 1794,
+   "x": 304,
+   "y": 232
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON."
+  ],
+  "pageActions": []
+ },
  "program-bos-1440-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -530,6 +917,13 @@
   "pageActions": []
  },
  "program-bos-1440-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -554,6 +948,13 @@
   "pageActions": []
  },
  "program-bos-390-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -566,7 +967,7 @@
   "dayGridCols": null,
   "view": {
    "w": 358,
-   "h": 909,
+   "h": 913,
    "x": 16,
    "y": 192
   },
@@ -579,6 +980,13 @@
   "pageActions": []
  },
  "program-bos-390-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -591,7 +999,7 @@
   "dayGridCols": null,
   "view": {
    "w": 358,
-   "h": 909,
+   "h": 913,
    "x": 16,
    "y": 192
   },
@@ -604,6 +1012,13 @@
   "pageActions": []
  },
  "sihirbaz-1440-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -633,6 +1048,13 @@
   "pageActions": []
  },
  "sihirbaz-1440-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -662,6 +1084,13 @@
   "pageActions": []
  },
  "sihirbaz-390-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -691,6 +1120,13 @@
   "pageActions": []
  },
  "sihirbaz-390-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -720,6 +1156,13 @@
   "pageActions": []
  },
  "kaynaklar-1440-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -744,6 +1187,13 @@
   "pageActions": []
  },
  "kaynaklar-1440-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -768,6 +1218,13 @@
   "pageActions": []
  },
  "kaynaklar-390-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -780,7 +1237,7 @@
   "dayGridCols": null,
   "view": {
    "w": 358,
-   "h": 1907,
+   "h": 1923,
    "x": 16,
    "y": 192
   },
@@ -793,6 +1250,13 @@
   "pageActions": []
  },
  "kaynaklar-390-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -805,7 +1269,7 @@
   "dayGridCols": null,
   "view": {
    "w": 358,
-   "h": 1907,
+   "h": 1923,
    "x": 16,
    "y": 192
   },
@@ -818,6 +1282,13 @@
   "pageActions": []
  },
  "kaynaklar-768-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 768,
   "cw": 768,
   "kobalt": [
@@ -842,6 +1313,13 @@
   "pageActions": []
  },
  "kaynaklar-bos-1440-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -866,6 +1344,13 @@
   "pageActions": []
  },
  "kaynaklar-bos-1440-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 1440,
   "cw": 1440,
   "kobalt": [
@@ -890,6 +1375,13 @@
   "pageActions": []
  },
  "kaynaklar-bos-390-acik": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -902,7 +1394,7 @@
   "dayGridCols": null,
   "view": {
    "w": 358,
-   "h": 781,
+   "h": 789,
    "x": 16,
    "y": 192
   },
@@ -915,6 +1407,13 @@
   "pageActions": []
  },
  "kaynaklar-bos-390-koyu": {
+  "dugmeKirpma": {
+   "n": 0,
+   "kirpik": 0,
+   "enDar": null,
+   "satirAraligi": null,
+   "ornek": []
+  },
   "sw": 390,
   "cw": 390,
   "kobalt": [
@@ -927,7 +1426,7 @@
   "dayGridCols": null,
   "view": {
    "w": 358,
-   "h": 781,
+   "h": 789,
    "x": 16,
    "y": 192
   },
