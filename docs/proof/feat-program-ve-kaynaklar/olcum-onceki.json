@@ -1,0 +1,1409 @@
+{
+ "bugun-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Tamamla"
+  ],
+  "kobaltSayi": 1,
+  "kucukHedef": [
+   "Daha fazla",
+   "Paylaş",
+   "Tüm kaynaklar",
+   "Haftalık program",
+   "Başka cümle",
+   "Aylık rapor"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 1024,
+   "h": 2026,
+   "x": 336,
+   "y": 276
+  },
+  "dashCols": "629.625px 370.375px",
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": [
+   "Programı düzenle"
+  ]
+ },
+ "bugun-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Tamamla"
+  ],
+  "kobaltSayi": 1,
+  "kucukHedef": [
+   "Daha fazla",
+   "Paylaş",
+   "Tüm kaynaklar",
+   "Haftalık program",
+   "Başka cümle",
+   "Aylık rapor"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 1024,
+   "h": 2026,
+   "x": 336,
+   "y": 276
+  },
+  "dashCols": "629.625px 370.375px",
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": [
+   "Programı düzenle"
+  ]
+ },
+ "bugun-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Tamamla",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 2,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 358,
+   "h": 3086,
+   "x": 16,
+   "y": 233
+  },
+  "dashCols": "358px",
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": [
+   "Programı düzenle"
+  ]
+ },
+ "bugun-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Tamamla",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 2,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 358,
+   "h": 3086,
+   "x": 16,
+   "y": 233
+  },
+  "dashCols": "358px",
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": [
+   "Programı düzenle"
+  ]
+ },
+ "bugun-bitti-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "İlk kaynağını ekle"
+  ],
+  "kobaltSayi": 1,
+  "kucukHedef": [
+   "Daha fazla",
+   "Paylaş",
+   "Tüm kaynaklar",
+   "Haftalık program",
+   "Başka cümle",
+   "Aylık rapor"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 1024,
+   "h": 1778,
+   "x": 336,
+   "y": 276
+  },
+  "dashCols": "629.625px 370.375px",
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": [
+   "Programı düzenle"
+  ]
+ },
+ "bugun-bitti-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "İlk kaynağını ekle"
+  ],
+  "kobaltSayi": 1,
+  "kucukHedef": [
+   "Daha fazla",
+   "Paylaş",
+   "Tüm kaynaklar",
+   "Haftalık program",
+   "Başka cümle",
+   "Aylık rapor"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 1024,
+   "h": 1778,
+   "x": 336,
+   "y": 276
+  },
+  "dashCols": "629.625px 370.375px",
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": [
+   "Programı düzenle"
+  ]
+ },
+ "bugun-bitti-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "İlk kaynağını ekle",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 2,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 358,
+   "h": 2530,
+   "x": 16,
+   "y": 233
+  },
+  "dashCols": "358px",
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": [
+   "Programı düzenle"
+  ]
+ },
+ "bugun-bitti-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "İlk kaynağını ekle",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 2,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 358,
+   "h": 2530,
+   "x": 16,
+   "y": 233
+  },
+  "dashCols": "358px",
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": [
+   "Programı düzenle"
+  ]
+ },
+ "bugun-bos-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Programı oluştur"
+  ],
+  "kobaltSayi": 1,
+  "kucukHedef": [
+   "Başka cümle",
+   "Aylık rapor"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 1024,
+   "h": 997,
+   "x": 336,
+   "y": 112
+  },
+  "dashCols": "629.625px 370.375px",
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "bugun-bos-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Programı oluştur"
+  ],
+  "kobaltSayi": 1,
+  "kucukHedef": [
+   "Başka cümle",
+   "Aylık rapor"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 1024,
+   "h": 997,
+   "x": 336,
+   "y": 112
+  },
+  "dashCols": "629.625px 370.375px",
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "bugun-bos-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Programı oluştur",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 2,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 358,
+   "h": 1646,
+   "x": 16,
+   "y": 77
+  },
+  "dashCols": "358px",
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "bugun-bos-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Programı oluştur",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 2,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 358,
+   "h": 1646,
+   "x": 16,
+   "y": 77
+  },
+  "dashCols": "358px",
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "program-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "1. hafta",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla"
+  ],
+  "kobaltSayi": 8,
+  "kucukHedef": [
+   "Haftayı sıfırla",
+   "Önceki hafta",
+   "1. hafta",
+   "2. hafta",
+   "3. hafta",
+   "4. hafta",
+   "5. hafta",
+   "6. hafta",
+   "7. hafta",
+   "8. hafta",
+   "9. hafta",
+   "10. hafta",
+   "11. hafta",
+   "12. hafta",
+   "13. hafta",
+   "14. hafta",
+   "15. hafta",
+   "16. hafta",
+   "Sonraki hafta",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video"
+  ],
+  "dayGrid": {
+   "w": 1024,
+   "h": 1117,
+   "x": 336,
+   "y": 599
+  },
+  "dayGridCols": "245.5px 245.5px 245.5px 245.5px",
+  "view": {
+   "w": 1024,
+   "h": 1484,
+   "x": 336,
+   "y": 232
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON."
+  ],
+  "pageActions": []
+ },
+ "program-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "1. hafta",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla"
+  ],
+  "kobaltSayi": 8,
+  "kucukHedef": [
+   "Haftayı sıfırla",
+   "Önceki hafta",
+   "1. hafta",
+   "2. hafta",
+   "3. hafta",
+   "4. hafta",
+   "5. hafta",
+   "6. hafta",
+   "7. hafta",
+   "8. hafta",
+   "9. hafta",
+   "10. hafta",
+   "11. hafta",
+   "12. hafta",
+   "13. hafta",
+   "14. hafta",
+   "15. hafta",
+   "16. hafta",
+   "Sonraki hafta",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video"
+  ],
+  "dayGrid": {
+   "w": 1024,
+   "h": 1117,
+   "x": 336,
+   "y": 599
+  },
+  "dayGridCols": "245.5px 245.5px 245.5px 245.5px",
+  "view": {
+   "w": 1024,
+   "h": 1484,
+   "x": 336,
+   "y": 232
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON."
+  ],
+  "pageActions": []
+ },
+ "program-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "1. hafta",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 9,
+  "kucukHedef": [
+   "1. hafta",
+   "2. hafta",
+   "3. hafta",
+   "4. hafta",
+   "5. hafta",
+   "6. hafta",
+   "7. hafta",
+   "8. hafta",
+   "9. hafta",
+   "10. hafta",
+   "11. hafta",
+   "12. hafta",
+   "13. hafta",
+   "14. hafta",
+   "15. hafta",
+   "16. hafta"
+  ],
+  "dayGrid": {
+   "w": 358,
+   "h": 3678,
+   "x": 16,
+   "y": 846
+  },
+  "dayGridCols": "358px",
+  "view": {
+   "w": 358,
+   "h": 4332,
+   "x": 16,
+   "y": 192
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON."
+  ],
+  "pageActions": []
+ },
+ "program-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "1. hafta",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 9,
+  "kucukHedef": [
+   "1. hafta",
+   "2. hafta",
+   "3. hafta",
+   "4. hafta",
+   "5. hafta",
+   "6. hafta",
+   "7. hafta",
+   "8. hafta",
+   "9. hafta",
+   "10. hafta",
+   "11. hafta",
+   "12. hafta",
+   "13. hafta",
+   "14. hafta",
+   "15. hafta",
+   "16. hafta"
+  ],
+  "dayGrid": {
+   "w": 358,
+   "h": 3678,
+   "x": 16,
+   "y": 846
+  },
+  "dayGridCols": "358px",
+  "view": {
+   "w": 358,
+   "h": 4332,
+   "x": 16,
+   "y": 192
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON."
+  ],
+  "pageActions": []
+ },
+ "program-768-acik": {
+  "sw": 768,
+  "cw": 768,
+  "kobalt": [
+   "1. hafta",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla"
+  ],
+  "kobaltSayi": 8,
+  "kucukHedef": [
+   "Haftayı sıfırla",
+   "Önceki hafta",
+   "1. hafta",
+   "2. hafta",
+   "3. hafta",
+   "4. hafta",
+   "5. hafta",
+   "6. hafta",
+   "7. hafta",
+   "8. hafta",
+   "9. hafta",
+   "10. hafta",
+   "11. hafta",
+   "12. hafta",
+   "13. hafta",
+   "14. hafta",
+   "15. hafta",
+   "16. hafta",
+   "Sonraki hafta",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video"
+  ],
+  "dayGrid": {
+   "w": 464,
+   "h": 3689,
+   "x": 280,
+   "y": 870
+  },
+  "dayGridCols": "464px",
+  "view": {
+   "w": 464,
+   "h": 4319,
+   "x": 280,
+   "y": 240
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON."
+  ],
+  "pageActions": []
+ },
+ "program-1024-acik": {
+  "sw": 1024,
+  "cw": 1024,
+  "kobalt": [
+   "1. hafta",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla"
+  ],
+  "kobaltSayi": 8,
+  "kucukHedef": [
+   "Haftayı sıfırla",
+   "Önceki hafta",
+   "1. hafta",
+   "2. hafta",
+   "3. hafta",
+   "4. hafta",
+   "5. hafta",
+   "6. hafta",
+   "7. hafta",
+   "8. hafta",
+   "9. hafta",
+   "10. hafta",
+   "11. hafta",
+   "12. hafta",
+   "13. hafta",
+   "14. hafta",
+   "15. hafta",
+   "16. hafta",
+   "Sonraki hafta",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video",
+   "Tamamla",
+   "Günü kaydır",
+   "Video"
+  ],
+  "dayGrid": {
+   "w": 720,
+   "h": 1808,
+   "x": 280,
+   "y": 695
+  },
+  "dayGridCols": "230.656px 230.672px 230.672px",
+  "view": {
+   "w": 720,
+   "h": 2287,
+   "x": 280,
+   "y": 216
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON.",
+   "BUTTON."
+  ],
+  "pageActions": []
+ },
+ "program-bos-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Programı oluştur"
+  ],
+  "kobaltSayi": 1,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 1024,
+   "h": 522,
+   "x": 336,
+   "y": 232
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "program-bos-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Programı oluştur"
+  ],
+  "kobaltSayi": 1,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 1024,
+   "h": 522,
+   "x": 336,
+   "y": 232
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "program-bos-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Programı oluştur",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 2,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 358,
+   "h": 913,
+   "x": 16,
+   "y": 192
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "program-bos-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Programı oluştur",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 2,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 358,
+   "h": 913,
+   "x": 16,
+   "y": 192
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "sihirbaz-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Pzt",
+   "Sal",
+   "Çar",
+   "Per",
+   "Cum",
+   "Pzt",
+   "Devam et"
+  ],
+  "kobaltSayi": 7,
+  "kucukHedef": [
+   "Pzt",
+   "Sal",
+   "Çar",
+   "Per",
+   "Cum",
+   "Cmt",
+   "Paz",
+   "Hafta içi",
+   "Hafta sonu",
+   "Pzt",
+   "Sal",
+   "Çar",
+   "Per",
+   "Cum",
+   "Cmt",
+   "Paz",
+   "Hafta içi",
+   "Hafta sonu"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": null,
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": {
+   "w": 940,
+   "h": 810,
+   "x": 250,
+   "y": 45
+  },
+  "wizardNav": {
+   "w": 890,
+   "h": 61,
+   "x": 275,
+   "y": 817
+  },
+  "taşan": [],
+  "pageActions": []
+ },
+ "sihirbaz-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Pzt",
+   "Sal",
+   "Çar",
+   "Per",
+   "Cum",
+   "Pzt",
+   "Devam et"
+  ],
+  "kobaltSayi": 7,
+  "kucukHedef": [
+   "Pzt",
+   "Sal",
+   "Çar",
+   "Per",
+   "Cum",
+   "Cmt",
+   "Paz",
+   "Hafta içi",
+   "Hafta sonu",
+   "Pzt",
+   "Sal",
+   "Çar",
+   "Per",
+   "Cum",
+   "Cmt",
+   "Paz",
+   "Hafta içi",
+   "Hafta sonu"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": null,
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": {
+   "w": 940,
+   "h": 810,
+   "x": 250,
+   "y": 45
+  },
+  "wizardNav": {
+   "w": 890,
+   "h": 61,
+   "x": 275,
+   "y": 817
+  },
+  "taşan": [],
+  "pageActions": []
+ },
+ "sihirbaz-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Pzt",
+   "Sal",
+   "Çar",
+   "Per",
+   "Cum",
+   "Pzt",
+   "Devam et"
+  ],
+  "kobaltSayi": 7,
+  "kucukHedef": [
+   "Pzt",
+   "Sal",
+   "Çar",
+   "Per",
+   "Cum",
+   "Cmt",
+   "Paz",
+   "Hafta içi",
+   "Hafta sonu",
+   "Pzt",
+   "Sal",
+   "Çar",
+   "Per",
+   "Cum",
+   "Cmt",
+   "Paz",
+   "Hafta içi",
+   "Hafta sonu"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": null,
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": {
+   "w": 374,
+   "h": 844,
+   "x": 0,
+   "y": 0
+  },
+  "wizardNav": {
+   "w": 324,
+   "h": 73,
+   "x": 25,
+   "y": 746
+  },
+  "taşan": [],
+  "pageActions": []
+ },
+ "sihirbaz-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Pzt",
+   "Sal",
+   "Çar",
+   "Per",
+   "Cum",
+   "Pzt",
+   "Devam et"
+  ],
+  "kobaltSayi": 7,
+  "kucukHedef": [
+   "Pzt",
+   "Sal",
+   "Çar",
+   "Per",
+   "Cum",
+   "Cmt",
+   "Paz",
+   "Hafta içi",
+   "Hafta sonu",
+   "Pzt",
+   "Sal",
+   "Çar",
+   "Per",
+   "Cum",
+   "Cmt",
+   "Paz",
+   "Hafta içi",
+   "Hafta sonu"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": null,
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": {
+   "w": 374,
+   "h": 844,
+   "x": 0,
+   "y": 0
+  },
+  "wizardNav": {
+   "w": 324,
+   "h": 73,
+   "x": 25,
+   "y": 746
+  },
+  "taşan": [],
+  "pageActions": []
+ },
+ "kaynaklar-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Bugünkünü bitirdim",
+   "Bugünkünü bitirdim",
+   "Bugünkünü bitirdim"
+  ],
+  "kobaltSayi": 3,
+  "kucukHedef": [
+   "Bir test geri al",
+   "Bir test ekle",
+   "Şu an buradayım",
+   "Düzenle",
+   "345 TYT Matematik kaynağ",
+   "Bir sayfa geri al",
+   "Bir sayfa ekle",
+   "Şu an buradayım",
+   "Düzenle",
+   "Paragraf soru bankası ka",
+   "Bir video geri al",
+   "Bir video ekle",
+   "Şu an buradayım",
+   "Düzenle",
+   "Matematik kampı kaynağın",
+   "Videolar (40)",
+   "Bir video geri al",
+   "Bir video ekle",
+   "Şu an buradayım",
+   "Düzenle",
+   "Fizik konu anlatımı kayn",
+   "Videolar (30)"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 1024,
+   "h": 1038,
+   "x": 336,
+   "y": 232
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "kaynaklar-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Bugünkünü bitirdim",
+   "Bugünkünü bitirdim",
+   "Bugünkünü bitirdim"
+  ],
+  "kobaltSayi": 3,
+  "kucukHedef": [
+   "Bir test geri al",
+   "Bir test ekle",
+   "Şu an buradayım",
+   "Düzenle",
+   "345 TYT Matematik kaynağ",
+   "Bir sayfa geri al",
+   "Bir sayfa ekle",
+   "Şu an buradayım",
+   "Düzenle",
+   "Paragraf soru bankası ka",
+   "Bir video geri al",
+   "Bir video ekle",
+   "Şu an buradayım",
+   "Düzenle",
+   "Matematik kampı kaynağın",
+   "Videolar (40)",
+   "Bir video geri al",
+   "Bir video ekle",
+   "Şu an buradayım",
+   "Düzenle",
+   "Fizik konu anlatımı kayn",
+   "Videolar (30)"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 1024,
+   "h": 1038,
+   "x": 336,
+   "y": 232
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "kaynaklar-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Bugünkünü bitirdim",
+   "Bugünkünü bitirdim",
+   "Bugünkünü bitirdim",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 4,
+  "kucukHedef": [
+   "Videolar (40)",
+   "Videolar (30)"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 358,
+   "h": 2149,
+   "x": 16,
+   "y": 192
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "kaynaklar-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Bugünkünü bitirdim",
+   "Bugünkünü bitirdim",
+   "Bugünkünü bitirdim",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 4,
+  "kucukHedef": [
+   "Videolar (40)",
+   "Videolar (30)"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 358,
+   "h": 2149,
+   "x": 16,
+   "y": 192
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "kaynaklar-768-acik": {
+  "sw": 768,
+  "cw": 768,
+  "kobalt": [
+   "Bugünkünü bitirdim",
+   "Bugünkünü bitirdim",
+   "Bugünkünü bitirdim"
+  ],
+  "kobaltSayi": 3,
+  "kucukHedef": [
+   "Bir test geri al",
+   "Bir test ekle",
+   "Şu an buradayım",
+   "Düzenle",
+   "345 TYT Matematik kaynağ",
+   "Bir sayfa geri al",
+   "Bir sayfa ekle",
+   "Şu an buradayım",
+   "Düzenle",
+   "Paragraf soru bankası ka",
+   "Bir video geri al",
+   "Bir video ekle",
+   "Şu an buradayım",
+   "Düzenle",
+   "Matematik kampı kaynağın",
+   "Videolar (40)",
+   "Bir video geri al",
+   "Bir video ekle",
+   "Şu an buradayım",
+   "Düzenle",
+   "Fizik konu anlatımı kayn",
+   "Videolar (30)"
+  ],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 464,
+   "h": 2056,
+   "x": 280,
+   "y": 263
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "kaynaklar-bos-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Soru bankası ekle"
+  ],
+  "kobaltSayi": 1,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 1024,
+   "h": 552,
+   "x": 336,
+   "y": 232
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "kaynaklar-bos-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Soru bankası ekle"
+  ],
+  "kobaltSayi": 1,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 1024,
+   "h": 552,
+   "x": 336,
+   "y": 232
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "kaynaklar-bos-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Soru bankası ekle",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 2,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 358,
+   "h": 789,
+   "x": 16,
+   "y": 192
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ },
+ "kaynaklar-bos-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Soru bankası ekle",
+   "Yanlış ekle"
+  ],
+  "kobaltSayi": 2,
+  "kucukHedef": [],
+  "dayGrid": null,
+  "dayGridCols": null,
+  "view": {
+   "w": 358,
+   "h": 789,
+   "x": 16,
+   "y": 192
+  },
+  "dashCols": null,
+  "tdCols": null,
+  "resStats": null,
+  "dialog": null,
+  "wizardNav": null,
+  "taşan": [],
+  "pageActions": []
+ }
+}

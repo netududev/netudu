@@ -3,6 +3,8 @@ import {useEffect,useRef,useState} from 'react';
 import {Sparkles,Bell,Download,ArrowUpRight,DatabaseBackup,Upload,LoaderCircle,LogOut,UserRound,Check,KeyRound,Trash2,ShieldCheck,CalendarDays,Wand2,BellRing,Database,RefreshCw,Copy,Unplug,Building2,UserPlus,Plus,Terminal,AlertCircle,Users,Search,Sun} from '@/components/icons';
 import {ThemeSwitch} from './theme';
 import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel} from '@/components/ui/alert-dialog';
+import {Tabs,TabsList,TabsTrigger,TabsContent} from '@/components/ui/tabs';
+import {settingsTabs,resolveTab,isProfileDirty} from '@/lib/settings-tabs';
 import {toast} from 'sonner';
 import {daysUntil,defaultExamYear,estimatedExamDate,initials,type Profile} from '@/lib/study';
 import {useStudy,api,postJson,Choice,kindLabel,writeSetting,authHeaders,type AiKind} from './shared';
@@ -46,7 +48,8 @@ type NoticeBox={type:'good'|'bad';text:string}|null;
 
 const roleLabel:Record<string,string>={owner:'Sahip',admin:'Yönetici',member:'Üye'};
 
-export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;const isDev=!!user?.developer;const fileInput=useRef<HTMLInputElement>(null);const [restoring,setRestoring]=useState(false);const [form,setForm]=useState<Profile>(s.profile);const [saving,setSaving]=useState(false);const [pw,setPw]=useState({current:'',next:''}),[pwBusy,setPwBusy]=useState(false),[del,setDel]=useState(false),[delForm,setDelForm]=useState({confirm:'',password:''}),[delBusy,setDelBusy]=useState(false);
+// initialTab yalnız ilk seçimdir (önizleme/derin bağlantı); seçili sekme `picked` ile hesap türünden türetilir, effect ile sıfırlanmaz.
+export function SettingsView({initialTab}:{initialTab?:string}={}){const s=useStudy();const {ai,youtube,user}=s;const isDev=!!user?.developer;const [picked,setPicked]=useState<string>(initialTab||'profile');const tab=resolveTab(picked,isDev);const tabs=settingsTabs(isDev);const fileInput=useRef<HTMLInputElement>(null);const [restoring,setRestoring]=useState(false);const [form,setForm]=useState<Profile>(s.profile);const [saving,setSaving]=useState(false);const [pw,setPw]=useState({current:'',next:''}),[pwBusy,setPwBusy]=useState(false),[del,setDel]=useState(false),[delForm,setDelForm]=useState({confirm:'',password:''}),[delBusy,setDelBusy]=useState(false);
  const [supa,setSupa]=useState<SupaState|null>(null),[supaForm,setSupaForm]=useState({url:'',key:''}),[supaBusy,setSupaBusy]=useState(false),[supaNotice,setSupaNotice]=useState<NoticeBox>(null);
  const [aiForm,setAiForm]=useState({openaiKey:'',openaiModel:'gpt-4o-mini',youtubeKey:'',resendKey:''}),[aiBusy,setAiBusy]=useState(false),[aiNotice,setAiNotice]=useState<NoticeBox>(null);
  const [userSearch,setUserSearch]=useState(''),[usersBusy,setUsersBusy]=useState(false);
@@ -192,20 +195,96 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
    setUsersBusy(false);
   }
  }
+ const profileDirty=isProfileDirty(form,s.profile);
  const allUsers=supa?.users||[];
  const filteredUsers=allUsers.filter(u=>{
   const q=userSearch.trim().toLocaleLowerCase('tr');
   if(!q)return true;
   return (u.name||'').toLocaleLowerCase('tr').includes(q)||(u.email||'').toLocaleLowerCase('tr').includes(q)||(u.school||'').toLocaleLowerCase('tr').includes(q)||(u.target||'').toLocaleLowerCase('tr').includes(q)||(u.tenantName||'').toLocaleLowerCase('tr').includes(q);
  });
- return <div className="settings-grid">
-  {isDev&&<>
-   <article className="panel profile-panel"><span className="settings-icon"><Users/></span><h2>Kayıtlı Kullanıcılar & Hesap Yönetimi (Developer Özel)</h2>
-    <span className="status good">Toplam {allUsers.length} Kayıtlı Hesap · {allUsers.filter(u=>u.developer).length} Developer · {allUsers.filter(u=>u.hasPlan).length} Aktif Program</span>
-    <p className="description">Bu panel yalnızca yetkili geliştirici (<code>yusufykykaya@gmail.com</code>, <code>batur2864@hotmail.com</code>, <code>netududev@gmail.com</code>) hesaplarında görünür. Uygulamada hesap açan tüm kullanıcıları, sınıflarını, çalışma alanlarını ve etkinlik istatistiklerini buradan takip edebilirsin.</p>
+ return <div className="settings-tabs">
+  <Tabs value={tab} onValueChange={setPicked}>
+   <TabsList className="detail-tabs settings-tablist" aria-label="Ayar bölümleri">{tabs.map(t=><TabsTrigger key={t.id} value={t.id}>{t.label}</TabsTrigger>)}</TabsList>
+   <TabsContent value="profile"><div className="settings-panels">
+  <article className="panel profile-panel"><span className="settings-icon"><UserRound/></span><h2>Profil</h2><p className="description">Ad, sınıf ve hedefin sınav geri sayımında, çıktılarda ve ders notlarında kullanılır.</p>
+   <form onSubmit={saveProfile}><div className="profile-head"><span className="avatar">{initials(form.name||'?')}</span><div><strong>{form.name||'Adın'}</strong><small>{form.grade==='Mezun'?'Mezun':form.grade+'. sınıf'} · YKS {form.examYear}</small></div></div>
+   <div className="form-grid"><label>Ad soyad<input required minLength={2} maxLength={60} value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><label>Sınıf<Choice label="Sınıf" value={form.grade} onChange={v=>{const y=defaultExamYear(v);setForm({...form,grade:v as Profile['grade'],examYear:y,examDate:estimatedExamDate(y)})}} values={['9','10','11','12','Mezun']}/></label><label>Sınav yılı<input type="number" min={2026} max={2035} value={form.examYear} onChange={e=>{const y=Number(e.target.value)||form.examYear;setForm({...form,examYear:y,examDate:form.examDate===estimatedExamDate(form.examYear)?estimatedExamDate(y):form.examDate})}}/></label><label>Sınav tarihi <small>Kesin tarih açıklanınca güncelle</small><input type="date" required value={form.examDate} min="2026-01-01" max="2035-12-31" onChange={e=>{if(e.target.value)setForm({...form,examDate:e.target.value})}}/></label><label>Hedef bölüm <small>isteğe bağlı</small><input maxLength={80} placeholder="Tıp" value={form.target} onChange={e=>setForm({...form,target:e.target.value})}/></label><label>Okul <small>isteğe bağlı</small><input maxLength={80} value={form.school} onChange={e=>setForm({...form,school:e.target.value})}/></label><label>Günlük soru hedefi <small>isteğe bağlı</small><input type="number" min={0} max={500} value={form.dailyGoal||''} placeholder="100" onChange={e=>setForm({...form,dailyGoal:Number(e.target.value)||0})}/></label><label>Motto<input maxLength={120} placeholder="Her yanlış, bir sonraki doğruya." value={form.motto} onChange={e=>setForm({...form,motto:e.target.value})}/></label></div>
+   <p className="inline-note">{daysUntil(form.examDate)>0?`Sınava ${daysUntil(form.examDate)} gün kaldı.`:'Sınav tarihi geçmiş görünüyor.'} {form.examDate!==estimatedExamDate(form.examYear)&&<button type="button" onClick={()=>setForm({...form,examDate:estimatedExamDate(form.examYear)})}>Tahmini tarihe dön</button>}</p>
+   <div className="actions wrap section-save"><button type="button" className="secondary" disabled={saving||!profileDirty} onClick={()=>setForm(s.profile)}>Vazgeç</button><button type="submit" className="primary" disabled={saving||!profileDirty}>{saving?<LoaderCircle className="spin" size={16}/>:<Check size={16}/>} Kaydet</button></div></form></article>
+  <article className="panel plan-settings"><span className="settings-icon"><CalendarDays/></span><h2>Program</h2>{s.plan?(()=>{const p=s.plan!;const st=planStats(p,localToday());return <><span className="status good">{TEMPO_OPTIONS[p.config.tempo].badge}</span><ul className="kv"><li><span>Başlangıç ve bitiş</span><b>{shortDate(p.config.startDate)} → {shortDate(st.endDate)}</b></li><li><span>İlerleme</span><b>{st.done}/{st.total} ders · %{st.percent}</b></li><li><span>Okul</span><b>{p.config.school.enabled?`${p.config.school.days.join(', ')} · ${p.config.school.start}-${p.config.school.end}`:'Yok'}</b></li><li><span>Sabit saatler</span><b>{p.config.fixedBlocks.length?p.config.fixedBlocks.map(b=>b.title).join(', '):'Yok'}</b></li><li><span>Hatırlatma</span><b>{p.config.alarm.enabled?p.config.alarm.time:'Kapalı'}{p.config.alarm.blockReminders?' · her blokta':''}</b></li></ul>
+   <div className="actions wrap"><button className="secondary" onClick={s.openWizard}><Wand2 size={16}/> Programı düzenle</button><button className="secondary" onClick={testAlarm}><BellRing size={16}/> Hatırlatmayı dene</button><button className="secondary" onClick={()=>void notif()}><Bell size={16}/> Bildirime izin ver</button><button className="danger-button inline" onClick={()=>void resetPlan()}><Trash2 size={16}/> Programı sil</button></div><p className="inline-note">Hatırlatmalar uygulama açıkken çalışır.</p></>})():<><p className="description">Okul ve sabit saatlerini gir, temponu seç. Konular boş saatlerine çakışmadan yerleşir.</p><button className="secondary" onClick={s.openWizard}><Wand2 size={16}/> Programı oluştur</button></>}</article>
+  <article className="panel"><span className="settings-icon"><Sun/></span><h2>Görünüm</h2><p className="description">Açık ya da koyu tema seç. “Cihaz ayarı” cihazının tercihini izler.</p><ThemeSwitch/></article>
+   </div></TabsContent>
+   <TabsContent value="membership"><div className="settings-panels">
+    <UyelikKarti user={user}/>
+  <article className="panel"><span className="settings-icon"><Sparkles/></span><h2>Çözüm haklarım</h2><span className={'status '+(ai?'good':'pending')}>{!ai?'Şu an kapalı':s.usage?.unlimited?'Sınırsız':'Günlük hak'}</span><p className="description">Soru çözümü, ders notu ve aylık rapor günlük haklarla hazırlanır. Haklar her gece yarısı yenilenir. Yanlış defterine kayıt, tekrar, Excel, PDF ve yedek sınırsızdır.</p>
+   {ai&&s.usage&&!s.usage.unlimited&&<ul className="usage-list">{(['solve','note','report','video'] as AiKind[]).map(k=>{const u=s.usage![k];const pct=u.limit?Math.min(100,Math.round(u.used/u.limit*100)):100;return <li key={k}><div><span>{kindLabel[k]}</span><b>{u.used}/{u.limit}</b></div><i className="bar"><b style={{width:pct+'%'}} className={pct>=100?'full':''}/></i></li>})}</ul>}
+   {!ai&&<div className="setup-box"><strong>{isDev?'Yapay zekâ bağlantısı kapalı':'Şu an kapalı'}</strong><p>{isDev?'Geliştirici sekmesinden bağlantıyı kurabilirsin.':'Soruların defterine kaydedilir. Çözüm hazırlama açılınca tek dokunuşla çözümünü hazırlarsın.'}</p></div>}
+   <p className="description">Soru fotoğrafın ve metnin yalnızca çözüm hazırlanırken bir yapay zekâ hizmetine gönderilir ve orada saklanmaz.</p></article>
+   </div></TabsContent>
+   <TabsContent value="data"><div className="settings-panels">
+  <article className="panel"><span className="settings-icon"><DatabaseBackup/></span><h2>Yedek</h2><p className="description">Sorularını, çözümlerini, tekrar geçmişini, aylık raporlarını ve deneme sonuçlarını tek dosya olarak indir. Fotoğraflar yedeğe girmez; çözüm ve soru metinleri girer.</p><div className="actions wrap"><a className="secondary" href="/api/export" download><Download size={16}/> Yedeği indir</a><button className="secondary" disabled={restoring} onClick={()=>fileInput.current?.click()}>{restoring?<LoaderCircle className="spin" size={16}/>:<Upload size={16}/>} Yedeği yükle</button><input ref={fileInput} type="file" accept="application/json,.json" className="sr-only" aria-label="Yedek dosyası" onChange={e=>void restore(e.target.files?.[0])}/></div><p className="inline-note">Yedeği yüklerken mevcut verilerin silinmez; aynı kayıtlar atlanır.</p></article>
+  <article className="panel"><span className="settings-icon"><Download/></span><h2>Excel ve PDF çıktısı</h2><p className="description">Yanlış defterinde filtreleri seçip Excel dosyası alabilirsin. “Yazdır / PDF” soruları, çözümleri ve notları A4 düzeninde verir.</p><button className="secondary" onClick={()=>s.setView('archive')}>Yanlış defterini aç <ArrowUpRight size={16}/></button></article>
+  <article className="panel"><span className="settings-icon"><Bell/></span><h2>Aylık rapor</h2><p className="description">Ayın ilk 10 gününde Bugün ekranında geçen ayın raporu için bir uyarı görürsün. Her ayın 1’i saat 19.00 için tekrarlayan bir takvim hatırlatması da indirebilirsin. Bunun için aylık rapor sayfasındaki “Takvime ekle” düğmesini kullan.</p><button className="secondary" onClick={()=>s.setView('report')}>Aylık raporu aç <ArrowUpRight size={16}/></button></article>
+   </div></TabsContent>
+   <TabsContent value="account"><div className="settings-panels">
+  <article className="panel account-panel"><span className="settings-icon"><ShieldCheck/></span><h2>Hesap ve güvenlik</h2><p className="description">Giriş yaptığın hesap: <b>{user?.email}</b>{isDev?<span className="tag">Geliştirici</span>:null}{user?.google?<span className="tag">Google ile bağlı</span>:null}{isDev&&<span className="tag">{user?.authProvider==='supabase'?'Supabase Auth':'Yerel Auth'}</span>}{isDev&&<> · Çalışma alanı: <b>{tState?.active?.name||user?.tenantName||'Kişisel çalışma alanı'}</b></>}</p>
+   {user?.email!=='netududev@gmail.com'&&<form onSubmit={changePassword} className="pw-form"><h3><KeyRound size={16}/> {user?.hasPassword?'Şifreyi değiştir':'Şifre oluştur'}</h3>{!user?.hasPassword&&<p className="muted">Sosyal hesapla giriş yaptın. E-posta ve şifreyle de girmek istersen bir şifre oluştur.</p>}<div className="form-grid">{user?.hasPassword&&<label>Mevcut şifre<input type="password" autoComplete="current-password" required value={pw.current} onChange={e=>setPw({...pw,current:e.target.value})}/></label>}<label>Yeni şifre<input type="password" autoComplete="new-password" required minLength={8} placeholder="En az 8 karakter, harf ve rakam" value={pw.next} onChange={e=>setPw({...pw,next:e.target.value})}/></label></div><div className="actions section-save"><button type="submit" className="secondary" disabled={pwBusy||!pw.next||(!!user?.hasPassword&&!pw.current)}>{pwBusy?<LoaderCircle className="spin" size={16}/>:<Check size={16}/>} Şifreyi kaydet</button></div></form>}
+   <div className="actions wrap account-actions"><button className="secondary" onClick={()=>void s.logout()}><LogOut size={16}/> Çıkış yap</button>{!isDev&&<button className="danger-button inline" onClick={()=>setDel(true)}><Trash2 size={16}/> Hesabı sil</button>}</div></article>
+  {!isDev&&tState&&user&&(tState.tenants.length>1||tState.active.id!==user.id)&&<article className="panel"><span className="settings-icon"><Building2/></span><h2>Çalışma alanı</h2>
+   <p className="description">Verilerin seçtiğin çalışma alanında tutulur. Buradan başka bir alana geçebilir ya da kişisel alanına dönebilirsin.</p>
+   <div className="form-grid">
+    <label>Aktif alan
+     <select className="choice-native" disabled={tBusy} value={tState.active.id} onChange={e=>void runTenantOp({action:'switch',tenantId:e.target.value},true)}>
+      {tState.tenants.map(t=><option key={t.id} value={t.id}>{t.id===user.id?'Kişisel alanım':t.name}</option>)}
+     </select>
+    </label>
+   </div>
+   {tState.active.id!==user.id&&<div className="actions wrap"><button type="button" className="secondary" disabled={tBusy} onClick={()=>void runTenantOp({action:'switch',tenantId:user.id},true)}>Kişisel alanıma dön</button></div>}
+  </article>}
+  {isDev&&<article className="panel profile-panel"><span className="settings-icon"><Building2/></span><h2>Çalışma alanı yönetimi</h2>
+   <span className="status good">{tState?.active?.name||user?.tenantName||'Kişisel çalışma alanı'} · {roleLabel[tState?.active?.role||user?.tenantRole||'owner']}</span>
+   <p className="description">Tüm soruların, deneme netlerin, ders çalışma programın ve raporların aktif çalışma alanına (<code>tenant_id</code>) bağlıdır. Birden fazla çalışma alanı oluşturabilir veya aynı çalışma alanına ekip/sınıf arkadaşı ekleyebilirsin.</p>
+   {tState&&<>
+    <div className="form-grid">
+     <label>Aktif çalışma alanını değiştir
+      <select className="choice-native" disabled={tBusy} value={tState.active.id} onChange={e=>void runTenantOp({action:'switch',tenantId:e.target.value},true)}>
+       {tState.tenants.map(t=><option key={t.id} value={t.id}>{t.name} ({roleLabel[t.role]||t.role})</option>)}
+      </select>
+     </label>
+     <label>Yeni çalışma alanı oluştur
+      <div style={{display:'flex',gap:8}}>
+       <input maxLength={80} placeholder="Örn. 12-A Sayısal Sınıfı veya Mezun Kampı" value={newTenantName} onChange={e=>setNewTenantName(e.target.value)}/>
+       <button type="button" className="secondary" disabled={tBusy||newTenantName.trim().length<2} onClick={()=>{const n=newTenantName.trim();setNewTenantName('');void runTenantOp({action:'create',name:n},true)}}><Plus size={16}/> Oluştur</button>
+      </div>
+     </label>
+    </div>
+    {(tState.active.role==='owner'||tState.active.role==='admin')&&<form className="pw-form" onSubmit={e=>{e.preventDefault();if(!memberForm.email.trim())return;const em=memberForm.email.trim();const rl=memberForm.role;setMemberForm({email:'',role:'member'});void runTenantOp({action:'add_member',email:em,role:rl},false)}}>
+     <h3><UserPlus size={16}/> Çalışma alanına üye ekle</h3>
+     <div className="form-grid">
+      <label>Üye e-posta adresi<input type="email" required placeholder="ogrenci@eposta.com" value={memberForm.email} onChange={e=>setMemberForm({...memberForm,email:e.target.value})}/></label>
+      <label>Yetki rolü
+       <select className="choice-native" value={memberForm.role} onChange={e=>setMemberForm({...memberForm,role:e.target.value})}>
+        <option value="member">Üye (soru ve program paylaşımı)</option>
+        <option value="admin">Yönetici (üye ekleyebilir)</option>
+       </select>
+      </label>
+     </div>
+     <button type="submit" className="secondary" disabled={tBusy}><UserPlus size={16}/> Çalışma alanına ekle</button>
+    </form>}
+    {tState.members.length>0&&<ul className="kv" style={{marginTop:12}}>
+     {tState.members.map(m=><li key={m.userId}><span><b>{m.name}</b> ({m.email})</span><b style={{display:'inline-flex',alignItems:'center',gap:8}}>{roleLabel[m.role]||m.role}{(tState.active.role==='owner'||tState.active.role==='admin')&&m.role!=='owner'&&m.userId!==user?.id&&<button type="button" className="danger-button inline" style={{padding:'2px 8px',fontSize:12}} disabled={tBusy} onClick={()=>void runTenantOp({action:'remove_member',userId:m.userId},false)}>Çıkar</button>}</b></li>)}
+    </ul>}
+   </>}
+  </article>}
+   </div></TabsContent>
+   {isDev&&<TabsContent value="developer"><div className="settings-panels">
+   <article className="panel profile-panel"><span className="settings-icon"><Users/></span><h2>Kayıtlı kullanıcılar</h2>
+    <span className="status good">{allUsers.length} kayıtlı hesap · {allUsers.filter(u=>u.developer).length} geliştirici · {allUsers.filter(u=>u.hasPlan).length} aktif program</span>
+    <p className="description">Bu bölüm yalnızca yetkili geliştirici (<code>yusufykykaya@gmail.com</code>, <code>batur2864@hotmail.com</code>, <code>netududev@gmail.com</code>) hesaplarında görünür. Uygulamada hesap açan tüm kullanıcıları, sınıflarını, çalışma alanlarını ve etkinlik istatistiklerini buradan takip edebilirsin.</p>
     <div style={{display:'flex',gap:10,flexWrap:'wrap',alignItems:'center',marginBottom:14}}>
-     <div className="search-field" style={{flex:1,minWidth:220}}><Search size={16}/><input placeholder="Kullanıcı adı, e-posta, okul, hedef veya çalışma alanı ara..." value={userSearch} onChange={e=>setUserSearch(e.target.value)}/></div>
-     <button type="button" className="secondary" disabled={usersBusy} onClick={()=>void refreshUsers()}>{usersBusy?<LoaderCircle className="spin" size={16}/>:<RefreshCw size={16}/>} Listeyi Yenile ({filteredUsers.length}/{allUsers.length})</button>
+     <div className="search-field" style={{flex:1,minWidth:220}}><Search size={16}/><input placeholder="Ad, e-posta, okul, hedef veya çalışma alanı ara" value={userSearch} onChange={e=>setUserSearch(e.target.value)}/></div>
+     <button type="button" className="secondary" disabled={usersBusy} onClick={()=>void refreshUsers()}>{usersBusy?<LoaderCircle className="spin" size={16}/>:<RefreshCw size={16}/>} Listeyi yenile ({filteredUsers.length}/{allUsers.length})</button>
     </div>
     {filteredUsers.length===0?(
      <p className="muted" style={{padding:'12px 0'}}>Aramana uygun kayıtlı kullanıcı bulunamadı.</p>
@@ -214,18 +293,18 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
       <table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
        <thead>
         <tr style={{background:'var(--inner)',textAlign:'left',borderBottom:'1px solid var(--line)',color:'var(--fg3)'}}>
-         <th style={{padding:'10px 12px'}}>Kullanıcı & E-posta</th>
+         <th style={{padding:'10px 12px'}}>Kullanıcı ve e-posta</th>
          <th style={{padding:'10px 12px'}}>Sınıf · Hedef · Okul</th>
-         <th style={{padding:'10px 12px'}}>Çalışma Alanı (Tenant)</th>
+         <th style={{padding:'10px 12px'}}>Çalışma alanı</th>
          <th style={{padding:'10px 12px'}}>Etkinlik</th>
-         <th style={{padding:'10px 12px'}}>Kayıt / Son Giriş</th>
+         <th style={{padding:'10px 12px'}}>Kayıt ve son giriş</th>
         </tr>
        </thead>
        <tbody>
         {filteredUsers.map(u=>(
          <tr key={u.id} style={{borderBottom:'1px solid var(--line)'}}>
           <td style={{padding:'10px 12px'}}>
-           <strong style={{display:'block',color:'var(--fg)'}}>{u.name} {u.developer&&<span className="tag">Developer</span>} {u.google&&<span className="tag">Google</span>}</strong>
+           <strong style={{display:'block',color:'var(--fg)'}}>{u.name} {u.developer&&<span className="tag">Geliştirici</span>} {u.google&&<span className="tag">Google</span>}</strong>
            <small style={{color:'var(--fg2)'}}>{u.email}</small>
           </td>
           <td style={{padding:'10px 12px',color:'var(--fg2)'}}>
@@ -248,129 +327,60 @@ export function SettingsView(){const s=useStudy();const {ai,youtube,user}=s;cons
      </div>
     )}
    </article>
-
-   <article className="panel profile-panel"><span className="settings-icon"><Terminal/></span><h2>OpenAI API & Yapay Zekâ Bağlantısı (Developer Özel)</h2>
-    <span className={'status '+(ai?'good':'pending')}>{ai?`OpenAI API Bağlı (${supa?.ai?.model||'gpt-4o-mini'}${supa?.ai?.maskedKey?' · '+supa.ai.maskedKey:''})`:'OpenAI API Henüz Bağlanmadı'}</span>
-    <p className="description">Bu panel yalnızca yetkili geliştirici hesaplarıyla (<code>yusufykykaya@gmail.com</code>, <code>batur2864@hotmail.com</code>, <code>netududev@gmail.com</code>) giriş yapıldığında görünür. OpenAI API anahtarını bağladığında tüm kullanıcılar için fotoğraftan soru çözümü, ders notu üretimi ve aylık rapor aktif olur.</p>
+   <article className="panel profile-panel"><span className="settings-icon"><Terminal/></span><h2>OpenAI ve yapay zekâ bağlantısı</h2>
+    <span className={'status '+(ai?'good':'pending')}>{ai?`OpenAI bağlı (${supa?.ai?.model||'gpt-4o-mini'}${supa?.ai?.maskedKey?' · '+supa.ai.maskedKey:''})`:'OpenAI henüz bağlanmadı'}</span>
+    <p className="description">Bu bölüm yalnızca yetkili geliştirici hesaplarıyla (<code>yusufykykaya@gmail.com</code>, <code>batur2864@hotmail.com</code>, <code>netududev@gmail.com</code>) giriş yapıldığında görünür. OpenAI API anahtarını bağladığında tüm kullanıcılar için fotoğraftan soru çözümü, ders notu üretimi ve aylık rapor aktif olur.</p>
     {aiBusy&&<div className="verify good" role="status"><LoaderCircle className="spin" size={18}/><span>OpenAI API anahtarı doğrulanıyor ve sunucuya kaydediliyor...</span></div>}
-    {!aiBusy&&aiNotice&&<div className={'verify '+aiNotice.type} role="alert">{aiNotice.type==='good'?<Check size={18}/>:<AlertCircle size={18}/>}<span><b>{aiNotice.type==='good'?'Bağlantı Aktif: ':'Bağlantı Hatası: '}</b>{aiNotice.text}</span></div>}
+    {!aiBusy&&aiNotice&&<div className={'verify '+aiNotice.type} role="alert">{aiNotice.type==='good'?<Check size={18}/>:<AlertCircle size={18}/>}<span><b>{aiNotice.type==='good'?'Bağlantı aktif: ':'Bağlantı hatası: '}</b>{aiNotice.text}</span></div>}
     {ai&&<ul className="kv">
-     <li><span>OpenAI Bağlantı Durumu</span><b style={{color:'var(--champ-ink)'}}>Bağlandı ve Aktif</b></li>
-     <li><span>Kayıtlı OpenAI API Anahtarı</span><b><code>{supa?.ai?.maskedKey||'Kayıtlı'}</code></b></li>
-     <li><span>Aktif Yapay Zekâ Modeli</span><b><code>{supa?.ai?.model||'gpt-4o-mini'}</code></b></li>
-     <li><span>YouTube Data API v3</span><b>{youtube?`Bağlı (${supa?.ai?.youtubeMaskedKey||'Kayıtlı'})`:'Varsayılan Müfredat Videoları Aktif'}</b></li>
-     <li><span>Resend E-posta Servisi (Şifre Sıfırlama Kodu)</span><b>{supa?.ai?.resendConnected?`Bağlı (${supa.ai.resendMaskedKey||'Kayıtlı'})`:'Supabase Auth / Hızlı Kod Aktif'}</b></li>
-     <li><span>Aktif Özellikler</span><b>Fotoğraftan Soru Çözümü · Ders Notu · Aylık Rapor</b></li>
+     <li><span>OpenAI bağlantı durumu</span><b style={{color:'var(--champ-ink)'}}>Bağlı ve aktif</b></li>
+     <li><span>Kayıtlı OpenAI anahtarı</span><b><code>{supa?.ai?.maskedKey||'Kayıtlı'}</code></b></li>
+     <li><span>Aktif yapay zekâ modeli</span><b><code>{supa?.ai?.model||'gpt-4o-mini'}</code></b></li>
+     <li><span>YouTube Data API v3</span><b>{youtube?`Bağlı (${supa?.ai?.youtubeMaskedKey||'Kayıtlı'})`:'Varsayılan müfredat videoları aktif'}</b></li>
+     <li><span>Resend e-posta servisi (şifre sıfırlama kodu)</span><b>{supa?.ai?.resendConnected?`Bağlı (${supa.ai.resendMaskedKey||'Kayıtlı'})`:'Supabase Auth / hızlı kod aktif'}</b></li>
+     <li><span>Aktif özellikler</span><b>Fotoğraftan soru çözümü · ders notu · aylık rapor</b></li>
     </ul>}
     <form onSubmit={saveOpenAi} className="pw-form">
      <div className="form-grid">
-      <label>OpenAI API Key (sk-...)<input required type="password" placeholder={ai?`Mevcut anahtar bağlı (${supa?.ai?.maskedKey||'sk-...'}) — değiştirmek için yeni gir`:'sk-proj-...'} value={aiForm.openaiKey} onChange={e=>setAiForm({...aiForm,openaiKey:e.target.value})}/></label>
-      <label>OpenAI Model<input required placeholder="gpt-4o-mini" value={aiForm.openaiModel} onChange={e=>setAiForm({...aiForm,openaiModel:e.target.value})}/></label>
-      <label>YouTube Data API v3 Key <small>(isteğe bağlı)</small><input type="password" placeholder={youtube?`Mevcut anahtar bağlı (${supa?.ai?.youtubeMaskedKey||'AIza...'})`:'AIzaSy...'} value={aiForm.youtubeKey} onChange={e=>setAiForm({...aiForm,youtubeKey:e.target.value})}/></label>
-      <label>Resend E-posta API Key <small>(isteğe bağlı · re_...)</small><input type="password" placeholder={supa?.ai?.resendConnected?`Mevcut bağlı (${supa?.ai?.resendMaskedKey||'re_...'})`:'re_... (Şifre sıfırlama e-postaları için)'} value={aiForm.resendKey} onChange={e=>setAiForm({...aiForm,resendKey:e.target.value})}/></label>
+      <label>OpenAI API anahtarı (sk-...)<input required type="password" placeholder={ai?`Mevcut anahtar bağlı (${supa?.ai?.maskedKey||'sk-...'}) — değiştirmek için yeni gir`:'sk-proj-...'} value={aiForm.openaiKey} onChange={e=>setAiForm({...aiForm,openaiKey:e.target.value})}/></label>
+      <label>OpenAI modeli<input required placeholder="gpt-4o-mini" value={aiForm.openaiModel} onChange={e=>setAiForm({...aiForm,openaiModel:e.target.value})}/></label>
+      <label>YouTube Data API v3 anahtarı <small>(isteğe bağlı)</small><input type="password" placeholder={youtube?`Mevcut anahtar bağlı (${supa?.ai?.youtubeMaskedKey||'AIza...'})`:'AIzaSy...'} value={aiForm.youtubeKey} onChange={e=>setAiForm({...aiForm,youtubeKey:e.target.value})}/></label>
+      <label>Resend e-posta API anahtarı <small>(isteğe bağlı · re_...)</small><input type="password" placeholder={supa?.ai?.resendConnected?`Mevcut bağlı (${supa?.ai?.resendMaskedKey||'re_...'})`:'re_... (Şifre sıfırlama e-postaları için)'} value={aiForm.resendKey} onChange={e=>setAiForm({...aiForm,resendKey:e.target.value})}/></label>
      </div>
-     <div className="actions wrap">
-      <button type="submit" className="primary" disabled={aiBusy}>{aiBusy?<LoaderCircle className="spin" size={16}/>:<Check size={16}/>} {ai?'OpenAI API bağlantısını güncelle':'OpenAI API bağla ve doğrula'}</button>
+     <div className="actions wrap section-save">
       {ai&&supa?.ai?.source==='runtime'&&<button type="button" className="danger-button inline" disabled={aiBusy} onClick={()=>void disconnectOpenAi()}><Unplug size={16}/> OpenAI bağlantısını kaldır</button>}
+      <button type="submit" className="secondary" disabled={aiBusy||!(aiForm.openaiKey.trim()||aiForm.youtubeKey.trim()||aiForm.resendKey.trim())}>{aiBusy?<LoaderCircle className="spin" size={16}/>:<Check size={16}/>} {ai?'OpenAI bağlantısını güncelle':'OpenAI\'yi bağla ve doğrula'}</button>
      </div>
     </form>
    </article>
-
-   <article className="panel profile-panel"><span className="settings-icon"><Database/></span><h2>Supabase Auth, Multi-Tenant & Arka Uç Bağlantısı (Developer Özel)</h2>
-    <span className={'status '+(supa?.connected?'good':'pending')}>{supa?.connected?(supa.tablesReady?'Supabase Bağlı ve Aktif (Auth + Tenant RLS + PostgreSQL + Storage)':'Supabase Bağlı (Auth Aktif · Tablo Şeması Bekleniyor)'):'Yerel D1 (SQLite) Modu'}</span>
-    <p className="description">Supabase bağlantısı yalnızca yetkili geliştirici hesaplarıyla (<code>yusufykykaya@gmail.com</code>, <code>batur2864@hotmail.com</code>, <code>netududev@gmail.com</code>) yapılandırılabilir. Supabase Project URL ve API anahtarını girdiğinde tüm kimlik doğrulama (Authentication), çalışma alanı (Tenant) yönetimi ve veriler Supabase üzerinde yürütülür.</p>
+   <article className="panel profile-panel"><span className="settings-icon"><Database/></span><h2>Supabase ve arka uç bağlantısı</h2>
+    <span className={'status '+(supa?.connected?'good':'pending')}>{supa?.connected?(supa.tablesReady?'Supabase bağlı ve aktif (Auth + çalışma alanı RLS + PostgreSQL + Storage)':'Supabase bağlı (Auth aktif · tablo şeması bekleniyor)'):'Yerel D1 (SQLite) modu'}</span>
+    <p className="description">Supabase bağlantısı yalnızca yetkili geliştirici hesaplarıyla (<code>yusufykykaya@gmail.com</code>, <code>batur2864@hotmail.com</code>, <code>netududev@gmail.com</code>) yapılandırılabilir. Supabase proje adresini ve API anahtarını girdiğinde tüm kimlik doğrulama, çalışma alanı yönetimi ve veriler Supabase üzerinde yürütülür.</p>
     {supaBusy&&<div className="verify good" role="status"><LoaderCircle className="spin" size={18}/><span>Supabase sunucusuna bağlanılıyor, Project URL ve API anahtarı test ediliyor...</span></div>}
-    {!supaBusy&&supaNotice&&<div className={'verify '+supaNotice.type} role="alert">{supaNotice.type==='good'?<Check size={18}/>:<AlertCircle size={18}/>}<span><b>{supaNotice.type==='good'?'Supabase Bağlandı: ':'Supabase Bağlantı Uyarısı: '}</b>{supaNotice.text}</span></div>}
+    {!supaBusy&&supaNotice&&<div className={'verify '+supaNotice.type} role="alert">{supaNotice.type==='good'?<Check size={18}/>:<AlertCircle size={18}/>}<span><b>{supaNotice.type==='good'?'Supabase bağlandı: ':'Supabase bağlantı uyarısı: '}</b>{supaNotice.text}</span></div>}
     {supa?.connected&&<ul className="kv">
-     <li><span>Supabase Bağlantı Durumu</span><b style={{color:'var(--champ-ink)'}}>Bağlandı ve Aktif</b></li>
-     <li><span>Bağlı Project URL</span><b><code>{supa.url}</code></b></li>
-     <li><span>Bağlı API Anahtarı</span><b><code>{supa.maskedKey||'Kayıtlı'}</code> {supa.keyType?`(${supa.keyType})`:''}</b></li>
+     <li><span>Supabase bağlantı durumu</span><b style={{color:'var(--champ-ink)'}}>Bağlı ve aktif</b></li>
+     <li><span>Bağlı proje adresi</span><b><code>{supa.url}</code></b></li>
+     <li><span>Bağlı API anahtarı</span><b><code>{supa.maskedKey||'Kayıtlı'}</code> {supa.keyType?`(${supa.keyType})`:''}</b></li>
      <li><span>Supabase Auth (/auth/v1)</span><b>{supa.authReady!==false?'Aktif':'Bağlı'}</b></li>
-     <li><span>PostgreSQL & Multi-Tenant Tabloları</span><b>{supa.tablesReady?'Hazır ve Senkronize':'Tablolar için SQL Şemasını Çalıştırın (Yerel D1 Yedekli)'}</b></li>
+     <li><span>PostgreSQL ve çalışma alanı tabloları</span><b>{supa.tablesReady?'Hazır ve senkronize':'Tablolar için SQL şemasını çalıştır (yerel D1 yedekli)'}</b></li>
     </ul>}
     <form onSubmit={saveSupabase} className="pw-form">
      <div className="form-grid">
-      <label>Supabase Project URL<input required placeholder="https://xxxx.supabase.co" value={supaForm.url} onChange={e=>setSupaForm({...supaForm,url:e.target.value})}/></label>
-      <label>Supabase API Key (service_role, anon, sb_secret_... veya sb_publishable_...)<input required type="password" placeholder={supa?.connected?`Mevcut anahtar bağlı (${supa.maskedKey||'kayıtlı'}) — değiştirmek için yeni gir`:'eyJhbGci... veya sb_secret_... / sb_publishable_...'} value={supaForm.key} onChange={e=>setSupaForm({...supaForm,key:e.target.value})}/></label>
+      <label>Supabase proje adresi<input required placeholder="https://xxxx.supabase.co" value={supaForm.url} onChange={e=>setSupaForm({...supaForm,url:e.target.value})}/></label>
+      <label>Supabase API anahtarı (service_role, anon, sb_secret_... veya sb_publishable_...)<input required type="password" placeholder={supa?.connected?`Mevcut anahtar bağlı (${supa.maskedKey||'kayıtlı'}) — değiştirmek için yeni gir`:'eyJhbGci... veya sb_secret_... / sb_publishable_...'} value={supaForm.key} onChange={e=>setSupaForm({...supaForm,key:e.target.value})}/></label>
      </div>
-     <div className="actions wrap">
-      <button type="submit" className="primary" disabled={supaBusy}>{supaBusy?<LoaderCircle className="spin" size={16}/>:<Check size={16}/>} {supa?.connected?'Supabase bağlantısını güncelle':'Supabase\'i bağla ve test et'}</button>
-      <button type="button" className="secondary" onClick={()=>{void navigator.clipboard.writeText(SUPABASE_DDL);toast.success('Supabase Auth + Tenant + Veri SQL şeması panoya kopyalandı! Supabase SQL Editor ekranına yapıştırıp çalıştırabilirsin.')}}><Copy size={16}/> SQL şemasını kopyala (supabase/schema.sql)</button>
+     <div className="actions wrap section-save">
+      <button type="submit" className="secondary" disabled={supaBusy||!supaForm.key.trim()}>{supaBusy?<LoaderCircle className="spin" size={16}/>:<Check size={16}/>} {supa?.connected?'Supabase bağlantısını güncelle':'Supabase\'i bağla ve test et'}</button>
+      <button type="button" className="secondary" onClick={()=>{void navigator.clipboard.writeText(SUPABASE_DDL);toast.success('Supabase Auth + Tenant + Veri SQL şeması panoya kopyalandı! Supabase SQL Editor ekranına yapıştırıp çalıştırabilirsin.')}}><Copy size={16}/> SQL şemasını kopyala</button>
       {supa?.connected&&<button type="button" className="secondary" disabled={supaBusy} onClick={()=>void syncSupabase()}><RefreshCw size={16}/> Mevcut verileri Supabase'e aktar</button>}
       {supa?.connected&&supa.source==='runtime'&&<button type="button" className="danger-button inline" disabled={supaBusy} onClick={()=>void disconnectSupabase()}><Unplug size={16}/> Bağlantıyı kaldır</button>}
      </div>
      <p className="inline-note">İpucu: Tabloları ve Row Level Security (RLS) politikalarını oluşturmak için <code>supabase/schema.sql</code> dosyasını (veya <b>SQL şemasını kopyala</b> düğmesini) Supabase Dashboard › SQL Editor içinde bir kez çalıştır.</p>
     </form>
    </article>
-  </>}
-
-  {!isDev&&tState&&user&&(tState.tenants.length>1||tState.active.id!==user.id)&&<article className="panel profile-panel"><span className="settings-icon"><Building2/></span><h2>Çalışma alanı</h2>
-   <p className="description">Verilerin seçtiğin çalışma alanında tutulur. Buradan başka bir alana geçebilir ya da kişisel alanına dönebilirsin.</p>
-   <div className="form-grid">
-    <label>Aktif alan
-     <select className="choice-native" disabled={tBusy} value={tState.active.id} onChange={e=>void runTenantOp({action:'switch',tenantId:e.target.value},true)}>
-      {tState.tenants.map(t=><option key={t.id} value={t.id}>{t.id===user.id?'Kişisel alanım':t.name}</option>)}
-     </select>
-    </label>
-   </div>
-   {tState.active.id!==user.id&&<div className="actions wrap"><button type="button" className="secondary" disabled={tBusy} onClick={()=>void runTenantOp({action:'switch',tenantId:user.id},true)}>Kişisel alanıma dön</button></div>}
-  </article>}
-
-  {isDev&&<article className="panel profile-panel"><span className="settings-icon"><Building2/></span><h2>Çalışma alanı yönetimi (yönetici)</h2>
-   <span className="status good">{tState?.active?.name||user?.tenantName||'Kişisel Çalışma Alanı'} · {roleLabel[tState?.active?.role||user?.tenantRole||'owner']}</span>
-   <p className="description">Tüm soruların, deneme netlerin, ders çalışma programın ve raporların aktif çalışma alanına (<code>tenant_id</code>) bağlıdır. Birden fazla çalışma alanı oluşturabilir veya aynı çalışma alanına ekip/sınıf arkadaşı ekleyebilirsin.</p>
-   {tState&&<>
-    <div className="form-grid">
-     <label>Aktif Çalışma Alanı (Tenant) Değiştir
-      <select className="choice-native" disabled={tBusy} value={tState.active.id} onChange={e=>void runTenantOp({action:'switch',tenantId:e.target.value},true)}>
-       {tState.tenants.map(t=><option key={t.id} value={t.id}>{t.name} ({roleLabel[t.role]||t.role})</option>)}
-      </select>
-     </label>
-     <label>Yeni Çalışma Alanı (Tenant) Oluştur
-      <div style={{display:'flex',gap:8}}>
-       <input maxLength={80} placeholder="Örn. 12-A Sayısal Sınıfı veya Mezun Kampı" value={newTenantName} onChange={e=>setNewTenantName(e.target.value)}/>
-       <button type="button" className="secondary" disabled={tBusy||newTenantName.trim().length<2} onClick={()=>{const n=newTenantName.trim();setNewTenantName('');void runTenantOp({action:'create',name:n},true)}}><Plus size={16}/> Oluştur</button>
-      </div>
-     </label>
-    </div>
-    {(tState.active.role==='owner'||tState.active.role==='admin')&&<form className="pw-form" onSubmit={e=>{e.preventDefault();if(!memberForm.email.trim())return;const em=memberForm.email.trim();const rl=memberForm.role;setMemberForm({email:'',role:'member'});void runTenantOp({action:'add_member',email:em,role:rl},false)}}>
-     <h3><UserPlus size={16}/> Çalışma alanına üye ekle</h3>
-     <div className="form-grid">
-      <label>Üye E-posta Adresi<input type="email" required placeholder="ogrenci@eposta.com" value={memberForm.email} onChange={e=>setMemberForm({...memberForm,email:e.target.value})}/></label>
-      <label>Yetki Rolü
-       <select className="choice-native" value={memberForm.role} onChange={e=>setMemberForm({...memberForm,role:e.target.value})}>
-        <option value="member">Üye (Soru & Program Paylaşımı)</option>
-        <option value="admin">Yönetici (Üye Ekleyebilir)</option>
-       </select>
-      </label>
-     </div>
-     <button type="submit" className="secondary" disabled={tBusy}><UserPlus size={16}/> Çalışma alanına ekle</button>
-    </form>}
-    {tState.members.length>0&&<ul className="kv" style={{marginTop:12}}>
-     {tState.members.map(m=><li key={m.userId}><span><b>{m.name}</b> ({m.email})</span><b style={{display:'inline-flex',alignItems:'center',gap:8}}>{roleLabel[m.role]||m.role}{(tState.active.role==='owner'||tState.active.role==='admin')&&m.role!=='owner'&&m.userId!==user?.id&&<button type="button" className="danger-button inline" style={{padding:'2px 8px',fontSize:12}} disabled={tBusy} onClick={()=>void runTenantOp({action:'remove_member',userId:m.userId},false)}>Çıkar</button>}</b></li>)}
-    </ul>}
-   </>}
-  </article>}
-
-  <UyelikKarti user={user}/>
-  <article className="panel plan-settings"><span className="settings-icon"><CalendarDays/></span><h2>Program</h2>{s.plan?(()=>{const p=s.plan!;const st=planStats(p,localToday());return <><span className="status good">{TEMPO_OPTIONS[p.config.tempo].badge}</span><ul className="kv"><li><span>Başlangıç ve bitiş</span><b>{shortDate(p.config.startDate)} → {shortDate(st.endDate)}</b></li><li><span>İlerleme</span><b>{st.done}/{st.total} ders · %{st.percent}</b></li><li><span>Okul</span><b>{p.config.school.enabled?`${p.config.school.days.join(', ')} · ${p.config.school.start}-${p.config.school.end}`:'Yok'}</b></li><li><span>Sabit saatler</span><b>{p.config.fixedBlocks.length?p.config.fixedBlocks.map(b=>b.title).join(', '):'Yok'}</b></li><li><span>Hatırlatma</span><b>{p.config.alarm.enabled?p.config.alarm.time:'Kapalı'}{p.config.alarm.blockReminders?' · her blokta':''}</b></li></ul>
-   <div className="actions wrap"><button className="primary" onClick={s.openWizard}><Wand2 size={16}/> Programı düzenle</button><button className="secondary" onClick={testAlarm}><BellRing size={16}/> Hatırlatmayı dene</button><button className="secondary" onClick={()=>void notif()}><Bell size={16}/> Bildirime izin ver</button><button className="danger-button inline" onClick={()=>void resetPlan()}><Trash2 size={16}/> Programı sil</button></div><p className="inline-note">Hatırlatmalar uygulama açıkken çalışır.</p></>})():<><p className="description">Okul ve sabit saatlerini gir, temponu seç. Konular boş saatlerine çakışmadan yerleşir.</p><button className="primary" onClick={s.openWizard}><Wand2 size={16}/> Programı oluştur</button></>}</article>
-  <article className="panel"><span className="settings-icon"><Sparkles/></span><h2>Çözüm haklarım</h2><span className={'status '+(ai?'good':'pending')}>{!ai?'Şu an kapalı':s.usage?.unlimited?'Sınırsız':'Günlük hak'}</span><p className="description">Soru çözümü, ders notu ve aylık rapor günlük haklarla hazırlanır. Haklar her gece yarısı yenilenir. Yanlış defterine kayıt, tekrar, Excel, PDF ve yedek sınırsızdır.</p>
-   {ai&&s.usage&&!s.usage.unlimited&&<ul className="usage-list">{(['solve','note','report','video'] as AiKind[]).map(k=>{const u=s.usage![k];const pct=u.limit?Math.min(100,Math.round(u.used/u.limit*100)):100;return <li key={k}><div><span>{kindLabel[k]}</span><b>{u.used}/{u.limit}</b></div><i className="bar"><b style={{width:pct+'%'}} className={pct>=100?'full':''}/></i></li>})}</ul>}
-   {!ai&&<div className="setup-box"><strong>{isDev?'Yapay zekâ bağlantısı kapalı':'Şu an kapalı'}</strong><p>{isDev?'Yukarıdaki yönetici panelinden bağlantıyı kurabilirsin.':'Soruların defterine kaydedilir. Çözüm hazırlama açılınca tek dokunuşla çözümünü hazırlarsın.'}</p></div>}
-   <p className="description">Soru fotoğrafın ve metnin yalnızca çözüm hazırlanırken bir yapay zekâ hizmetine gönderilir ve orada saklanmaz.</p></article>
-  <article className="panel profile-panel"><span className="settings-icon"><UserRound/></span><h2>Profil</h2><p className="description">Ad, sınıf ve hedefin sınav geri sayımında, çıktılarda ve ders notlarında kullanılır.</p>
-   <form onSubmit={saveProfile}><div className="profile-head"><span className="avatar">{initials(form.name||'?')}</span><div><strong>{form.name||'Adın'}</strong><small>{form.grade==='Mezun'?'Mezun':form.grade+'. sınıf'} · YKS {form.examYear}</small></div></div>
-   <div className="form-grid"><label>Ad soyad<input required minLength={2} maxLength={60} value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><label>Sınıf<Choice label="Sınıf" value={form.grade} onChange={v=>{const y=defaultExamYear(v);setForm({...form,grade:v as Profile['grade'],examYear:y,examDate:estimatedExamDate(y)})}} values={['9','10','11','12','Mezun']}/></label><label>Sınav yılı<input type="number" min={2026} max={2035} value={form.examYear} onChange={e=>{const y=Number(e.target.value)||form.examYear;setForm({...form,examYear:y,examDate:form.examDate===estimatedExamDate(form.examYear)?estimatedExamDate(y):form.examDate})}}/></label><label>Sınav tarihi <small>Kesin tarih açıklanınca güncelle</small><input type="date" required value={form.examDate} min="2026-01-01" max="2035-12-31" onChange={e=>{if(e.target.value)setForm({...form,examDate:e.target.value})}}/></label><label>Hedef bölüm <small>isteğe bağlı</small><input maxLength={80} placeholder="Tıp" value={form.target} onChange={e=>setForm({...form,target:e.target.value})}/></label><label>Okul <small>isteğe bağlı</small><input maxLength={80} value={form.school} onChange={e=>setForm({...form,school:e.target.value})}/></label><label>Günlük soru hedefi <small>isteğe bağlı</small><input type="number" min={0} max={500} value={form.dailyGoal||''} placeholder="100" onChange={e=>setForm({...form,dailyGoal:Number(e.target.value)||0})}/></label><label>Motto<input maxLength={120} placeholder="Her yanlış, bir sonraki doğruya." value={form.motto} onChange={e=>setForm({...form,motto:e.target.value})}/></label></div>
-   <p className="inline-note">{daysUntil(form.examDate)>0?`Sınava ${daysUntil(form.examDate)} gün kaldı.`:'Sınav tarihi geçmiş görünüyor.'} {form.examDate!==estimatedExamDate(form.examYear)&&<button type="button" onClick={()=>setForm({...form,examDate:estimatedExamDate(form.examYear)})}>Tahmini tarihe dön</button>}</p>
-   <div className="actions wrap"><button type="submit" className="primary" disabled={saving}>{saving?<LoaderCircle className="spin" size={16}/>:<Check size={16}/>} Kaydet</button><button type="button" className="secondary" disabled={saving} onClick={()=>setForm(s.profile)}>Vazgeç</button></div></form></article>
-  <article className="panel"><span className="settings-icon"><Sun/></span><h2>Görünüm</h2><p className="description">Açık ya da koyu tema seç. “Cihaz ayarı” cihazının tercihini izler.</p><ThemeSwitch/></article>
-  <article className="panel"><span className="settings-icon"><Bell/></span><h2>Aylık rapor</h2><p className="description">Ayın ilk 10 gününde Bugün ekranında geçen ayın raporu için bir uyarı görürsün. Her ayın 1’i saat 19.00 için tekrarlayan bir takvim hatırlatması da indirebilirsin. Bunun için aylık rapor sayfasındaki “Takvime ekle” düğmesini kullan.</p><button className="secondary" onClick={()=>s.setView('report')}>Aylık raporu aç <ArrowUpRight size={16}/></button></article>
-  <article className="panel"><span className="settings-icon"><DatabaseBackup/></span><h2>Yedek</h2><p className="description">Sorularını, çözümlerini, tekrar geçmişini, aylık raporlarını ve deneme sonuçlarını tek dosya olarak indir. Fotoğraflar yedeğe girmez; çözüm ve soru metinleri girer.</p><div className="actions wrap"><a className="secondary" href="/api/export" download><Download size={16}/> Yedeği indir</a><button className="secondary" disabled={restoring} onClick={()=>fileInput.current?.click()}>{restoring?<LoaderCircle className="spin" size={16}/>:<Upload size={16}/>} Yedeği yükle</button><input ref={fileInput} type="file" accept="application/json,.json" className="sr-only" aria-label="Yedek dosyası" onChange={e=>void restore(e.target.files?.[0])}/></div><p className="inline-note">Yedeği yüklerken mevcut verilerin silinmez; aynı kayıtlar atlanır.</p></article>
-  <article className="panel"><span className="settings-icon"><Download/></span><h2>Excel ve PDF çıktısı</h2><p className="description">Yanlış defterinde filtreleri seçip Excel dosyası alabilirsin. “Yazdır / PDF” soruları, çözümleri ve notları A4 düzeninde verir.</p><button className="secondary" onClick={()=>s.setView('archive')}>Yanlış defterini aç <ArrowUpRight size={16}/></button></article>
-  <article className="panel account-panel"><span className="settings-icon"><ShieldCheck/></span><h2>Hesap ve güvenlik</h2><p className="description">Giriş yaptığın hesap: <b>{user?.email}</b>{isDev?<span className="tag">Yönetici</span>:null}{user?.google?<span className="tag">Google ile bağlı</span>:null}{isDev&&<span className="tag">{user?.authProvider==='supabase'?'Supabase Auth':'Yerel Auth'}</span>}{isDev&&<> · Çalışma alanı: <b>{tState?.active?.name||user?.tenantName||'Kişisel Çalışma Alanı'}</b></>}</p>
-   {user?.email!=='netududev@gmail.com'&&<form onSubmit={changePassword} className="pw-form"><h3><KeyRound size={16}/> {user?.hasPassword?'Şifreyi değiştir':'Şifre oluştur'}</h3>{!user?.hasPassword&&<p className="muted">Sosyal hesapla giriş yaptın. E-posta ve şifreyle de girmek istersen bir şifre oluştur.</p>}<div className="form-grid">{user?.hasPassword&&<label>Mevcut şifre<input type="password" autoComplete="current-password" required value={pw.current} onChange={e=>setPw({...pw,current:e.target.value})}/></label>}<label>Yeni şifre<input type="password" autoComplete="new-password" required minLength={8} placeholder="En az 8 karakter, harf ve rakam" value={pw.next} onChange={e=>setPw({...pw,next:e.target.value})}/></label></div><button type="submit" className="secondary" disabled={pwBusy}>{pwBusy?<LoaderCircle className="spin" size={16}/>:<Check size={16}/>} Şifreyi kaydet</button></form>}
-   <div className="actions wrap account-actions"><button className="secondary" onClick={()=>void s.logout()}><LogOut size={16}/> Çıkış yap</button>{!isDev&&<button className="danger-button inline" onClick={()=>setDel(true)}><Trash2 size={16}/> Hesabı sil</button>}</div></article>
+   </div></TabsContent>}
+  </Tabs>
   <AlertDialog open={del} onOpenChange={v=>{if(!delBusy){setDel(v);setDelForm({confirm:'',password:''})}}}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Hesabın silinsin mi?</AlertDialogTitle><AlertDialogDescription>Tüm soruların, çözümlerin, notların, raporların ve deneme sonuçların kalıcı olarak silinir. Bu işlem geri alınamaz. İstersen önce yedeğini indir.</AlertDialogDescription></AlertDialogHeader>
    <div className="form-grid single">{user?.hasPassword&&<label>Şifren<input type="password" autoComplete="current-password" value={delForm.password} onChange={e=>setDelForm({...delForm,password:e.target.value})}/></label>}<label>Onaylamak için <b>SİL</b> yaz<input value={delForm.confirm} onChange={e=>setDelForm({...delForm,confirm:e.target.value})} placeholder="SİL"/></label></div>
    <AlertDialogFooter><AlertDialogCancel disabled={delBusy}>Vazgeç</AlertDialogCancel><button className="primary danger" disabled={delBusy||delForm.confirm!=='SİL'} onClick={()=>void deleteAccount()}>{delBusy?<LoaderCircle className="spin" size={16}/>:<Trash2 size={16}/>} Hesabı sil</button></AlertDialogFooter></AlertDialogContent></AlertDialog>
