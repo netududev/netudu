@@ -1,0 +1,104 @@
+/* PR K2: Kaydır Çöz ekranı (başlangıç, akış, soru / çözüm / bitiş kartları). Seçiciler .view[data-view=swipe] altındadır; tek istisna: başlık ve boşluk kabuk öğeleri (.view'ın kardeşi) :has ile ele alınır. */
+/* Kabuk: sayfa başlığı ekran okuyucu için kalır (h1), görsel olarak gizlenir; akış çalışma alanını doldurur */
+.workspace:has(.view[data-view=swipe]) .page-heading{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.workspace:has(.view[data-view=swipe]){padding-top:var(--s5);padding-bottom:var(--s5)}
+@media(max-width:767px){.workspace:has(.view[data-view=swipe]){padding:0 0 calc(var(--sw-bar) + env(safe-area-inset-bottom))}}
+.view[data-view=swipe]{--sw-top:64px;--sw-bar:66px;--sw-h:calc(100dvh - var(--sw-top) - 2*var(--s5));--sw-col:560px}
+@media(max-width:767px){.view[data-view=swipe]{--sw-top:57px;--sw-h:calc(100dvh - var(--sw-top) - var(--sw-bar) - env(safe-area-inset-bottom))}}
+
+/* Başlangıç ekranı */
+.view[data-view=swipe] .sw-start{display:grid;gap:var(--s4);width:100%;max-width:var(--sw-col);margin-inline:auto;padding:var(--s5) var(--s4)}
+@media(min-width:768px){.view[data-view=swipe] .sw-start{padding:var(--s5) 0}}
+.view[data-view=swipe] .sw-hello{margin:0;font-size:1.5rem;line-height:1.25;letter-spacing:-.4px;color:var(--fg)}
+.view[data-view=swipe] .sw-chips{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.view[data-view=swipe] .sw-subject{display:inline-flex;align-items:center;gap:var(--s2);min-height:var(--h-btn);padding:0 var(--s4);border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);font-size:.9375rem;font-weight:600;white-space:nowrap}
+.view[data-view=swipe] .sw-subject span{color:var(--fg2);font-weight:500}
+.view[data-view=swipe] .sw-subject.on{border-color:var(--brand);color:var(--brand-ink)}
+.view[data-view=swipe] .sw-scope{justify-self:start}
+.view[data-view=swipe] .sw-scope button{min-height:var(--h-btn)}
+.view[data-view=swipe] .sw-actions{display:grid;gap:var(--s3)}
+.view[data-view=swipe] .sw-actions :is(.primary,.secondary){width:100%;min-height:var(--h-btn);white-space:nowrap}
+.view[data-view=swipe] .sw-none,.view[data-view=swipe] .sw-pending{margin:0;color:var(--fg2);font-size:.9375rem}
+.view[data-view=swipe] .sw-pending .text-button{display:inline-flex;min-height:var(--h-btn);padding:0 var(--s1)}
+.view[data-view=swipe] .sw-start .empty .primary{min-height:var(--h-btn)}
+
+/* Akış kabı: tarayıcının kendi scroll-snap kaydırması */
+.view[data-view=swipe] .sw-feed{height:var(--sw-h);overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y mandatory;scroll-behavior:smooth;scrollbar-width:none;width:100%;max-width:var(--sw-col);margin-inline:auto;outline:none}
+.view[data-view=swipe] .sw-feed::-webkit-scrollbar{display:none}
+@media(prefers-reduced-motion:reduce){.view[data-view=swipe] .sw-feed{scroll-behavior:auto}.view[data-view=swipe] *{animation:none!important;transition:none!important}}
+.view[data-view=swipe] .sw-ghost{height:100%;scroll-snap-align:start;scroll-snap-stop:always}
+.view[data-view=swipe] .sw-ghost p{margin:0;padding:var(--s5);color:var(--fg2)}
+.view[data-view=swipe] .sw-card{display:flex;flex-direction:column;position:relative;height:100%;min-height:0;scroll-snap-align:start;scroll-snap-stop:always;background:var(--surface);color:var(--fg);overflow:hidden}
+.view[data-view=swipe] .sw-card.sw-s{background:var(--inner)}
+@media(min-width:768px){.view[data-view=swipe] .sw-card{border:1px solid var(--line);border-radius:var(--r-hero)}}
+.view[data-view=swipe] .sw-card :focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* Üst şerit */
+.view[data-view=swipe] .sw-strip{display:flex;align-items:center;gap:var(--s2);position:relative;flex:none;padding:var(--s2) var(--s3) var(--s3) var(--s2);min-height:56px}
+.view[data-view=swipe] .sw-close,.view[data-view=swipe] .sw-more{flex:none;width:var(--h-btn);height:var(--h-btn)}
+.view[data-view=swipe] .sw-title{flex:1;min-width:0;display:flex;align-items:center;gap:var(--s2);margin:0;font-size:.8125rem;font-weight:600;line-height:1.3;color:var(--fg)}
+.view[data-view=swipe] .sw-title:focus-visible{outline:2px solid var(--brand);border-radius:var(--r-sm)}
+.view[data-view=swipe] .sw-chip{flex:none;padding:3px var(--s3);border:1px solid var(--line2);border-radius:999px;font-size:.8125rem;font-weight:600;white-space:nowrap}
+.view[data-view=swipe] .sw-topic,.view[data-view=swipe] .sw-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8125rem;color:var(--fg2);font-weight:500}
+.view[data-view=swipe] .sw-label{color:var(--fg);font-weight:700;flex:none}
+.view[data-view=swipe] .sw-progress{flex:none;font-size:.8125rem;font-weight:600;color:var(--fg2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.view[data-view=swipe] .sw-line{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--line)}
+.view[data-view=swipe] .sw-line i{display:block;height:100%;background:var(--brand)}
+
+/* Kart gövdesi */
+.view[data-view=swipe] .scroll-body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:var(--s4) var(--s4) var(--s5);display:flex;flex-direction:column;gap:var(--s4)}
+.view[data-view=swipe] .sw-photo{display:flex;align-items:center;justify-content:center;flex:1 1 auto;min-height:0;max-height:70%;padding:0;border:0;background:transparent;border-radius:var(--r-sm);cursor:zoom-in}
+.view[data-view=swipe] .sw-photo img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+.view[data-view=swipe] .sw-q .scroll-body{justify-content:center}
+.view[data-view=swipe] .sw-qtext{margin:0;font-size:1.0625rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.view[data-view=swipe] .sw-prev{margin:0;font-size:.875rem;color:var(--fg2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.view[data-view=swipe] .sw-opts{display:flex;gap:var(--s2);padding:0 var(--s4)}
+.view[data-view=swipe] .sw-opt{flex:1 1 0;min-width:0;min-height:var(--h-btn);padding:0;font-size:1.0625rem;font-weight:700}
+.view[data-view=swipe] .sw-opt.on{border-color:var(--brand);color:var(--brand-ink)}
+.view[data-view=swipe] .sw-foot{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);flex:none;padding:var(--s3) var(--s4) var(--s4)}
+.view[data-view=swipe] .sw-hint{display:flex;align-items:center;gap:var(--s1);margin:0;font-size:.8125rem;color:var(--fg2)}
+.view[data-view=swipe] .sw-show{min-height:var(--h-btn);margin-left:auto;white-space:nowrap}
+
+/* Çözüm kartı */
+.view[data-view=swipe] .sw-band{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s4);padding:var(--s3) var(--s4);border:2px solid var(--line2);border-radius:var(--r-sm);background:var(--surface)}
+.view[data-view=swipe] .sw-band strong{font-size:1.0625rem}
+.view[data-view=swipe] .sw-band span{font-weight:600;color:var(--fg2)}
+.view[data-view=swipe] .sw-band.good{border-color:var(--brand)}
+.view[data-view=swipe] .sw-band.bad{border-color:var(--destructive)}
+.view[data-view=swipe] .sw-band.bad span{color:var(--destructive)}
+.view[data-view=swipe] .sw-result{margin:0;font-size:.9375rem;color:var(--fg2)}
+.view[data-view=swipe] .sw-steps{margin:0;padding-left:var(--s5);display:grid;gap:var(--s3);font-size:1rem;line-height:1.5;list-style:decimal}
+.view[data-view=swipe] .sw-steps li{padding-left:var(--s1);overflow-wrap:anywhere}
+.view[data-view=swipe] .sw-pitfall{padding:var(--s3) var(--s4);border-radius:var(--r-sm);background:var(--champ-bg);border:1px solid var(--champ-line);color:var(--champ-ink)}
+.view[data-view=swipe] .sw-pitfall p,.view[data-view=swipe] .sw-note p{margin:var(--s1) 0 0;line-height:1.5;overflow-wrap:anywhere}
+.view[data-view=swipe] .sw-note strong{color:var(--fg)}
+.view[data-view=swipe] .sw-note p{color:var(--fg2);font-size:.9375rem}
+.view[data-view=swipe] .sw-note .text-button{min-height:var(--h-btn);padding:0 var(--s1)}
+.view[data-view=swipe] .sw-note p.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.view[data-view=swipe] .sw-unreadable{margin:0;padding:var(--s3) var(--s4);border-radius:var(--r-sm);border:1px solid var(--destructive);color:var(--destructive);font-weight:600}
+.view[data-view=swipe] .sw-nosol{display:grid;gap:var(--s2);justify-items:start}
+.view[data-view=swipe] .sw-nosol p{margin:0;color:var(--fg2)}
+.view[data-view=swipe] .sw-nosol .secondary{min-height:var(--h-btn);white-space:nowrap}
+
+/* Sabit alt çubuk: solda ikincil, sağda tek birincil */
+.view[data-view=swipe] .sw-bar{display:flex;gap:var(--s3);flex:none;padding:var(--s3) var(--s4) calc(var(--s3) + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface)}
+.view[data-view=swipe] .sw-bar :is(.primary,.secondary){flex:1 1 0;min-width:0;min-height:var(--h-btn);white-space:nowrap}
+.view[data-view=swipe] .sw-learned{flex:1 1 0;align-self:center;font-size:.875rem;color:var(--fg2)}
+@media(max-width:560px){.view[data-view=swipe] .sw-foot{flex-direction:column-reverse;align-items:stretch}.view[data-view=swipe] .sw-hint{justify-content:center}.view[data-view=swipe] .sw-show{margin-left:0;width:100%}}
+@media(max-width:767px){.view[data-view=swipe] :is(.sw-opt,.sw-bar .primary,.sw-bar .secondary,.sw-foot .secondary){min-height:48px}}
+
+/* Bitiş kartı */
+.view[data-view=swipe] .sw-end-title{margin:0;font-size:1.5rem;line-height:1.25;letter-spacing:-.4px}
+.view[data-view=swipe] .sw-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3);margin:0}
+.view[data-view=swipe] .sw-stats div{padding:var(--s3);border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface)}
+.view[data-view=swipe] .sw-stats dt{font-size:.8125rem;color:var(--fg2)}
+.view[data-view=swipe] .sw-stats dd{margin:var(--s1) 0 0;font-size:1.5rem;font-weight:700}
+.view[data-view=swipe] .sw-next{margin:0;color:var(--fg2)}
+.view[data-view=swipe] .sw-hard ul{margin:var(--s2) 0 0;padding:0;display:grid;gap:var(--s1);color:var(--fg2);font-size:.9375rem}
+.view[data-view=swipe] .sw-end-actions{flex-direction:column}
+.view[data-view=swipe] .sw-end-actions :is(.primary,.secondary){flex:0 0 auto;width:100%}
+
+/* Fotoğraf görüntüleyici: Radix penceresi portalda (.view dışında) çizilir; bu yüzden tek seçici .sw-viewer'a bağlıdır */
+[data-slot=dialog-content].sw-viewer{max-width:min(96vw,900px);padding:var(--s3)}
+.sw-viewer .sw-viewer-scroll{max-height:80dvh;overflow:auto;touch-action:pan-x pan-y pinch-zoom;border-radius:var(--r-sm)}
+.sw-viewer .sw-viewer-scroll img{display:block;width:100%;height:auto}

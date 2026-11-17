@@ -1,0 +1,158 @@
+{
+ "kisayol-390-azaltilmis": {
+  "log": [
+   {
+    "adim": "başla",
+    "idx": 0,
+    "odak": "sw-q-1",
+    "canli": "Soru 1 / 6: Matematik, Türev",
+    "bitis": false,
+    "slots": 3
+   },
+   {
+    "adim": "↓ (çözüm kartı)",
+    "idx": 1,
+    "odak": "sw-s-2",
+    "canli": "Çözüm 1 / 6: Matematik, Türev",
+    "bitis": false,
+    "slots": 3
+   },
+   {
+    "adim": "1 (Bildim)",
+    "idx": 1,
+    "odak": "sw-s-2",
+    "canli": "Bildim. Bir sonraki tekrar 24 Kasım.",
+    "bitis": false,
+    "slots": 3
+   },
+   {
+    "adim": "↓ (sonraki soru)",
+    "idx": 2,
+    "odak": "sw-q-3",
+    "canli": "Soru 2 / 6: Fizik, Elektrik ve manyetizma",
+    "bitis": false,
+    "slots": 5
+   },
+   {
+    "adim": "oturum sonu",
+    "idx": 12,
+    "odak": "sw-s-12",
+    "canli": "Çözüm 6 / 6: Fizik, Basınç",
+    "bitis": true,
+    "slots": 13
+   },
+   {
+    "adim": "Esc → başlangıç",
+    "metin": "Bugünkü tekrarların bitti. İstersen erken tekrar yap.\nTümü\n7\nMatematik\n2\nFizik\n2"
+   }
+  ],
+  "yazmalar": [
+   "PATCH q0 {\"review\":\"doğru\"}",
+   "PATCH q1 {\"review\":\"doğru\"}",
+   "PATCH q2 {\"review\":\"doğru\"}",
+   "PATCH q3 {\"review\":\"doğru\"}",
+   "PATCH q4 {\"review\":\"doğru\"}",
+   "PATCH q5 {\"review\":\"doğru\"}"
+  ]
+ },
+ "kisayol-1100-azaltilmis": {
+  "log": [
+   {
+    "adim": "başla",
+    "idx": 0,
+    "odak": "sw-q-1",
+    "canli": "Soru 1 / 6: Matematik, Türev",
+    "bitis": false,
+    "slots": 3
+   },
+   {
+    "adim": "↓ (çözüm kartı)",
+    "idx": 1,
+    "odak": "sw-s-2",
+    "canli": "Çözüm 1 / 6: Matematik, Türev",
+    "bitis": false,
+    "slots": 3
+   },
+   {
+    "adim": "1 (Bildim)",
+    "idx": 1,
+    "odak": "sw-s-2",
+    "canli": "Bildim. Bir sonraki tekrar 24 Kasım.",
+    "bitis": false,
+    "slots": 3
+   },
+   {
+    "adim": "↓ (sonraki soru)",
+    "idx": 2,
+    "odak": "sw-q-3",
+    "canli": "Soru 2 / 6: Fizik, Elektrik ve manyetizma",
+    "bitis": false,
+    "slots": 5
+   },
+   {
+    "adim": "oturum sonu",
+    "idx": 12,
+    "odak": "sw-s-12",
+    "canli": "Çözüm 6 / 6: Fizik, Basınç",
+    "bitis": true,
+    "slots": 13
+   },
+   {
+    "adim": "Esc → başlangıç",
+    "metin": "Bugünkü tekrarların bitti. İstersen erken tekrar yap.\nTümü\n7\nMatematik\n2\nFizik\n2"
+   }
+  ],
+  "yazmalar": [
+   "PATCH q0 {\"review\":\"doğru\"}",
+   "PATCH q1 {\"review\":\"doğru\"}",
+   "PATCH q2 {\"review\":\"doğru\"}",
+   "PATCH q3 {\"review\":\"doğru\"}",
+   "PATCH q4 {\"review\":\"doğru\"}",
+   "PATCH q5 {\"review\":\"doğru\"}"
+  ]
+ },
+ "otomatik-gecis-390": {
+  "log": [
+   {
+    "adim": "başla",
+    "idx": 0,
+    "odak": "sw-q-1",
+    "canli": "Soru 1 / 6: Matematik, Türev",
+    "bitis": false,
+    "slots": 3
+   },
+   {
+    "adim": "↓ (çözüm kartı)",
+    "idx": 1,
+    "odak": "sw-s-2",
+    "canli": "Çözüm 1 / 6: Matematik, Türev",
+    "bitis": false,
+    "slots": 3
+   },
+   {
+    "adim": "1 (Bildim, 400ms sonra otomatik geçiş)",
+    "idx": 2,
+    "odak": "sw-q-3",
+    "canli": "Soru 2 / 6: Fizik, Elektrik ve manyetizma",
+    "bitis": false,
+    "slots": 5
+   }
+  ],
+  "yazmalar": [
+   "PATCH q0 {\"review\":\"doğru\"}"
+  ]
+ },
+ "tekerlek": {
+  "delta100": 0,
+  "delta300": 0,
+  "delta600": 1
+ },
+ "devam": {
+  "baslangicEkrani": "Kaldığın yerden devam et (2/8) | Baştan başla",
+  "devamSonrasi": {
+   "idx": 4,
+   "odak": "sw-q-5",
+   "canli": "Bilemedim. Yarın yeniden karşına gelecek."
+  }
+ }
+}

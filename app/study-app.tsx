@@ -21,6 +21,7 @@ import {ReportView} from './study/report';
 import {ExamsView,focusExamForm} from './study/exams';
 import {SettingsView} from './study/settings';
 import {NotesView} from './study/notes';
+import {SwipeView} from './study/swipe/swipe-view';
 import {UploadDialog} from './study/upload-dialog';
 import {QuestionDialog} from './study/question-dialog';
 // Açılış kapısı: logo animasyonunun bitişi (.logo-anim wordmark .86s+.3s=1.16s; .boot .1s+.25s=.35s) + ~250ms nefes payı (globals.css ile birlikte güncelle)
@@ -105,6 +106,7 @@ export default function StudyApp(){
  {view==='exams'&&<ExamsView/>}
  {view==='notes'&&<NotesView preset={notesPreset}/>}
  {view==='settings'&&<SettingsView/>}
+ {view==='swipe'&&<SwipeView/>}
  </AppFrame>
  <UploadDialog open={upload} files={uploadFiles} preset={uploadPreset} onClose={()=>setUpload(false)}/>
  <PlanWizard open={wizard} onClose={()=>setWizard(false)}/>

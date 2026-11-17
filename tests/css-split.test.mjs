@@ -62,8 +62,8 @@ test('90-defter-yukleme.css: 560px pencere kuralı .cap-dialog\'a bağlı; ortak
   assert.ok(!/\.upload-dialog\{[^}]*560px/.test(css),'css içinde .upload-dialog{...560px} yok');
 });
 
-test('styles/95-program-kaynaklar.css: 98 parçasından önce @import edilmiş; sınıflar var; düz hex yok',()=>{
-  assert.equal(partImports().at(-2),'./styles/95-program-kaynaklar.css');
+test('styles/95-program-kaynaklar.css: 98 ve 99 parçalarından önce @import edilmiş; sınıflar var; düz hex yok',()=>{
+  assert.equal(partImports().at(-3),'./styles/95-program-kaynaklar.css');
   const css=readFileSync(join(appDir,'styles','95-program-kaynaklar.css'),'utf8');
   for(const c of ['td-columns','td-aside','day-tabs','wz-top','rc-progress','rc-more'])assert.match(css,new RegExp('\\.'+c+'(?![\\w-])'),c);
   assert.ok(!/#[0-9a-f]{3,8}\b/i.test(css.replace(/\/\*.*?\*\//g,'')),'renk jetonlardan gelir, düz hex yok');

@@ -11,13 +11,17 @@ test('headings: her ekranın yalnız başlığı ve tek satır açıklaması var
     assert.doesNotMatch(h.title+h.description,/^[A-ZÇĞİÖŞÜ ]{4,}$/,v);
   }
   assert.equal(headings.archive.title,'Yanlış defteri.');
+  assert.equal(headings.swipe.title,'Kaydır Çöz.');
+  assert.equal(headings.swipe.description,'Yanlışlarını tek tek kaydır, çözümü gör, tekrar takvimin kendiliğinden ilerlesin.');
 });
 
 test('kenar çubuğu gezinmesinde "Programı oluştur" yok',()=>{
   const labels=[...planNavEntries,...bookNavEntries,settingsEntry].map(e=>e.label);
   assert.ok(!labels.includes('Programı oluştur'));
   assert.deepEqual(planNavEntries.map(e=>e.id),['home','program','resources']);
-  assert.deepEqual(bookNavEntries.map(e=>e.id),['archive','report','exams','notes']);
+  assert.deepEqual(bookNavEntries.map(e=>e.id),['archive','swipe','report','exams','notes']);
+  assert.equal(bookNavEntries.find(e=>e.id==='swipe').label,'Kaydır Çöz');
+  assert.equal(bookNavEntries.findIndex(e=>e.id==='swipe'),bookNavEntries.findIndex(e=>e.id==='archive')+1,'Kaydır Çöz, Yanlış defteri\'nin hemen altında');
 });
 
 test('sayfa başlığı eylemleri: Programı düzenle yalnız Bugün + program varken',()=>{
@@ -27,6 +31,7 @@ test('sayfa başlığı eylemleri: Programı düzenle yalnız Bugün + program v
   assert.deepEqual(pageActions('archive',{plan:true}),[],'Defter: Yazdır/PDF artık "Dışa aktar" menüsünde');
   assert.deepEqual(pageActions('report',{plan:false}),['month','print']);
   assert.deepEqual(pageActions('settings',{plan:true}),[]);
+  assert.deepEqual(pageActions('swipe',{plan:true}),[],'Kaydır Çöz: başlıkta eylem yok');
 });
 
 test('üst çubuk "Yanlış ekle": yalnız Defter\'te birincil; diğer tüm ekranlarda ikincil (ekran başına tek kobalt)',()=>{
@@ -42,7 +47,7 @@ test('üst çubuk "Yanlış ekle": Defter boşken ikincil (birincil boş durumda
 
 test('içerik genişliği: yalnız Ayarlar okuma genişliği; Notlar (iki sütun) dahil diğerleri geniş',()=>{
   assert.equal(contentWidth('settings'),'reading');
-  for(const v of ['home','program','resources','archive','report','exams','notes'])assert.equal(contentWidth(v),'wide',v);
+  for(const v of ['home','program','resources','archive','report','exams','notes','swipe'])assert.equal(contentWidth(v),'wide',v);
 });
 
 test('giriş CSS: kahraman h1 clamp ölçeklemesini ezmez; üst çubuk hedefleri 44px',async()=>{

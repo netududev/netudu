@@ -7,7 +7,7 @@ export const AlertDialog=P,AlertDialogContent=()=>null,AlertDialogHeader=P,Alert
 const SelCtx=React.createContext<string>('');
 export const Select=({value,children}:any)=><SelCtx.Provider value={value??''}>{children}</SelCtx.Provider>,SelectTrigger=({children}:any)=><div className="choice">{children}</div>,SelectValue=()=>{const v=React.useContext(SelCtx);return <span>{v}</span>},SelectContent=()=>null,SelectItem=()=>null;
 export const Table=({children,className}:any)=><table className={className} style={{width:'100%',borderCollapse:'collapse'}}>{children}</table>,TableHeader=({children}:any)=><thead>{children}</thead>,TableBody=({children}:any)=><tbody>{children}</tbody>,TableRow=({children,className}:any)=><tr className={className}>{children}</tr>,TableHead=({children,className}:any)=><th className={className} style={{textAlign:'left',padding:'10px 12px'}}>{children}</th>,TableCell=({children,className}:any)=><td className={className} style={{padding:'10px 12px'}}>{children}</td>;
-export const toast:any=Object.assign(()=>{},{error(){},success(){},message(){}});
+export const toast:any=Object.assign(()=>{},{error(){},success(){},message(){},warning(){}});
 export const Toaster=()=>null;
 const Ctx=React.createContext<any>({isMobile:false,setOpenMobile(){}});
 export const useSidebar=()=>React.useContext(Ctx);
