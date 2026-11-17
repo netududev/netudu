@@ -27,11 +27,11 @@ await t('tiers: gidiş-dönüş korunur; silinmiş kimlik ve geçersiz katman ay
   assert.deepEqual(SS.restore(SS.serialize(s),{day:DAY,ids:['a','x']}).tiers,{a:'A',x:'B'});
   assert.deepEqual(SS.restore(JSON.stringify({...s,tiers:{a:'Z',x:'B'}}),{day:DAY,ids:all}).tiers,{x:'B'});
   const {tiers,...eski}=s;assert.deepEqual(SS.restore(JSON.stringify(eski),{day:DAY,ids:all}).tiers,{})});
-await t('collectPending: eski günlerin gönderilmemiş yazmalarını döndürür; bugün/başka kullanıcı/bozuk/tries>=3 hariç; depoya dokunmaz',()=>{
+await t('collectPending: eski günlerin bekleyen yazmalarını (tries>=3 dahil) döndürür; bugün/başka kullanıcı/bozuk hariç; depoya dokunmaz',()=>{
   const old=(p)=>JSON.stringify({...base(),day:'2026-11-15',pending:p});
   const st=mem({'kaydir:u1:2026-11-15':old([{id:'a',review:'yanlış',tries:1},{id:'b',review:'doğru',tries:3}]),'kaydir:u1:2026-11-14':old([{id:'c',review:'doğru',tries:3}]),'kaydir:u1:2026-11-13':'{bozuk','kaydir:u1:2026-11-16':JSON.stringify({...base(),pending:[{id:'z',review:'doğru',tries:0}]}),'kaydir:u2:2026-11-10':old([{id:'q',review:'doğru',tries:0}])});
   const before=Object.keys(st.m).sort();
-  assert.deepEqual(SS.collectPending(st,'u1',DAY),[{day:'2026-11-15',pending:[{id:'a',review:'yanlış',tries:1}]}]);
+  assert.deepEqual(SS.collectPending(st,'u1',DAY),[{day:'2026-11-14',pending:[{id:'c',review:'doğru',tries:3}]},{day:'2026-11-15',pending:[{id:'a',review:'yanlış',tries:1},{id:'b',review:'doğru',tries:3}]}].sort((x,y)=>Object.keys(st.m).indexOf('kaydir:u1:'+x.day)-Object.keys(st.m).indexOf('kaydir:u1:'+y.day)));
   assert.deepEqual(Object.keys(st.m).sort(),before);
   const bad={getItem(){throw new Error('x')},key(){throw new Error('x')},length:1};assert.deepEqual(SS.collectPending(bad,'u1',DAY),[]);assert.deepEqual(SS.collectPending(null,'u1',DAY),[])});
 await t('bekleyen yazma: tries<3 denenir; başarıda çıkar; başarısızlıkta tries+1; 3 deneme sonra vazgeçilir ve sayılır',()=>{
@@ -39,4 +39,18 @@ await t('bekleyen yazma: tries<3 denenir; başarıda çıkar; başarısızlıkta
   assert.deepEqual(SS.duePending(p).map(x=>x.id),['a','b']);
   for(let i=0;i<3;i++)p=SS.afterAttempt(p,'a',false);assert.deepEqual(SS.duePending(p).map(x=>x.id),['b']);assert.equal(SS.failedCount(p),1);
   p=SS.afterAttempt(p,'b',true);assert.deepEqual(p.map(x=>x.id),['a'])});
+await t('settleOldSessions: başarılı gidenler anahtardan çıkar, başarısızlar kalır ve tries artar; boşalan anahtar silinir; bugün/başka kullanıcı/bozuk dokunulmaz',()=>{
+  const old=(p)=>JSON.stringify({...base(),day:'2026-11-15',pending:p});
+  const st=mem({'kaydir:u1:2026-11-15':old([{id:'a',review:'yanlış',tries:1},{id:'b',review:'doğru',tries:3},{id:'c',review:'doğru',tries:0}]),'kaydir:u1:2026-11-14':old([{id:'d',review:'doğru',tries:0}]),'kaydir:u1:2026-11-13':'{bozuk','kaydir:u1:2026-11-12':old([]),'kaydir:u1:2026-11-16':'{}','kaydir:u2:2026-11-10':'{}'});
+  SS.settleOldSessions(st,'u1',DAY,'2026-11-15','a',true);SS.settleOldSessions(st,'u1',DAY,'2026-11-15','b',false);SS.settleOldSessions(st,'u1',DAY,'2026-11-14','d',true);
+  assert.deepEqual(JSON.parse(st.m['kaydir:u1:2026-11-15']).pending,[{id:'b',review:'doğru',tries:4},{id:'c',review:'doğru',tries:0}]);
+  assert.equal(JSON.parse(st.m['kaydir:u1:2026-11-15']).subject,'Matematik','pending dışındaki alanlar korunur');
+  assert.ok(!('kaydir:u1:2026-11-14' in st.m),'boşalan anahtar silinir');
+  assert.ok('kaydir:u1:2026-11-16' in st.m&&'kaydir:u2:2026-11-10' in st.m);
+  SS.settleOldSessions(st,'u1',DAY,'2026-11-15','b',true);SS.settleOldSessions(st,'u1',DAY,'2026-11-15','c',true);assert.ok(!('kaydir:u1:2026-11-15' in st.m));
+  SS.settleOldSessions(null,'u1',DAY,'x','a',true)});
+await t('purgeOldSessions: bekleyeni olan eski anahtar korunur (keepPending); boş ve bozuk olanlar silinir',()=>{
+  const old=(p)=>JSON.stringify({...base(),day:'2026-11-15',pending:p});
+  const st=mem({'kaydir:u1:2026-11-15':old([{id:'a',review:'yanlış',tries:3}]),'kaydir:u1:2026-11-14':old([]),'kaydir:u1:2026-11-13':'{bozuk'});SS.purgeOldSessions(st,'u1',DAY,true);
+  assert.deepEqual(Object.keys(st.m),['kaydir:u1:2026-11-15'])});
 console.log(n+' test geçti');

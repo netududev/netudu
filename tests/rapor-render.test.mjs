@@ -90,5 +90,5 @@ test('CSS: sabit renk yok (jeton), seçiciler ekrana özgü, reduced-motion var,
   const rules=css.replace(/\/\*.*?\*\//gs,'').replace(/@media[^{]*\{/g,'').split('}').map(x=>x.split('{')[0].trim()).filter(Boolean);
   for(const sel of rules)assert.ok(/data-view|\.page-heading|\.settings-/.test(sel),'kapsamsız seçici: '+sel);
   const g=readFileSync(join(root,'app/globals.css'),'utf8').split('\n').filter(l=>l.startsWith('@import'));
-  assert.equal(g[g.length-1],'@import "./styles/98-rapor-not-ayarlar.css";');assert.ok(g.indexOf('@import "./styles/95-program-kaynaklar.css";')<g.length-1);
+  assert.equal(g[g.length-2],'@import "./styles/98-rapor-not-ayarlar.css";','98 artık sondan ikinci; son dosya 99-kaydir-coz.css');assert.equal(g[g.length-1],'@import "./styles/99-kaydir-coz.css";');assert.ok(g.indexOf('@import "./styles/95-program-kaynaklar.css";')<g.length-2);
 });
