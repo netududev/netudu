@@ -1,0 +1,1330 @@
+{
+ "defter-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [
+   "Türev 24",
+   "sorusunu aç 36",
+   "Elektrik 24",
+   "sorusunu aç 36",
+   "Mol kavramı 24",
+   "sorusunu aç 36",
+   "Hücre 24",
+   "sorusunu aç 36",
+   "Paragraf 24",
+   "sorusunu aç 36",
+   "Limit 24",
+   "sorusunu aç 36"
+  ],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 1011,
+   "y": 380
+  },
+  "exportBtn": {
+   "w": 158,
+   "h": 44,
+   "x": 1171,
+   "y": 437
+  },
+  "strip": null,
+  "bar": {
+   "w": 962,
+   "h": 102,
+   "x": 367,
+   "y": 378
+  },
+  "satir1": [
+   378,
+   380,
+   379
+  ]
+ },
+ "defter-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [
+   "Türev 24",
+   "sorusunu aç 36",
+   "Elektrik 24",
+   "sorusunu aç 36",
+   "Mol kavramı 24",
+   "sorusunu aç 36",
+   "Hücre 24",
+   "sorusunu aç 36",
+   "Paragraf 24",
+   "sorusunu aç 36",
+   "Limit 24",
+   "sorusunu aç 36"
+  ],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 1011,
+   "y": 380
+  },
+  "exportBtn": {
+   "w": 158,
+   "h": 44,
+   "x": 1171,
+   "y": 437
+  },
+  "strip": null,
+  "bar": {
+   "w": 962,
+   "h": 102,
+   "x": 367,
+   "y": 378
+  },
+  "satir1": [
+   378,
+   380,
+   379
+  ]
+ },
+ "defter-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 35,
+   "y": 474
+  },
+  "exportBtn": {
+   "w": 154,
+   "h": 44,
+   "x": 201,
+   "y": 531
+  },
+  "strip": null,
+  "bar": {
+   "w": 320,
+   "h": 159,
+   "x": 35,
+   "y": 416
+  },
+  "satir1": [
+   416,
+   474,
+   473
+  ]
+ },
+ "defter-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 35,
+   "y": 474
+  },
+  "exportBtn": {
+   "w": 154,
+   "h": 44,
+   "x": 201,
+   "y": 531
+  },
+  "strip": null,
+  "bar": {
+   "w": 320,
+   "h": 159,
+   "x": 35,
+   "y": 416
+  },
+  "satir1": [
+   416,
+   474,
+   473
+  ]
+ },
+ "defter-filtre-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [
+   "Türev 24",
+   "sorusunu aç 36",
+   "Elektrik 24",
+   "sorusunu aç 36",
+   "Mol kavramı 24",
+   "sorusunu aç 36",
+   "Hücre 24",
+   "sorusunu aç 36",
+   "Paragraf 24",
+   "sorusunu aç 36",
+   "Limit 24",
+   "sorusunu aç 36"
+  ],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 1011,
+   "y": 380
+  },
+  "exportBtn": {
+   "w": 158,
+   "h": 44,
+   "x": 1171,
+   "y": 609
+  },
+  "strip": null,
+  "bar": {
+   "w": 962,
+   "h": 274,
+   "x": 367,
+   "y": 378
+  },
+  "satir1": [
+   378,
+   380,
+   379
+  ]
+ },
+ "defter-filtre-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [
+   "Türev 24",
+   "sorusunu aç 36",
+   "Elektrik 24",
+   "sorusunu aç 36",
+   "Mol kavramı 24",
+   "sorusunu aç 36",
+   "Hücre 24",
+   "sorusunu aç 36",
+   "Paragraf 24",
+   "sorusunu aç 36",
+   "Limit 24",
+   "sorusunu aç 36"
+  ],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 1011,
+   "y": 380
+  },
+  "exportBtn": {
+   "w": 158,
+   "h": 44,
+   "x": 1171,
+   "y": 609
+  },
+  "strip": null,
+  "bar": {
+   "w": 962,
+   "h": 274,
+   "x": 367,
+   "y": 378
+  },
+  "satir1": [
+   378,
+   380,
+   379
+  ]
+ },
+ "defter-filtre-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 35,
+   "y": 474
+  },
+  "exportBtn": {
+   "w": 154,
+   "h": 44,
+   "x": 201,
+   "y": 1032
+  },
+  "strip": null,
+  "bar": {
+   "w": 320,
+   "h": 660,
+   "x": 35,
+   "y": 416
+  },
+  "satir1": [
+   416,
+   474,
+   473
+  ]
+ },
+ "defter-filtre-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 35,
+   "y": 474
+  },
+  "exportBtn": {
+   "w": 154,
+   "h": 44,
+   "x": 201,
+   "y": 1032
+  },
+  "strip": null,
+  "bar": {
+   "w": 320,
+   "h": 660,
+   "x": 35,
+   "y": 416
+  },
+  "satir1": [
+   416,
+   474,
+   473
+  ]
+ },
+ "defter-menu-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [
+   "Türev 24",
+   "sorusunu aç 36",
+   "Elektrik 24",
+   "sorusunu aç 36",
+   "Mol kavramı 24",
+   "sorusunu aç 36",
+   "Hücre 24",
+   "sorusunu aç 36",
+   "Paragraf 24",
+   "sorusunu aç 36",
+   "Limit 24",
+   "sorusunu aç 36"
+  ],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 1011,
+   "y": 380
+  },
+  "exportBtn": {
+   "w": 158,
+   "h": 44,
+   "x": 1171,
+   "y": 437
+  },
+  "strip": null,
+  "bar": {
+   "w": 962,
+   "h": 102,
+   "x": 367,
+   "y": 378
+  },
+  "satir1": [
+   378,
+   380,
+   379
+  ]
+ },
+ "defter-menu-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [
+   "Türev 24",
+   "sorusunu aç 36",
+   "Elektrik 24",
+   "sorusunu aç 36",
+   "Mol kavramı 24",
+   "sorusunu aç 36",
+   "Hücre 24",
+   "sorusunu aç 36",
+   "Paragraf 24",
+   "sorusunu aç 36",
+   "Limit 24",
+   "sorusunu aç 36"
+  ],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 1011,
+   "y": 380
+  },
+  "exportBtn": {
+   "w": 158,
+   "h": 44,
+   "x": 1171,
+   "y": 437
+  },
+  "strip": null,
+  "bar": {
+   "w": 962,
+   "h": 102,
+   "x": 367,
+   "y": 378
+  },
+  "satir1": [
+   378,
+   380,
+   379
+  ]
+ },
+ "defter-menu-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 35,
+   "y": 474
+  },
+  "exportBtn": {
+   "w": 154,
+   "h": 44,
+   "x": 201,
+   "y": 531
+  },
+  "strip": null,
+  "bar": {
+   "w": 320,
+   "h": 159,
+   "x": 35,
+   "y": 416
+  },
+  "satir1": [
+   416,
+   474,
+   473
+  ]
+ },
+ "defter-menu-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 35,
+   "y": 474
+  },
+  "exportBtn": {
+   "w": 154,
+   "h": 44,
+   "x": 201,
+   "y": 531
+  },
+  "strip": null,
+  "bar": {
+   "w": 320,
+   "h": 159,
+   "x": 35,
+   "y": 416
+  },
+  "satir1": [
+   416,
+   474,
+   473
+  ]
+ },
+ "defter-bos-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "İlk yanlışını ekle"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "defter-bos-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "İlk yanlışını ekle"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "defter-bos-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "İlk yanlışını ekle",
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "defter-bos-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "İlk yanlışını ekle",
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "defter-kontrol-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [
+   "Türev 24",
+   "sorusunu aç 36",
+   "Elektrik 24",
+   "sorusunu aç 36",
+   "Mol kavramı 24",
+   "sorusunu aç 36",
+   "Hücre 24",
+   "sorusunu aç 36",
+   "Paragraf 24",
+   "sorusunu aç 36",
+   "Limit 24",
+   "sorusunu aç 36",
+   "Konu belirlenmedi 24",
+   "sorusunu aç 36",
+   "Konu belirlenmedi 24",
+   "sorusunu aç 36"
+  ],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 1011,
+   "y": 436
+  },
+  "exportBtn": {
+   "w": 158,
+   "h": 44,
+   "x": 1171,
+   "y": 493
+  },
+  "strip": {
+   "w": 962,
+   "h": 44,
+   "x": 367,
+   "y": 378
+  },
+  "bar": {
+   "w": 962,
+   "h": 102,
+   "x": 367,
+   "y": 434
+  },
+  "satir1": [
+   434,
+   436,
+   435
+  ]
+ },
+ "defter-kontrol-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [
+   "Türev 24",
+   "sorusunu aç 36",
+   "Elektrik 24",
+   "sorusunu aç 36",
+   "Mol kavramı 24",
+   "sorusunu aç 36",
+   "Hücre 24",
+   "sorusunu aç 36",
+   "Paragraf 24",
+   "sorusunu aç 36",
+   "Limit 24",
+   "sorusunu aç 36",
+   "Konu belirlenmedi 24",
+   "sorusunu aç 36",
+   "Konu belirlenmedi 24",
+   "sorusunu aç 36"
+  ],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 1011,
+   "y": 436
+  },
+  "exportBtn": {
+   "w": 158,
+   "h": 44,
+   "x": 1171,
+   "y": 493
+  },
+  "strip": {
+   "w": 962,
+   "h": 44,
+   "x": 367,
+   "y": 378
+  },
+  "bar": {
+   "w": 962,
+   "h": 102,
+   "x": 367,
+   "y": 434
+  },
+  "satir1": [
+   434,
+   436,
+   435
+  ]
+ },
+ "defter-kontrol-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 35,
+   "y": 550
+  },
+  "exportBtn": {
+   "w": 154,
+   "h": 44,
+   "x": 201,
+   "y": 607
+  },
+  "strip": {
+   "w": 320,
+   "h": 64,
+   "x": 35,
+   "y": 416
+  },
+  "bar": {
+   "w": 320,
+   "h": 159,
+   "x": 35,
+   "y": 492
+  },
+  "satir1": [
+   492,
+   550,
+   549
+  ]
+ },
+ "defter-kontrol-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Yanlış ekle"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": null,
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": {
+   "w": 112,
+   "h": 44,
+   "x": 35,
+   "y": 550
+  },
+  "exportBtn": {
+   "w": 154,
+   "h": 44,
+   "x": 201,
+   "y": 607
+  },
+  "strip": {
+   "w": 320,
+   "h": 64,
+   "x": 35,
+   "y": 416
+  },
+  "bar": {
+   "w": 320,
+   "h": 159,
+   "x": 35,
+   "y": 492
+  },
+  "satir1": [
+   492,
+   550,
+   549
+  ]
+ },
+ "yukle-bos-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Önce soru seç"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 560,
+   "h": 613,
+   "x": 440,
+   "y": 144
+  },
+  "capBtn": {
+   "w": 249,
+   "h": 128,
+   "x": 465,
+   "y": 294
+  },
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "yukle-bos-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Önce soru seç"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 560,
+   "h": 613,
+   "x": 440,
+   "y": 144
+  },
+  "capBtn": {
+   "w": 249,
+   "h": 128,
+   "x": 465,
+   "y": 294
+  },
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "yukle-bos-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Önce soru seç"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 390,
+   "h": 844,
+   "x": 0,
+   "y": 0
+  },
+  "capBtn": {
+   "w": 164,
+   "h": 128,
+   "x": 25,
+   "y": 171
+  },
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "yukle-bos-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Önce soru seç"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 390,
+   "h": 844,
+   "x": 0,
+   "y": 0
+  },
+  "capBtn": {
+   "w": 164,
+   "h": 128,
+   "x": 25,
+   "y": 171
+  },
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "yukle-fotolu-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "5 soruyu tanı"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 560,
+   "h": 852,
+   "x": 440,
+   "y": 24
+  },
+  "capBtn": {
+   "w": 249,
+   "h": 128,
+   "x": 465,
+   "y": 175
+  },
+  "capShot": {
+   "w": 163,
+   "h": 218,
+   "x": 465,
+   "y": 364
+  },
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "yukle-fotolu-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "5 soruyu tanı"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 560,
+   "h": 852,
+   "x": 440,
+   "y": 24
+  },
+  "capBtn": {
+   "w": 249,
+   "h": 128,
+   "x": 465,
+   "y": 175
+  },
+  "capShot": {
+   "w": 163,
+   "h": 218,
+   "x": 465,
+   "y": 364
+  },
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "yukle-fotolu-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "5 soruyu tanı"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 390,
+   "h": 844,
+   "x": 0,
+   "y": 0
+  },
+  "capBtn": {
+   "w": 164,
+   "h": 128,
+   "x": 25,
+   "y": 171
+  },
+  "capShot": {
+   "w": 107,
+   "h": 142,
+   "x": 25,
+   "y": 360
+  },
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "yukle-fotolu-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "5 soruyu tanı"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 390,
+   "h": 844,
+   "x": 0,
+   "y": 0
+  },
+  "capBtn": {
+   "w": 164,
+   "h": 128,
+   "x": 25,
+   "y": 171
+  },
+  "capShot": {
+   "w": 107,
+   "h": 142,
+   "x": 25,
+   "y": 360
+  },
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "yukle-ai-kapali-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "3 soruyu tanı"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 560,
+   "h": 821,
+   "x": 440,
+   "y": 39
+  },
+  "capBtn": {
+   "w": 249,
+   "h": 128,
+   "x": 465,
+   "y": 190
+  },
+  "capShot": {
+   "w": 163,
+   "h": 218,
+   "x": 465,
+   "y": 380
+  },
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "yukle-ai-kapali-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "3 soruyu tanı"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 560,
+   "h": 821,
+   "x": 440,
+   "y": 39
+  },
+  "capBtn": {
+   "w": 249,
+   "h": 128,
+   "x": 465,
+   "y": 190
+  },
+  "capShot": {
+   "w": 163,
+   "h": 218,
+   "x": 465,
+   "y": 380
+  },
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "yukle-ai-kapali-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "3 soruyu tanı"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 390,
+   "h": 844,
+   "x": 0,
+   "y": 0
+  },
+  "capBtn": {
+   "w": 164,
+   "h": 128,
+   "x": 25,
+   "y": 171
+  },
+  "capShot": {
+   "w": 107,
+   "h": 142,
+   "x": 25,
+   "y": 360
+  },
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "yukle-ai-kapali-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "3 soruyu tanı"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 390,
+   "h": 844,
+   "x": 0,
+   "y": 0
+  },
+  "capBtn": {
+   "w": 164,
+   "h": 128,
+   "x": 25,
+   "y": 171
+  },
+  "capShot": {
+   "w": 107,
+   "h": 142,
+   "x": 25,
+   "y": 360
+  },
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "etiket-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Tamam, 3 soru defterde"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 560,
+   "h": 789,
+   "x": 440,
+   "y": 56
+  },
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "etiket-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Tamam, 3 soru defterde"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 560,
+   "h": 789,
+   "x": 440,
+   "y": 56
+  },
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "etiket-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Tamam, 3 soru defterde"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 390,
+   "h": 844,
+   "x": 0,
+   "y": 0
+  },
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "etiket-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Tamam, 3 soru defterde"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 390,
+   "h": 844,
+   "x": 0,
+   "y": 0
+  },
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "soru-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Çözümü hazırla"
+  ],
+  "kucukHedef": [
+   "Soru ve çözüm 34",
+   "Konu videosu 34",
+   "Tekrar 34",
+   "Düzenle 34"
+  ],
+  "tasan": 0,
+  "dialog": {
+   "w": 1000,
+   "h": 594,
+   "x": 220,
+   "y": 153
+  },
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "soru-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "kobalt": [
+   "Çözümü hazırla"
+  ],
+  "kucukHedef": [
+   "Soru ve çözüm 34",
+   "Konu videosu 34",
+   "Tekrar 34",
+   "Düzenle 34"
+  ],
+  "tasan": 0,
+  "dialog": {
+   "w": 1000,
+   "h": 594,
+   "x": 220,
+   "y": 153
+  },
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "soru-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Çözümü hazırla"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 390,
+   "h": 844,
+   "x": 0,
+   "y": 0
+  },
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ },
+ "soru-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "kobalt": [
+   "Çözümü hazırla"
+  ],
+  "kucukHedef": [],
+  "tasan": 0,
+  "dialog": {
+   "w": 390,
+   "h": 844,
+   "x": 0,
+   "y": 0
+  },
+  "capBtn": null,
+  "capShot": null,
+  "filtersBtn": null,
+  "exportBtn": null,
+  "strip": null,
+  "bar": null,
+  "satir1": []
+ }
+}

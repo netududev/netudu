@@ -1,0 +1,34 @@
+/* Kabuk ve giriş sayfası: tek başlık, 1120/760 içerik genişliği, sade üst çubuk, giriş kahramanı ve tek kobalt buton kuralı */
+/* Üst çubuk: solda kenar çubuğu tetikleyicisi (mobilde logo), sağda tek birincil eylem ve kullanıcı etiketi */
+.topbar [data-slot=sidebar-trigger]{width:var(--h-btn);height:var(--h-btn);border-radius:var(--r-sm);color:var(--fg2)}
+.topbar [data-slot=sidebar-trigger]:hover{background:var(--inner2);color:var(--fg)}
+.topbar-logo{display:none;align-items:center;justify-content:center;min-width:var(--h-btn);min-height:var(--h-btn);color:var(--fg);background:none;border:0;border-radius:var(--r-sm)}
+.topbar-end{margin-left:auto;gap:var(--s3)}
+.topbar-add{white-space:nowrap}
+.secondary.ghost{background:transparent;border-color:transparent}
+.secondary.ghost:hover{background:var(--inner2);border-color:var(--line2)}
+@media(max-width:767px){
+ .topbar{display:flex;align-items:center;gap:var(--s2)}
+ .topbar-logo{display:inline-flex}
+ .topbar-add{display:none}
+ .mobile-bar .fab{width:56px;height:56px}
+}
+/* İçerik genişliği: kap 1120px ortalı; Ayarlar 760px okuma sütunu (başlıkla birlikte); Notlar iki sütunlu olduğu için geniş */
+.workspace{width:100%;max-width:1120px;margin-inline:auto}
+.view[data-width=reading]{max-width:760px;margin-inline:auto}
+.workspace:has(.view[data-width=reading]) :is(.page-heading,.error-banner){max-width:760px;margin-inline:auto}
+/* Kenar çubuğu alt bloğu: hedef kartı ile kullanıcı satırı arası tam 16px */
+.app-sidebar [data-slot=sidebar-footer]{gap:0}
+.app-sidebar .target-card{margin-bottom:var(--s4)}
+/* Giriş sayfası: kobalt yalnız kahraman ve fiyat birincilinde; üst çubuk ve kapanış CTA siyah/ters dolgu */
+.lp-btn.ink{background:var(--fg);color:var(--bg);box-shadow:none}
+.lp-btn.ink:hover{background:var(--fg2)}
+.lp-btn.ink:active{transform:scale(.97)}
+.lp-plan::after{content:none;animation:none}
+.lp-hero{grid-template-columns:minmax(0,560px) minmax(0,1fr)}
+.lp-hero h1{line-height:1.02}
+@media(max-width:900px){.lp-hero{grid-template-columns:minmax(0,1fr)}.lp-visual{min-height:480px}}
+@media(max-width:520px){.lp-cta .lp-btn,.lp-cta .lp-quiet{width:100%;justify-content:center}}
+/* Giriş sayfası üst çubuğu: dokunma hedefleri en az 44px */
+.lp-link,.lp-nav nav a,.lp-logo{min-height:var(--h-btn);display:inline-flex;align-items:center}
+.lp-link{white-space:nowrap}
