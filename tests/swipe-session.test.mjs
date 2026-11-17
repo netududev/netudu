@@ -22,6 +22,18 @@ await t('depolama: kaydet/yükle; hata ve bulunmayan depolama → null/false, f�
 await t('depolama: eski gün anahtarı silinir; bugünküne ve başka kullanıcıya dokunulmaz',()=>{
   const st=mem({'kaydir:u1:2026-11-15':'{}','kaydir:u1:2026-11-16':'{}','kaydir:u2:2026-11-10':'{}','baska':'1'});SS.purgeOldSessions(st,'u1',DAY);
   assert.deepEqual(Object.keys(st.m).sort(),['baska','kaydir:u1:2026-11-16','kaydir:u2:2026-11-10'])});
+await t('tiers: gidiş-dönüş korunur; silinmiş kimlik ve geçersiz katman ayıklanır; eksik alan {} olur',()=>{
+  const s={...base(),tiers:{a:'A',x:'B',gone:'C'}};assert.deepEqual(SS.restore(SS.serialize(s),{day:DAY,ids:all}).tiers,s.tiers);
+  assert.deepEqual(SS.restore(SS.serialize(s),{day:DAY,ids:['a','x']}).tiers,{a:'A',x:'B'});
+  assert.deepEqual(SS.restore(JSON.stringify({...s,tiers:{a:'Z',x:'B'}}),{day:DAY,ids:all}).tiers,{x:'B'});
+  const {tiers,...eski}=s;assert.deepEqual(SS.restore(JSON.stringify(eski),{day:DAY,ids:all}).tiers,{})});
+await t('collectPending: eski günlerin gönderilmemiş yazmalarını döndürür; bugün/başka kullanıcı/bozuk/tries>=3 hariç; depoya dokunmaz',()=>{
+  const old=(p)=>JSON.stringify({...base(),day:'2026-11-15',pending:p});
+  const st=mem({'kaydir:u1:2026-11-15':old([{id:'a',review:'yanlış',tries:1},{id:'b',review:'doğru',tries:3}]),'kaydir:u1:2026-11-14':old([{id:'c',review:'doğru',tries:3}]),'kaydir:u1:2026-11-13':'{bozuk','kaydir:u1:2026-11-16':JSON.stringify({...base(),pending:[{id:'z',review:'doğru',tries:0}]}),'kaydir:u2:2026-11-10':old([{id:'q',review:'doğru',tries:0}])});
+  const before=Object.keys(st.m).sort();
+  assert.deepEqual(SS.collectPending(st,'u1',DAY),[{day:'2026-11-15',pending:[{id:'a',review:'yanlış',tries:1}]}]);
+  assert.deepEqual(Object.keys(st.m).sort(),before);
+  const bad={getItem(){throw new Error('x')},key(){throw new Error('x')},length:1};assert.deepEqual(SS.collectPending(bad,'u1',DAY),[]);assert.deepEqual(SS.collectPending(null,'u1',DAY),[])});
 await t('bekleyen yazma: tries<3 denenir; başarıda çıkar; başarısızlıkta tries+1; 3 deneme sonra vazgeçilir ve sayılır',()=>{
   let p=SS.addPending([],'a','doğru');p=SS.addPending(p,'a','yanlış');assert.equal(p.length,1,'aynı soru ikinci kez eklenmez');p=SS.addPending(p,'b','yanlış');
   assert.deepEqual(SS.duePending(p).map(x=>x.id),['a','b']);

@@ -24,11 +24,11 @@ Davranışsal "önce" yok (arayüz yok; yeni modüller). Test dosyaları önce y
 | Komut | Beklenen | Gerçek | Çıkış kodu | Sonuç |
 |---|---|---|---|---|
 | `node --experimental-strip-types --import ./tests/reg.mjs --test tests/swipe-*.test.mjs` (ND_ZOD_PATH ile) | 4 dosya yeşil | 4/4 geçti, 35 durum `ok` | 0 | PASS |
-| `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` | tümü yeşil | 103 test, 102 geçti, 1 kaldı: `Bugün: gün tamamsa .td-focus.is-done ve kum ışıma sınıfı` (tests/program-render.test.mjs:45) | 1 | FAIL (bu görevden bağımsız, aşağıya bak) |
+| `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` | tümü yeşil | 103 test, 103 geçti (Tur 1 doğrulamasında taban dalın tarihe bağlı testi düzeltildi; bkz. Orkestratör doğrulaması) | 0 | PASS |
 | Aynı `npm test`, bu PR'dan ÖNCEKİ HEAD'in geçici `--detach` worktree'sinde | taban yeşil (99) | 99 test, 98 geçti, aynı test kaldı | 1 | Hata taban dalda zaten var |
 
 ## Kapsam dışı / bilinen eksikler
-- **Taban dalda kırmızı test:** `program-render.test.mjs` "Bugün: gün tamamsa .td-focus.is-done…" bu PR'ın değişikliklerinden önce de kalıyor (aynı komut, temiz HEAD'de kanıtlandı). Nedeni araştırılmadı (görev kapsamı dışı; bu ortamın tarihi/ortamıyla ilgili olabilir). Görevdeki "99 yeşil" beklentisi bu ortamda tutmuyor; yeni testlerle 102/103.
+- **Taban dalda kırmızı test:** `program-render.test.mjs` "Bugün: gün tamamsa .td-focus.is-done…" bu PR'ın değişikliklerinden önce de kalıyor (aynı komut, temiz HEAD'de kanıtlandı). Nedeni araştırılmadı (görev kapsamı dışı; bu ortamın tarihi/ortamıyla ilgili olabilir). Görevdeki "99 yeşil" beklentisi bu ortamda tutmuyor; yeni testlerle 103/103 (taban test düzeltmesi sonrası).
 - **Route gerçekten çalıştırılmadı.** PATCH ve fotoğraf GET oturum (`owner`) ve D1/R2 ister; mevcut testlerde route çağıran kalıp yok. Bu yüzden kural saf yardımcıya çıkarıldı (`lib/swipe/server.ts`: `learnedState()`, `IMAGE_CACHE_CONTROL`) ve o sınandı; route'un yardımcıyı kullandığı yalnız kaynak metni regex testiyle (`route bağlantısı`) sabitlendi. Gerçek HTTP yanıtı/başlığı ve SQL güncellemesi doğrulanmadı (Vercel/yerel çalıştırma gerekir).
 - `tsc` çalıştırılmadı; tip hataları yakalanmadı (testler `--experimental-strip-types` ile tipleri siler).
 - Radix/React yok bu PR'da; arayüz doğrulaması K2'de.
@@ -40,10 +40,24 @@ Davranışsal "önce" yok (arayüz yok; yeni modüller). Test dosyaları önce y
 2. `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test`
 3. Yalnız yeni testler: `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js node --experimental-strip-types --import ./tests/reg.mjs --test tests/swipe-*.test.mjs`
 
-## Orkestratör doğrulaması
-
 ## Orkestratör doğrulaması (Tur 1)
 
 - `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test`: 103/103, çıkış 0.
 - Taban dalda (PR 5) `tests/program-render.test.mjs` "gün tamamsa .td-focus.is-done" testi tarihe bağlıydı: fixture örnek soruların `next_review` değeri sabit 2026-11-17; 17 Kasım'dan itibaren bu sorular vadesi gelmiş sayıldığından `allDone` false oluyordu. Üretim kodunda hata yok; test `rows:[]` ve 7 günlük sabit Date ile tarihten bağımsız yapıldı (bu dalda ayrı commit). PR #13'teki aynı test 17 Kasım'dan sonra kırmızıdır.
 - Gerçek HTTP/route çalışması, Radix ve `tsc` bu ortamda doğrulanamadı.
+
+## Tur 2 (inceleme 1 bulguları, SKOR 4)
+- **ÖNEMLİ: katman donduruldu.** Karıştırma/yazma artık canlı `tierOf`'a değil oturum başında dondurulan `s.tiers`'a bakar; sunucu upsert'i vadeyi kaydırsa da sıra değişmez. Simülasyon (Türev, Limit, İntegral, Limit, Türev, Olasılık, Olasılık; q0'a Bilemedim): upsert'li ve upsert'siz akış aynı sırayı verir: `q0 q1 q2 q4 q3 q5 q0 q6`. Yeniden çıkan q0 kuyrukta 4. konuma girer; q4 (Türev) araya seçildiği ve q0 son iki konuyla (Türev, Limit) çakıştığı için q5'ten sonra gelir. Yani "son iki konudan farklı" kuralı korunur.
+- **Yeni/değişen imzalar (K2 bağlanacak):**
+  - `type SwipeSession={day,subject,scope,includeLearned,queue,current,history,mark,results,struggle,pending,tiers:Record<string,Tier>}`; `Tier` artık `session.ts`'te tanımlı, `queue.ts` yeniden dışa aktarır.
+  - `newSession({...,tiers?})` (varsayılan `{}`); `startSession(rows,today,opts)` tiers'ı doldurur.
+  - `pickNext(queue:Question[],recentTopics:string[],tiers:Record<string,Tier>)`; `advance(s,rows:Map)` (today kalktı); `applyResult(s,q,outcome)` ve `leaveCard(s,q)` (today kalktı). Tiers'ta kaydı olmayan kart `B` sayılır (yalnız Bilemedim yazar).
+  - `reclassify(s,rows:Map,today):SwipeSession`: yeniden yüklemede (`loadSession` sonrası) sonucu işlenmemiş kuyruk/güncel kartların katmanını satırlara bakarak yeniden hesaplar; sonucu olan kartlar donuk kalır. K2 `loadSession` ardından çağırmalıdır.
+  - `restore`/`loadSession`: `tiers` alanı okunur (silinmiş kimlik ve geçersiz değer ayıklanır; eski kayıtta yoksa `{}`).
+  - `collectPending(storage,user,today):{day:string;pending:Pending[]}[]`: eski günlerin gönderilmemiş (`tries<3`) yazmaları; depoya dokunmaz. K2, `purgeOldSessions`'tan ÖNCE bunları göndermelidir; "ertesi gün eski anahtar silinir" kuralı aynen duruyor.
+- **KÜÇÜK:** `route.ts` `reviewed===true` dalına `!d.markLearned` eklendi (regex testiyle sabit); B sıralamasında `topicHistory` sayısı ders|konu başına bir kez hesaplanır; `server.test` totolojisi `learnedState` anahtar/değer testine çevrildi; `optionLetter("(B)")` doğrudan test; yukarıdaki 102/103 notları 103/103 yapıldı, çift başlık teke indi.
+- **Test (Tur 2):** `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` → 103 test, 103 geçti, çıkış 0 (`t(...)` durumları: queue 24, session 9, answer 3, server 5).
+
+## Orkestratör doğrulaması (Tur 2)
+
+- `npm test` yeniden koşuldu: 103/103, çıkış 0.
