@@ -1,6 +1,8 @@
 // Cloudflare D1 veya Supabase bağlantısı henüz hazır olmadığında (veya yer tutucu D1 binding hatasında)
 // uygulamanın hiçbir zaman 503 ("Arşiv bağlantısı henüz hazır değil") vermemesi için bellek içi D1 ve R2 yedeği.
 
+import {toObjectBody} from './supabase-storage';
+
 type Row=Record<string,unknown>;
 const tables=new Map<string,Row[]>();
 const blobs=new Map<string,{data:Uint8Array;contentType:string}>();
@@ -247,13 +249,8 @@ export function createMemoryBucket():R2Bucket{
   async get(key:string){
    const item=blobs.get(key);
    if(!item)return null;
-   const stream=new ReadableStream({
-    start(controller){
-     controller.enqueue(item.data);
-     controller.close();
-    }
-   });
-   return {body:stream} as unknown as R2ObjectBody;
+   const buf=item.data.buffer.slice(item.data.byteOffset,item.data.byteOffset+item.data.byteLength) as ArrayBuffer;
+   return toObjectBody(buf,item.contentType,key) as unknown as R2ObjectBody;
   },
   async delete(keys:string|string[]){
    const list=Array.isArray(keys)?keys:[keys];

@@ -3,6 +3,8 @@
 // sorgularını, kimlik doğrulama (Authentication) işlemlerini, çoklu çalışma alanı (Tenant) yönetimini
 // ve soru fotoğrafı depolamasını Supabase üzerinden çalıştırır; yerel D1 ile senkronize tutar.
 
+import {putObject,getObject,STORAGE_BUCKET} from './supabase-storage';
+
 export type SupabaseConfig={url:string;key:string;source:'env'|'runtime'};
 
 export function normalizeSupabaseUrl(raw:string):string{
@@ -77,7 +79,7 @@ export function getSupabaseConfig(envObj?:Record<string,unknown>):SupabaseConfig
  return null;
 }
 
-export const SUPABASE_BUCKET_NAME='question-images';
+export const SUPABASE_BUCKET_NAME=STORAGE_BUCKET;
 
 function headers(cfg:SupabaseConfig,extra?:Record<string,string>):Record<string,string>{
  const base:Record<string,string>={
@@ -856,55 +858,18 @@ export function createSupabaseD1(cfg:SupabaseConfig,fallback:D1Database|null):D1
  } as unknown as D1Database;
 }
 
-// Supabase Storage bağdaştırıcısı (R2Bucket uyumlu)
-let bucketChecked=false;
-async function ensureStorageBucket(cfg:SupabaseConfig){
- if(bucketChecked)return;
- try{
-  const r=await fetch(`${cfg.url}/storage/v1/bucket/${SUPABASE_BUCKET_NAME}`,{headers:headers(cfg)});
-  if(r.status===404||r.status===400){
-   await fetch(`${cfg.url}/storage/v1/bucket`,{
-    method:'POST',
-    headers:headers(cfg),
-    body:JSON.stringify({id:SUPABASE_BUCKET_NAME,name:SUPABASE_BUCKET_NAME,public:false})
-   });
-  }
-  bucketChecked=true;
- }catch{}
-}
-
+// Supabase Storage bağdaştırıcısı (R2Bucket uyumlu); ayrıntı lib/supabase-storage.ts içinde.
+// put başarısızsa StorageError fırlatır (route: ağ/5xx => 502, Supabase 4xx => 424); get bulunamazsa null döner.
 export function createSupabaseBucket(cfg:SupabaseConfig,fallback:R2Bucket|null):R2Bucket{
+ const hdr=(extra?:Record<string,string>)=>headers(cfg,extra);
  return {
-  async put(key:string,value:Uint8Array|ArrayBuffer|ReadableStream|string,options?:{httpMetadata?:{contentType?:string}}){
+  async put(key:string,value:Uint8Array|ArrayBuffer|string,options?:{httpMetadata?:{contentType?:string}}){
    const contentType=options?.httpMetadata?.contentType||'application/octet-stream';
-   await ensureStorageBucket(cfg);
-   try{
-    const encodedKey=key.split('/').map(encodeURIComponent).join('/');
-    await fetch(`${cfg.url}/storage/v1/object/${SUPABASE_BUCKET_NAME}/${encodedKey}`,{
-     method:'POST',
-     headers:headers(cfg,{'Content-Type':contentType,'x-upsert':'true'}),
-     body:value as BodyInit
-    });
-   }catch{}
-   if(fallback){
-    try{await fallback.put(key,value as any,options as any)}catch{}
-   }
+   await putObject(cfg,hdr,key,value,contentType,fallback as any);
    return null as unknown as R2Object;
   },
   async get(key:string){
-   try{
-    const encodedKey=key.split('/').map(encodeURIComponent).join('/');
-    const h:Record<string,string>={apikey:cfg.key};
-    if(isJwtKey(cfg.key))h.Authorization=`Bearer ${cfg.key}`;
-    const r=await fetch(`${cfg.url}/storage/v1/object/${SUPABASE_BUCKET_NAME}/${encodedKey}`,{
-     headers:h
-    });
-    if(r.ok&&r.body){
-     return {body:r.body} as unknown as R2ObjectBody;
-    }
-   }catch{}
-   if(fallback)return fallback.get(key);
-   return null;
+   return (await getObject(cfg,hdr,key,fallback as any)) as unknown as R2ObjectBody|null;
   },
   async delete(keys:string|string[]){
    const list=Array.isArray(keys)?keys:[keys];
