@@ -5,7 +5,7 @@ import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/compo
 import {topicOptions,mebGrades,gradeOfExam,type Question,type Exam,type Report,type Video,type StudyNote,type Profile} from '@/lib/study';
 import type {PlanState,Lesson} from '@/lib/plan/scheduler';
 import type {PlaylistItem} from '@/lib/plan/resources';
-export type View='home'|'program'|'resources'|'archive'|'report'|'exams'|'notes'|'settings';
+export type View='home'|'program'|'resources'|'archive'|'report'|'exams'|'notes'|'settings'|'swipe';
 export type AiKind='solve'|'note'|'report'|'video'|'quote'|'playlist'|'classify';
 export type Usage=Record<AiKind,{used:number;limit:number}>&{unlimited:boolean};
 export type Account={
