@@ -2,7 +2,7 @@
 
 | Görev | Tür | Aralık | Tur | Yazar modeli |
 |---|---|---|---|---|
-| Çözme isteğinden video araması ve konu geçmişi sorgusunu çıkar | mantık | 4d785c3..bu turun commit'i | 2 | sonnet |
+| Çözme isteğinden video araması ve konu geçmişi sorgusunu çıkar | mantık | 4d785c3..bu turun commit'i | 3 | sonnet |
 
 ## İddia
 - [x] `solve/route.ts` artık `findVideos` çağırmıyor ve `SELECT id,subject,topic FROM questions WHERE user_id=?` atmıyor; `topicHistory`/`history` hesabı yok.
@@ -15,12 +15,12 @@ Rota kaynağında (4d785c3) `findVideos(...)` (readable ise, ağ: OpenAI web ara
 `Error [ERR_MODULE_NOT_FOUND]: Cannot find module '.../lib/solve-result.ts'`, `# pass 0 / # fail 1`.
 
 ## Sonra
-`ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` → `# tests 134 / # pass 134 / # fail 0`, çıkış 0 (7'si yeni).
+`ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers npm test` → `# tests 141 / # pass 141 / # fail 0`, çıkış 0 (tur 3 sonu; ilk turda 134 idi).
 
 ## Test / Ölçüm
 | Komut | Beklenen | Gerçek | Çıkış kodu | Sonuç |
 |---|---|---|---|---|
-| `npm test` (ND_ZOD_PATH ile) | tüm testler geçer | 134 pass, 0 fail | 0 | PASS |
+| `npm test` (ND_ZOD_PATH + PLAYWRIGHT_BROWSERS_PATH ile) | tüm testler geçer | 141 pass, 0 fail | 0 | PASS |
 
 Tasarım kararları (tüketiciler okunarak):
 - `videos:[]` yazılır (tip `videos:Video[]` zorunlu; `solution-card.tsx`, `plan/ui.tsx`, `exportRows`, yazdırma `?.` ile okur). `videoNotice` ve `history` HİÇ yazılmaz: `question-dialog.tsx` AutoVideos koşulu `!vids.length&&!a?.videoNotice` (alan yoksa tetiklenir); `questions/[id]/route.ts` konu değişince zaten `videos=[]` + `delete videoNotice` yapıyor, yani "alan yok" kodda bilinen geçerli durum. `''` de eşdeğer olurdu ama silme deseniyle tutarlılık için alan yok. `history` tipte yok ve istemci kendi hesaplıyor; eski kayıtlardaki `history` alanı okunmuyor, zararsız.
@@ -28,6 +28,7 @@ Tasarım kararları (tüketiciler okunarak):
 - Test, rota içeriğini gerçek OpenAI/DB olmadan çalıştırmak yerine saf fonksiyonu (`buildCombined`) davranış olarak sınar; rotada çağrıların yokluğu ise kaynak taramasıyla sınanır (rota `@/` ve bulut bağlarına bağlı, test düzeninde yüklenemiyor).
 
 ## Orkestratör doğrulaması
+- Tur 3 sonrası `npm test` (PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers): 141/141, çıkış 0 (orkestratör bağımsız koştu).
 - Tur 2 sonrası `npm test`: 135/135, çıkış 0 (orkestratör bağımsız koştu). Bileşen davranışı tarayıcıda denenmedi (saf yardımcı testi + kaynak taraması).
 - `npm test`: 134/134, çıkış 0 (orkestratör bağımsız koştu). Fark 3 satır ekleme/6 silme + 11 satırlık yardımcı okundu.
 - Gerçek OpenAI/YouTube/Vercel süresi ölçülemedi; yalnız çağrı sayısı azaldı.
@@ -44,7 +45,8 @@ Tasarım kararları (tüketiciler okunarak):
 - Excel dışa aktarımında `videos[0].url` sütunu aynı nedenle boş kalır.
 - Kaydırma kartındaki "Konu videosu" (`solution-card.tsx` ~27) video yokken doğrudan açmak yerine dialog'a düşer.
 - "Konu belirlenmedi" çözümlerde eski "video aranmadı" bildirimi yerine AutoVideos "<Ders> Genel Tekrar" ile arar.
-- İstemci davranışı (toast/sayaç/tek seferlik yükleme) render testiyle değil, saf yardımcı testi + kaynak taramasıyla sınandı; tarayıcıda denenmedi.
+- Tur 2'de bileşen akışı yalnız saf yardımcı testi + kaynak taramasıyla sınanmıştı. Tur 3'te `tests/video-autoload-browser.test.mjs` eklendi, ama QuestionDialog'un kendisini değil, gerçek yardımcıları (`autoKey`, `shouldAutoLoad`, `emptyVideosMessage`, `buildCombined`) kullanan küçük bir koşum bileşenini Chromium'da sınar; gerçek diyalog (useStudy/Dialog) tarayıcıda denenmedi.
+- Video sekmesi çözümden ÖNCE açılırsa akış (AutoVideos -> /api/videos analizi subject/topic'siz yazar -> "Çözümü hazırla" -> `buildCombined` videoları siliyordu -> sekmeye dönünce "Video bulunamadı", yenileyene kadar kalıcı) tur 2'de YAKALANMADI; tur 2 testleri yalnız konu aynı/farklı ve subject/topic'siz önceki analizin temizlendiği durumu (yanlış biçimde) "doğru" sayıyordu. Tur 3 inceleyicisi buldu; düzeltme aşağıda.
 
 ## Tur 2
 İnceleme SKOR 4 bulguları (yalnız istemci):
@@ -53,6 +55,15 @@ Tasarım kararları (tüketiciler okunarak):
 - Toast döngüsü: `shouldAutoLoad` + diyalogda `autoTried` (useRef, soru kimliği kümesi) ile otomatik yükleme soru başına tek sefer; hata sonrası boş durumda "Yeniden ara" ipucu görünür. (Bayrak AutoVideos içinde değil üst bileşende: AutoVideos `videoBusy` ile söküldüğü için kendi ref'i sıfırlanırdı.)
 - `tests/solve-result.test.mjs` SELECT taraması tırnaktan bağımsız regex + `SELECT *` yakalar.
 - Önce: `tests/video-call.test.mjs` `lib/video-call.ts` yokken `ERR_MODULE_NOT_FOUND` ile kırmızıydı. Sonra: `ND_ZOD_PATH=... npm test` → 135 pass, 0 fail, çıkış 0.
+
+## Tur 3
+İnceleme SKOR 4, tek ÖNEMLİ bulgu: yukarıdaki video-sekmesi-önce regresyonu. İki düzeltme birlikte yapıldı:
+- (a) `lib/solve-result.ts` `buildCombined` yeni son parametre `row` (soru satırı) alır; önceki analizde `subject`/`topic` (string) yoksa karşılaştırma satırın `subject`/`topic`'iyle yapılır. Gerekçe: `/api/videos` aramayı zaten satırın ders+konusuyla yapıyor ve analizi subject/topic'siz yazıyor; çözümde konu değişmediyse videolar hâlâ geçerli. Konu değiştiyse, satır okunamadıysa (eksik/yanlış tip, `row` verilmediyse) ya da soru okunamadıysa temizlenir. `solve/route.ts`'te yalnız çağrıya `row` eklendi. Önceki analizde subject/topic varsa eski kural aynen geçerli.
+- (b) `question-dialog.tsx`: `autoTried` anahtarı `autoKey(q,hasSolution(a))` = `id|subject|topic|çözüldü(0/1)`. İstenen `id|subject|topic`'e çözüm durumu bayrağı eklendi: çözüm bittiğinde (çözümsüz->çözümlü) anahtar değişir, videolar boş kalmışsa otomatik yükleme yeniden mümkün olur; çözüm hangi ekrandan tetiklenirse tetiklensin (kaydırma, liste) çalışır ve ayrı bir silme girişi gerekmez. Konu değişince de anahtar değişir.
+- (c) Otomatik yükleme ağ hatasıyla düşerse ayrı `autoFailed` kümesi tutulur ve "Videolar yüklenemedi; Yeniden ara'yı dene." gösterilir (`emptyVideosMessage`); "Video bulunamadı" yalnız başarılı-ama-boş sonuçta. Başarılı sonraki çağrı hata girdisini siler.
+- (d) `autoTried.add` artık `onLoad` içinde `if(!autoTried.current.has(key))` ile korunur; StrictMode çift effect'inde tek istek gider.
+- Testler önce kırmızı: `solve-result`/`video-call` testleri `autoKey is not a function` ve satır-konusu korunma beklentisinde başarısızdı. Tarayıcı testi için düzeltmeler geçici geri alınınca (`row` yok sayıldı, anahtardaki çözüm bayrağı sabitlendi) test 1 ve 3 kırmızı oldu, geri konunca yeşil.
+- Sonra: `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers npm test` → 141 pass, 0 fail, çıkış 0.
 
 ## Yeniden üretme
 1. Bu turun commit'ini checkout et (SHA: REVIEW-<n>.md başlığı / PR head'i).
