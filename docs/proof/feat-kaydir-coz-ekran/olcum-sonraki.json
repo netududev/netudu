@@ -1,0 +1,1682 @@
+{
+ "baslangic-320-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "baslangic-320-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "baslangic-390-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "baslangic-390-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "baslangic-768-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "baslangic-768-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "baslangic-1100-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "baslangic-1100-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "baslangic-1440-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "baslangic-1440-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bos-320-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bos-320-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bos-390-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bos-390-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bos-768-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bos-768-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bos-1100-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bos-1100-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bos-1440-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bos-1440-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": null,
+  "kartOturuyor": true,
+  "goruntuAlani": null,
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "soru-foto-320-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-foto-320-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-foto-390-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-foto-390-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-foto-768-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-foto-768-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-foto-1100-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-foto-1100-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-foto-1440-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-foto-1440-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-metin-320-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-metin-320-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-metin-390-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-metin-390-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-metin-768-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-metin-768-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-metin-1100-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-metin-1100-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-metin-1440-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-metin-1440-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-sikli-metin-320-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-sikli-metin-320-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-sikli-metin-390-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-sikli-metin-390-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-sikli-metin-768-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-sikli-metin-768-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-sikli-metin-1100-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-sikli-metin-1100-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-sikli-metin-1440-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "soru-sikli-metin-1440-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 0,
+  "icKayar": false
+ },
+ "cozum-kisa-320-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-kisa-320-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-kisa-390-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-kisa-390-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-kisa-768-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-kisa-768-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-kisa-1100-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-kisa-1100-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-kisa-1440-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-kisa-1440-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-uzun-320-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-uzun-320-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-uzun-390-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-uzun-390-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-uzun-768-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-uzun-768-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-uzun-1100-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-uzun-1100-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-uzun-1440-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-uzun-1440-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozumsuz-320-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozumsuz-320-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozumsuz-390-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozumsuz-390-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozumsuz-768-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozumsuz-768-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozumsuz-1100-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozumsuz-1100-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozumsuz-1440-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozumsuz-1440-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-yanlis-sik-320-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-yanlis-sik-320-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": true
+ },
+ "cozum-yanlis-sik-390-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-yanlis-sik-390-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-yanlis-sik-768-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-yanlis-sik-768-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-yanlis-sik-1100-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-yanlis-sik-1100-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-yanlis-sik-1440-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-yanlis-sik-1440-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-okunamadi-320-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-okunamadi-320-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-okunamadi-390-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-okunamadi-390-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-okunamadi-768-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-okunamadi-768-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-okunamadi-1100-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-okunamadi-1100-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-okunamadi-1440-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "cozum-okunamadi-1440-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bitis-320-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bitis-320-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 503
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bitis-390-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bitis-390-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 0,
+   "alt": 0,
+   "yuk": 723
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bitis-768-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bitis-768-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 912
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bitis-1100-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bitis-1100-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 688
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bitis-1440-acik": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ },
+ "bitis-1440-koyu": {
+  "tasma": false,
+  "sayfaKayar": false,
+  "kartSayisi": 1,
+  "kartOturuyor": true,
+  "goruntuAlani": {
+   "ust": 24,
+   "alt": 24,
+   "yuk": 788
+  },
+  "kirikDugme": [],
+  "kucukHedef": [],
+  "kirpilan": [],
+  "birincil": 1,
+  "icKayar": false
+ }
+}

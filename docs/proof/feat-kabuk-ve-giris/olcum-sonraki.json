@@ -1,0 +1,896 @@
+{
+ "landing-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "workspace": null,
+  "view": null,
+  "topbar": null,
+  "trigger": null,
+  "add": null,
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": null,
+  "cobaltAboveFold": [
+   "7 gün ücretsiz başla[lp-btn solid lg]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 188,
+   "y": 225,
+   "w": 560,
+   "h": 208,
+   "right": 748
+  },
+  "fab": null,
+  "heroH1Font": "68px",
+  "hero": {
+   "x": 140,
+   "y": 69,
+   "w": 1160,
+   "h": 803,
+   "right": 1300
+  },
+  "copy": {
+   "x": 188,
+   "y": 133,
+   "w": 560,
+   "h": 600,
+   "right": 748
+  },
+  "visual": {
+   "x": 820,
+   "y": 133,
+   "w": 432,
+   "h": 600,
+   "right": 1252
+  }
+ },
+ "defter-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "workspace": {
+   "x": 288,
+   "y": 64,
+   "w": 1120,
+   "h": 927,
+   "right": 1408
+  },
+  "view": {
+   "x": 336,
+   "y": 232,
+   "w": 1024,
+   "h": 695,
+   "right": 1360
+  },
+  "topbar": {
+   "x": 256,
+   "y": 0,
+   "w": 1184,
+   "h": 64,
+   "right": 1440
+  },
+  "trigger": {
+   "x": 292,
+   "y": 10,
+   "w": 44,
+   "h": 44,
+   "right": 336
+  },
+  "add": {
+   "x": 1115,
+   "y": 10,
+   "w": 151,
+   "h": 44,
+   "right": 1266
+  },
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": 16,
+  "cobaltAboveFold": [
+   "Yanlış ekle[topbar-add primary]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 336,
+   "y": 112,
+   "w": 292,
+   "h": 40,
+   "right": 628
+  },
+  "fab": {
+   "x": 0,
+   "y": 0,
+   "w": 0,
+   "h": 0,
+   "right": 0
+  },
+  "heroH1Font": null,
+  "hero": null,
+  "copy": null,
+  "visual": null
+ },
+ "bugun-bos-1440-acik": {
+  "sw": 1440,
+  "cw": 1440,
+  "workspace": {
+   "x": 288,
+   "y": 64,
+   "w": 1120,
+   "h": 1133,
+   "right": 1408
+  },
+  "view": {
+   "x": 336,
+   "y": 112,
+   "w": 1024,
+   "h": 997,
+   "right": 1360
+  },
+  "topbar": {
+   "x": 256,
+   "y": 0,
+   "w": 1184,
+   "h": 64,
+   "right": 1440
+  },
+  "trigger": {
+   "x": 292,
+   "y": 10,
+   "w": 44,
+   "h": 44,
+   "right": 336
+  },
+  "add": {
+   "x": 1129,
+   "y": 10,
+   "w": 137,
+   "h": 44,
+   "right": 1266
+  },
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": 16,
+  "cobaltAboveFold": [
+   "Programı oluştur[primary]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 336,
+   "y": 137,
+   "w": 1024,
+   "h": 48,
+   "right": 1360
+  },
+  "fab": {
+   "x": 0,
+   "y": 0,
+   "w": 0,
+   "h": 0,
+   "right": 0
+  },
+  "heroH1Font": null,
+  "hero": null,
+  "copy": null,
+  "visual": null
+ },
+ "landing-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "workspace": null,
+  "view": null,
+  "topbar": null,
+  "trigger": null,
+  "add": null,
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": null,
+  "cobaltAboveFold": [
+   "7 gün ücretsiz başla[lp-btn solid lg]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 188,
+   "y": 225,
+   "w": 560,
+   "h": 208,
+   "right": 748
+  },
+  "fab": null,
+  "heroH1Font": "68px",
+  "hero": {
+   "x": 140,
+   "y": 69,
+   "w": 1160,
+   "h": 803,
+   "right": 1300
+  },
+  "copy": {
+   "x": 188,
+   "y": 133,
+   "w": 560,
+   "h": 600,
+   "right": 748
+  },
+  "visual": {
+   "x": 820,
+   "y": 133,
+   "w": 432,
+   "h": 600,
+   "right": 1252
+  }
+ },
+ "defter-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "workspace": {
+   "x": 288,
+   "y": 64,
+   "w": 1120,
+   "h": 927,
+   "right": 1408
+  },
+  "view": {
+   "x": 336,
+   "y": 232,
+   "w": 1024,
+   "h": 695,
+   "right": 1360
+  },
+  "topbar": {
+   "x": 256,
+   "y": 0,
+   "w": 1184,
+   "h": 64,
+   "right": 1440
+  },
+  "trigger": {
+   "x": 292,
+   "y": 10,
+   "w": 44,
+   "h": 44,
+   "right": 336
+  },
+  "add": {
+   "x": 1115,
+   "y": 10,
+   "w": 151,
+   "h": 44,
+   "right": 1266
+  },
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": 16,
+  "cobaltAboveFold": [
+   "Yanlış ekle[topbar-add primary]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 336,
+   "y": 112,
+   "w": 292,
+   "h": 40,
+   "right": 628
+  },
+  "fab": {
+   "x": 0,
+   "y": 0,
+   "w": 0,
+   "h": 0,
+   "right": 0
+  },
+  "heroH1Font": null,
+  "hero": null,
+  "copy": null,
+  "visual": null
+ },
+ "bugun-bos-1440-koyu": {
+  "sw": 1440,
+  "cw": 1440,
+  "workspace": {
+   "x": 288,
+   "y": 64,
+   "w": 1120,
+   "h": 1133,
+   "right": 1408
+  },
+  "view": {
+   "x": 336,
+   "y": 112,
+   "w": 1024,
+   "h": 997,
+   "right": 1360
+  },
+  "topbar": {
+   "x": 256,
+   "y": 0,
+   "w": 1184,
+   "h": 64,
+   "right": 1440
+  },
+  "trigger": {
+   "x": 292,
+   "y": 10,
+   "w": 44,
+   "h": 44,
+   "right": 336
+  },
+  "add": {
+   "x": 1129,
+   "y": 10,
+   "w": 137,
+   "h": 44,
+   "right": 1266
+  },
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": 16,
+  "cobaltAboveFold": [
+   "Programı oluştur[primary]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 336,
+   "y": 137,
+   "w": 1024,
+   "h": 48,
+   "right": 1360
+  },
+  "fab": {
+   "x": 0,
+   "y": 0,
+   "w": 0,
+   "h": 0,
+   "right": 0
+  },
+  "heroH1Font": null,
+  "hero": null,
+  "copy": null,
+  "visual": null
+ },
+ "landing-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "workspace": null,
+  "view": null,
+  "topbar": null,
+  "trigger": null,
+  "add": null,
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": null,
+  "cobaltAboveFold": [
+   "7 gün ücretsiz başla[lp-btn solid lg]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 20,
+   "y": 169,
+   "w": 350,
+   "h": 122,
+   "right": 370
+  },
+  "fab": null,
+  "heroH1Font": "40px",
+  "hero": {
+   "x": 0,
+   "y": 97,
+   "w": 390,
+   "h": 1148,
+   "right": 390
+  },
+  "copy": {
+   "x": 20,
+   "y": 125,
+   "w": 350,
+   "h": 533,
+   "right": 370
+  },
+  "visual": {
+   "x": 20,
+   "y": 690,
+   "w": 350,
+   "h": 480,
+   "right": 370
+  }
+ },
+ "defter-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "workspace": {
+   "x": 0,
+   "y": 53,
+   "w": 390,
+   "h": 1942,
+   "right": 390
+  },
+  "view": {
+   "x": 16,
+   "y": 218,
+   "w": 358,
+   "h": 1685,
+   "right": 374
+  },
+  "topbar": {
+   "x": 0,
+   "y": 0,
+   "w": 390,
+   "h": 53,
+   "right": 390
+  },
+  "trigger": {
+   "x": 18,
+   "y": 8,
+   "w": 44,
+   "h": 44,
+   "right": 62
+  },
+  "add": null,
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": null,
+  "cobaltAboveFold": [
+   "Yanlış ekle[fab]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 16,
+   "y": 77,
+   "w": 274,
+   "h": 31,
+   "right": 290
+  },
+  "fab": {
+   "x": 167,
+   "y": 786,
+   "w": 56,
+   "h": 56,
+   "right": 223
+  },
+  "heroH1Font": null,
+  "hero": null,
+  "copy": null,
+  "visual": null
+ },
+ "bugun-bos-390-acik": {
+  "sw": 390,
+  "cw": 390,
+  "workspace": {
+   "x": 0,
+   "y": 53,
+   "w": 390,
+   "h": 1786,
+   "right": 390
+  },
+  "view": {
+   "x": 16,
+   "y": 77,
+   "w": 358,
+   "h": 1646,
+   "right": 374
+  },
+  "topbar": {
+   "x": 0,
+   "y": 0,
+   "w": 390,
+   "h": 53,
+   "right": 390
+  },
+  "trigger": {
+   "x": 18,
+   "y": 8,
+   "w": 44,
+   "h": 44,
+   "right": 62
+  },
+  "add": null,
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": null,
+  "cobaltAboveFold": [
+   "Programı oluştur[primary]",
+   "Yanlış ekle[fab]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 16,
+   "y": 102,
+   "w": 358,
+   "h": 31,
+   "right": 374
+  },
+  "fab": {
+   "x": 167,
+   "y": 786,
+   "w": 56,
+   "h": 56,
+   "right": 223
+  },
+  "heroH1Font": null,
+  "hero": null,
+  "copy": null,
+  "visual": null
+ },
+ "landing-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "workspace": null,
+  "view": null,
+  "topbar": null,
+  "trigger": null,
+  "add": null,
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": null,
+  "cobaltAboveFold": [
+   "7 gün ücretsiz başla[lp-btn solid lg]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 20,
+   "y": 169,
+   "w": 350,
+   "h": 122,
+   "right": 370
+  },
+  "fab": null,
+  "heroH1Font": "40px",
+  "hero": {
+   "x": 0,
+   "y": 97,
+   "w": 390,
+   "h": 1148,
+   "right": 390
+  },
+  "copy": {
+   "x": 20,
+   "y": 125,
+   "w": 350,
+   "h": 533,
+   "right": 370
+  },
+  "visual": {
+   "x": 20,
+   "y": 690,
+   "w": 350,
+   "h": 480,
+   "right": 370
+  }
+ },
+ "defter-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "workspace": {
+   "x": 0,
+   "y": 53,
+   "w": 390,
+   "h": 1942,
+   "right": 390
+  },
+  "view": {
+   "x": 16,
+   "y": 218,
+   "w": 358,
+   "h": 1685,
+   "right": 374
+  },
+  "topbar": {
+   "x": 0,
+   "y": 0,
+   "w": 390,
+   "h": 53,
+   "right": 390
+  },
+  "trigger": {
+   "x": 18,
+   "y": 8,
+   "w": 44,
+   "h": 44,
+   "right": 62
+  },
+  "add": null,
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": null,
+  "cobaltAboveFold": [
+   "Yanlış ekle[fab]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 16,
+   "y": 77,
+   "w": 274,
+   "h": 31,
+   "right": 290
+  },
+  "fab": {
+   "x": 167,
+   "y": 786,
+   "w": 56,
+   "h": 56,
+   "right": 223
+  },
+  "heroH1Font": null,
+  "hero": null,
+  "copy": null,
+  "visual": null
+ },
+ "bugun-bos-390-koyu": {
+  "sw": 390,
+  "cw": 390,
+  "workspace": {
+   "x": 0,
+   "y": 53,
+   "w": 390,
+   "h": 1786,
+   "right": 390
+  },
+  "view": {
+   "x": 16,
+   "y": 77,
+   "w": 358,
+   "h": 1646,
+   "right": 374
+  },
+  "topbar": {
+   "x": 0,
+   "y": 0,
+   "w": 390,
+   "h": 53,
+   "right": 390
+  },
+  "trigger": {
+   "x": 18,
+   "y": 8,
+   "w": 44,
+   "h": 44,
+   "right": 62
+  },
+  "add": null,
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": null,
+  "cobaltAboveFold": [
+   "Programı oluştur[primary]",
+   "Yanlış ekle[fab]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 16,
+   "y": 102,
+   "w": 358,
+   "h": 31,
+   "right": 374
+  },
+  "fab": {
+   "x": 167,
+   "y": 786,
+   "w": 56,
+   "h": 56,
+   "right": 223
+  },
+  "heroH1Font": null,
+  "hero": null,
+  "copy": null,
+  "visual": null
+ },
+ "ayarlar-1568-acik": {
+  "sw": 1568,
+  "cw": 1568,
+  "workspace": {
+   "x": 352,
+   "y": 64,
+   "w": 1120,
+   "h": 5798,
+   "right": 1472
+  },
+  "view": {
+   "x": 532,
+   "y": 232,
+   "w": 760,
+   "h": 5567,
+   "right": 1292
+  },
+  "topbar": {
+   "x": 256,
+   "y": 0,
+   "w": 1312,
+   "h": 64,
+   "right": 1568
+  },
+  "trigger": {
+   "x": 292,
+   "y": 10,
+   "w": 44,
+   "h": 44,
+   "right": 336
+  },
+  "add": {
+   "x": 1257,
+   "y": 10,
+   "w": 137,
+   "h": 44,
+   "right": 1394
+  },
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": 16,
+  "cobaltAboveFold": [],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 532,
+   "y": 112,
+   "w": 276,
+   "h": 40,
+   "right": 808
+  },
+  "fab": {
+   "x": 0,
+   "y": 0,
+   "w": 0,
+   "h": 0,
+   "right": 0
+  },
+  "heroH1Font": null,
+  "hero": null,
+  "copy": null,
+  "visual": null
+ },
+ "notlar-1568-acik": {
+  "sw": 1568,
+  "cw": 1568,
+  "workspace": {
+   "x": 352,
+   "y": 64,
+   "w": 1120,
+   "h": 902,
+   "right": 1472
+  },
+  "view": {
+   "x": 400,
+   "y": 232,
+   "w": 1024,
+   "h": 670,
+   "right": 1424
+  },
+  "topbar": {
+   "x": 256,
+   "y": 0,
+   "w": 1312,
+   "h": 64,
+   "right": 1568
+  },
+  "trigger": {
+   "x": 292,
+   "y": 10,
+   "w": 44,
+   "h": 44,
+   "right": 336
+  },
+  "add": {
+   "x": 1257,
+   "y": 10,
+   "w": 137,
+   "h": 44,
+   "right": 1394
+  },
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": 16,
+  "cobaltAboveFold": [
+   "Notu hazırla[primary full]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 400,
+   "y": 112,
+   "w": 404,
+   "h": 40,
+   "right": 804
+  },
+  "fab": {
+   "x": 0,
+   "y": 0,
+   "w": 0,
+   "h": 0,
+   "right": 0
+  },
+  "heroH1Font": null,
+  "hero": null,
+  "copy": null,
+  "visual": null
+ },
+ "defter-1568-acik": {
+  "sw": 1568,
+  "cw": 1568,
+  "workspace": {
+   "x": 352,
+   "y": 64,
+   "w": 1120,
+   "h": 927,
+   "right": 1472
+  },
+  "view": {
+   "x": 400,
+   "y": 232,
+   "w": 1024,
+   "h": 695,
+   "right": 1424
+  },
+  "topbar": {
+   "x": 256,
+   "y": 0,
+   "w": 1312,
+   "h": 64,
+   "right": 1568
+  },
+  "trigger": {
+   "x": 292,
+   "y": 10,
+   "w": 44,
+   "h": 44,
+   "right": 336
+  },
+  "add": {
+   "x": 1243,
+   "y": 10,
+   "w": 151,
+   "h": 44,
+   "right": 1394
+  },
+  "crumb": false,
+  "eyebrowInHeading": false,
+  "statusBtns": 0,
+  "navHasCreate": false,
+  "targetToProfileGap": 16,
+  "cobaltAboveFold": [
+   "Yanlış ekle[topbar-add primary]"
+  ],
+  "coloredGradientPseudos": [],
+  "h1": {
+   "x": 400,
+   "y": 112,
+   "w": 292,
+   "h": 40,
+   "right": 692
+  },
+  "fab": {
+   "x": 0,
+   "y": 0,
+   "w": 0,
+   "h": 0,
+   "right": 0
+  },
+  "heroH1Font": null,
+  "hero": null,
+  "copy": null,
+  "visual": null
+ }
+}

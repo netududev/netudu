@@ -1,0 +1,69 @@
+/* v12: tipografi ölçeği (@layer base), boş durumlar, özet şeritleri, simge imzası */
+/* --- v12: tek yazı ailesi (Manrope, next/font ile --font-manrope) ve tipografi ölçeği. Ağırlıklar 400/500 gövde, 600/700 başlık; ince ağırlık yok. --- */
+body{font-weight:400;line-height:1.55;letter-spacing:-.006em}
+.brand,.logo-word{font-family:var(--sans);font-weight:700;letter-spacing:-.02em;line-height:1.18}
+/* Başlıklar @layer base içinde: Tailwind yardımcıları (leading-none, font-semibold, text-lg) ve mobil medya kuralları (h1 1.9rem, h2 1.08rem) katmansız olanlara/üst katmana kaybetmez. */
+@layer base{
+h1,h2,h3,h4{font-family:var(--sans);font-weight:700;letter-spacing:-.02em;line-height:1.18}
+h1{font-size:clamp(1.75rem,1.4rem + 1.5vw,2.5rem);letter-spacing:-.025em;line-height:1.12}
+h2{font-size:1.25rem;font-weight:650;line-height:1.25}
+h3{font-size:1rem;font-weight:650;line-height:1.3}
+}
+button,input,select,textarea{font-family:inherit}
+.stat strong,.ring,.count,time,td,th,.badge,.pill,.tabular{font-variant-numeric:tabular-nums}
+.muted,.footnote,small{line-height:1.5}
+
+/* yükleme logosu: sekmeler + alt kenar + çerçeve hattı çizilir -> kalem ucu -> kıvılcım -> N -> yazı (toplam ~1.15 sn: hızlı yüklemede yarım kesilmesin). Taban durum = tam logo; hareket azaltmada animasyon yok. */
+.lg-m{stroke-dasharray:1;stroke-dashoffset:0}
+.logo-anim{--lg-draw:cubic-bezier(.65,0,.35,1);--lg-out:cubic-bezier(.22,1,.36,1)}
+.logo-anim .lg-tab{animation:lgDraw .2s var(--lg-draw) calc(.03s + var(--i)*.06s) backwards}
+.logo-anim .lg-bottom{animation:lgDraw .26s var(--lg-draw) .2s backwards}
+.logo-anim .lg-frame{animation:lgDraw .5s var(--lg-draw) .1s backwards}
+.logo-anim .lg-nib{animation:lgDraw .11s var(--lg-out) .58s backwards}
+.logo-anim .lg-n{animation:lgDraw .22s var(--lg-draw) .75s backwards}
+.logo-anim .logo-word{animation:lgWord .3s var(--lg-out) .86s backwards}
+.lg-spark{opacity:0;animation:lgSpark .19s var(--lg-draw) .66s backwards}
+.lg-pulse{opacity:0;transform-box:fill-box;transform-origin:center;animation:lgPulse 2.4s ease-out 1.25s infinite}
+@keyframes lgDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes lgWord{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes lgSpark{0%{opacity:0;transform:translate(812px,716px) scale(.4)}20%{opacity:1;transform:translate(790px,690px) scale(1)}100%{opacity:0;transform:translate(647px,557px) scale(.5)}}
+@keyframes lgPulse{0%{opacity:.35;transform:scale(.6)}70%,100%{opacity:0;transform:scale(2.2)}}
+.boot{animation:bootIn .25s ease .1s backwards}
+@keyframes bootIn{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.lg-spark,.lg-pulse{display:none}}
+
+/* --- v12: boş durumlar ve özet şeritleri. Örnek iskeletleri "Örnek" etiketlidir ve gerçek veriden ayrıdır; özet şeridi yalnız gerçek veriyi gösterir. --- */
+.sample{margin:0;width:100%;max-width:520px;text-align:left;border:1px dashed var(--line);border-radius:var(--r-card);background:var(--inner);padding:var(--s4)}
+.sample figcaption{display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s3);font-size:.75rem;color:var(--fg2)}
+.sample-tag{display:inline-flex;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-size:.6875rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.sample-body{display:grid;gap:var(--s3)}
+.sample-row{display:flex;align-items:center;gap:var(--s3);min-height:40px}
+.sample .sk-bar,.sample .sk-time,.sample .sk-chip,.sample .sk-box,.sample .sk-dot,.sample .sk-pip{display:block;background:var(--line);border-radius:6px;flex:none}
+.sample .sk-bar{height:10px;flex:1}.sample .sk-bar.thin{height:8px;opacity:.7}.sample .w60{max-width:60%}.sample .w40{max-width:40%}.sample .w30{max-width:30%}
+.sample .sk-time{width:38px;height:10px}.sample .sk-chip{width:56px;height:22px;border-radius:999px}.sample .sk-box{width:20px;height:20px;border-radius:6px}.sample .sk-dot{width:12px;height:12px;border-radius:50%}
+.sample .sk-pip{width:8px;height:8px;border-radius:50%;background:var(--brand)}
+.sample .sk-stack{display:grid;gap:6px;flex:1}
+.sample-chart svg{display:block;width:100%;height:110px;overflow:visible}
+.sample-grid{stroke:var(--line);stroke-width:1;fill:none;vector-effect:non-scaling-stroke}
+.sample-line{stroke:var(--brand);stroke-width:2.5;fill:none;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.sample-chart circle{fill:var(--brand)}
+.empty.rich{gap:var(--s4)}
+.empty-steps{list-style:none;margin:0;padding:0;display:grid;gap:var(--s3);width:100%;max-width:520px;text-align:left}
+.empty-steps li{display:flex;align-items:flex-start;gap:var(--s3);color:var(--fg2);font-size:.9375rem;line-height:1.45}
+.empty-steps b{display:grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-size:.75rem;font-weight:700}
+.plan-start{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;gap:var(--s6);text-align:left;padding:clamp(28px,5vw,56px)}
+.plan-start-copy{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s4)}
+.plan-start-sample{display:grid;gap:var(--s4)}
+.plan-start .empty-steps{margin-top:var(--s2)}
+@media(min-width:960px){.plan-start{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}}
+@media(max-width:767px){.plan-start{text-align:left}}
+.stat-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;margin:0 0 var(--s5);padding:0;overflow:hidden;border:1px solid var(--line);border-radius:var(--r-card);background:var(--line)}
+.stat-strip>div{display:grid;gap:2px;padding:var(--s4);background:var(--surface)}
+.stat-strip dt{font-size:.75rem;font-weight:600;color:var(--fg2)}
+.stat-strip dd{margin:0;font-size:1.5rem;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat-strip small{font-size:.75rem;color:var(--fg2)}
+
+/* --- simge imzası K2: mürekkep noktası. Varsayılan currentColor; vurgu yerlerinde çizgi nötr, nokta kobalt (koyu temada okunur ton --brand-ink). --- */
+.nd-ink{fill:var(--icon-ink,currentColor)}
+.app-sidebar [data-slot=sidebar-menu-button][data-active=true],.empty-ico,.plan-start-ico,.lp-plan,.target-card{--icon-ink:var(--brand-ink)}
+

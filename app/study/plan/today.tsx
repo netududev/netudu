@@ -42,6 +42,7 @@ export function TodayView(){const s=useStudy();const {plan,rows,loading,ai}=s;co
  useEffect(()=>{if(!allDone)return;if(readSetting(dayCelebKey,'')!==date){writeSetting(dayCelebKey,date);setCelebrate(true)}},[allDone,date,dayCelebKey]);
  const sub=plan&&day?day.isOff?'Bugün dinlenme günün. Dersin yarına kaydı.':day.lesson?(lessonDone?'Bugünün işi tamam. Yarın kaldığın yerden devam edersin.':'Bugünün işi bu. Tamamlayınca ilerlemene eklenir.'):stats?.started===false?`Programın ${longDate(plan.config.startDate)} günü başlıyor.`:'Bugün serbest tekrar günü.':'';
  const dueSection=<article className="archive-preview flush"><div className="section-heading"><div><h2>Bugünkü tekrarların</h2><p className="muted">Yanlışların 1, 3, 7, 14, 30 ve 60. günde tekrar sorulur.</p></div></div>{loading?<SkelRows rows={3}/>:due.length?<DueList items={due.slice(0,6)}/>:<Empty title="Bugün tekrar yok." icon={<Check/>}>{rows.length?'Sırası gelen sorular burada görünür.':'Denemeden sonra yanlışlarını ekle. Tekrar takvimin burada oluşur.'}</Empty>}{due.length>6&&<p className="footnote">+{due.length-6} soru daha · <button className="text-button" onClick={()=>s.setView('archive')}>yanlış defterinde gör</button></p>}</article>;
+ const quoteCard=<article className="focus-card"><span className="eyebrow">GÜNÜN CÜMLESİ</span><h2 key={quote} className="quote-in">“{quote}”</h2><p>{focus?`Bu ay en çok ${focus.subject} · ${focus.topic} konusunda zorlandın (${focus.count} yanlış).`:'Denemeden sonra yanlışlarını ekle. En çok zorlandığın konu burada görünür.'}</p><div className="focus-actions"><button onClick={()=>void freshQuote(true)} disabled={quoteBusy}>{quoteBusy?<LoaderCircle className="spin" size={16}/>:<Sparkles size={16}/>} Başka cümle</button><button onClick={()=>s.setView('report')}><Target size={16}/> Aylık rapor</button></div></article>;
  return <>
   {!ai&&rows.length>0&&<div className="notice-strip warn"><AlertTriangle size={19}/><div><strong>Çözüm hazırlama şu an kapalı.</strong> Yanlışların defterine kaydedilir. Hizmet açılınca çözümü tek dokunuşla hazırlarsın.</div></div>}
   {Number(today().slice(8,10))<=10&&lastCount>0&&<div className="notice-strip"><Bell size={19}/><div><strong>{monthLabel(prevMonth(month))} raporun hazır.</strong> Geçen ay {lastCount} yanlış ekledin.</div><button className="text-button" onClick={()=>s.setView('report')}>Raporu aç <ArrowUpRight size={15}/></button></div>}
@@ -66,10 +67,10 @@ export function TodayView(){const s=useStudy();const {plan,rows,loading,ai}=s;co
    </aside>
   </section>}
   {plan&&day&&<section className="td-resources"><TodayResources day={day}/></section>}
-  {plan&&day&&<section className="td-flow"><article className="panel"><div className="section-heading"><div><span className="eyebrow">SAATLİK PLAN</span><h2>Bugünün akışı</h2></div><button className="text-button" onClick={()=>s.setView('program')}>Haftalık program <ArrowUpRight size={15}/></button></div><Timeline day={day} live/></article></section>}
-  {(plan||rows.length>0)&&<section className="dashboard-grid">
-   {dueSection}
-   <article className="focus-card"><span className="eyebrow">GÜNÜN CÜMLESİ</span><h2 key={quote} className="quote-in">“{quote}”</h2><p>{focus?`Bu ay en çok ${focus.subject} · ${focus.topic} konusunda zorlandın (${focus.count} yanlış).`:'Denemeden sonra yanlışlarını ekle. En çok zorlandığın konu burada görünür.'}</p><div className="focus-actions"><button onClick={()=>void freshQuote(true)} disabled={quoteBusy}>{quoteBusy?<LoaderCircle className="spin" size={16}/>:<Sparkles size={16}/>} Başka cümle</button><button onClick={()=>s.setView('report')}><Target size={16}/> Aylık rapor</button></div></article>
-  </section>}
+  {plan&&day?<section className="td-columns">
+   <article className="panel td-flow"><div className="section-heading"><div><span className="eyebrow">SAATLİK PLAN</span><h2>Bugünün akışı</h2></div><button className="text-button" onClick={()=>s.setView('program')}>Haftalık program <ArrowUpRight size={15}/></button></div><Timeline day={day} live/></article>
+   <div className="td-aside">{dueSection}{quoteCard}</div>
+  </section>
+  :(plan||rows.length>0)&&<section className="dashboard-grid">{dueSection}{quoteCard}</section>}
   {plan&&stats&&!stats.started&&<p className="footnote">Program {daysBetween(date,plan.config.startDate)} gün sonra başlıyor.</p>}
  </>}

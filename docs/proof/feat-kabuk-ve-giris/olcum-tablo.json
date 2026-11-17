@@ -1,0 +1,140 @@
+{
+ "kobalt": {
+  "home plan-yok": [
+   "Programı oluştur"
+  ],
+  "home plan-var": [
+   "Tamamla"
+  ],
+  "program plan-yok": [
+   "Programı oluştur"
+  ],
+  "program plan-var": [
+   "1. hafta",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla",
+   "Tamamla"
+  ],
+  "resources plan-yok": [
+   "Programı oluştur"
+  ],
+  "resources plan-var": [
+   "Soru bankası ekle"
+  ],
+  "archive plan-yok": [
+   "Yanlış ekle"
+  ],
+  "archive plan-var": [
+   "Yanlış ekle"
+  ],
+  "report plan-yok": [],
+  "report plan-var": [],
+  "exams plan-yok": [],
+  "exams plan-var": [],
+  "notes plan-yok": [
+   "Notu hazırla"
+  ],
+  "notes plan-var": [
+   "Notu hazırla"
+  ],
+  "settings plan-yok": [
+   "Programı oluştur"
+  ],
+  "settings plan-var": [
+   "Programı düzenle"
+  ]
+ },
+ "landing": {
+  "320": {
+   "fontSize": "40px",
+   "lines": 3,
+   "link": 44,
+   "navA": 44,
+   "logo": 44,
+   "sw": 320,
+   "cw": 320
+  },
+  "390": {
+   "fontSize": "40px",
+   "lines": 3,
+   "link": 44,
+   "navA": 44,
+   "logo": 44,
+   "sw": 390,
+   "cw": 390
+  },
+  "520": {
+   "fontSize": "40px",
+   "lines": 2,
+   "link": 44,
+   "navA": 44,
+   "logo": 44,
+   "sw": 520,
+   "cw": 520
+  },
+  "521": {
+   "fontSize": "40px",
+   "lines": 2,
+   "link": 44,
+   "navA": 44,
+   "logo": 44,
+   "sw": 521,
+   "cw": 521
+  },
+  "600": {
+   "fontSize": "40px",
+   "lines": 2,
+   "link": 44,
+   "navA": 44,
+   "logo": 44,
+   "sw": 600,
+   "cw": 600
+  },
+  "768": {
+   "fontSize": "40px",
+   "lines": 2,
+   "link": 44,
+   "navA": 44,
+   "logo": 44,
+   "sw": 768,
+   "cw": 768
+  },
+  "900": {
+   "fontSize": "46.8px",
+   "lines": 2,
+   "link": 44,
+   "navA": 44,
+   "logo": 44,
+   "sw": 900,
+   "cw": 900
+  },
+  "901": {
+   "fontSize": "46.852px",
+   "lines": 2,
+   "link": 44,
+   "navA": 44,
+   "logo": 44,
+   "sw": 901,
+   "cw": 901
+  },
+  "1024": {
+   "fontSize": "53.248px",
+   "lines": 2,
+   "link": 44,
+   "navA": 44,
+   "logo": 44,
+   "sw": 1024,
+   "cw": 1024
+  },
+  "1440": {
+   "fontSize": "68px",
+   "lines": 3,
+   "link": 44,
+   "navA": 44,
+   "logo": 44,
+   "sw": 1440,
+   "cw": 1440
+  }
+ }
+}

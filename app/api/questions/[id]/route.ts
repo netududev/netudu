@@ -1,14 +1,16 @@
 import {z} from 'zod';
 import {subjects,examTypes,mistakeTypes,scheduleReview,today,type ReviewEntry} from '@/lib/study';
 import {readClassification,editedClassification,resolveTopic,isLabelEdit,withClassification} from '@/lib/classify';
+import {learnedState} from '@/lib/swipe/server';
 import {owner,db,mine,bindings,failure,json,AppError,unpack} from '@/lib/server';
-// PATCH: ders/sınav/konu/alt konu/zorluk/hata türü düzenleme (alt konu ve zorluk analysis.classification içinde; elle düzenleme "kontrol et" bayrağını kaldırır), "tekrar ettim" işareti veya aralıklı tekrar sonucu (review: doğru | yanlış)
-export async function PATCH(req:Request,{params}:{params:Promise<{id:string}>}){try{const user=await owner(req);const {id}=await params;const row=await mine(id,user);const p=z.object({subject:z.enum(subjects as [string,...string[]]).optional(),topic:z.string().trim().min(1).max(150).optional(),reviewed:z.boolean().optional(),mistakeType:z.enum(mistakeTypes).optional(),myAnswer:z.string().max(500).optional(),answerKey:z.string().max(500).optional(),review:z.enum(['doğru','yanlış']).optional(),resetReview:z.boolean().optional(),examType:z.enum(examTypes).optional(),subtopic:z.string().trim().max(80).optional(),difficulty:z.enum(['kolay','orta','zor','']).optional(),confirm:z.boolean().optional()}).safeParse(await json(req));if(!p.success)throw new AppError('Ders ve konu alanlarını kontrol et.');const d=p.data;
+// PATCH: ders/sınav/konu/alt konu/zorluk/hata türü düzenleme (alt konu ve zorluk analysis.classification içinde; elle düzenleme "kontrol et" bayrağını kaldırır), "tekrar ettim" işareti veya aralıklı tekrar sonucu (review: doğru | yanlış), "öğrendim" işareti (markLearned: aşama sona, vade boş, log'a satır yok)
+export async function PATCH(req:Request,{params}:{params:Promise<{id:string}>}){try{const user=await owner(req);const {id}=await params;const row=await mine(id,user);const p=z.object({subject:z.enum(subjects as [string,...string[]]).optional(),topic:z.string().trim().min(1).max(150).optional(),reviewed:z.boolean().optional(),mistakeType:z.enum(mistakeTypes).optional(),myAnswer:z.string().max(500).optional(),answerKey:z.string().max(500).optional(),review:z.enum(['doğru','yanlış']).optional(),resetReview:z.boolean().optional(),examType:z.enum(examTypes).optional(),subtopic:z.string().trim().max(80).optional(),difficulty:z.enum(['kolay','orta','zor','']).optional(),confirm:z.boolean().optional(),markLearned:z.boolean().optional()}).safeParse(await json(req));if(!p.success)throw new AppError('Ders ve konu alanlarını kontrol et.');const d=p.data;
  const subject=d.subject??String(row.subject);const topic=resolveTopic({subject:String(row.subject),topic:String(row.topic)},subject,d.topic);let reviewed=d.reviewed??Number(row.reviewed);let stage=Number(row.review_stage||0);let next:string|null=(row.next_review as string|null)??null;let log:ReviewEntry[]=[];try{log=JSON.parse(String(row.review_log||'[]'))}catch{}
  if(d.review){const s=scheduleReview(stage,d.review);stage=s.stage;next=s.nextReview;log=[...log,{date:today(),result:d.review}].slice(-30);if(d.review==='doğru')reviewed=1}
+ if(d.markLearned){const l=learnedState();stage=l.stage;next=l.next;reviewed=l.reviewed}
  if(d.resetReview){stage=0;next=today();log=[];reviewed=0}
- if(d.reviewed===true&&!d.review&&!log.length){log=[{date:today(),result:'doğru'}];const s=scheduleReview(0,'doğru');stage=s.stage;next=s.nextReview}
- if(d.reviewed===false&&!d.review){reviewed=0}
+ if(d.reviewed===true&&!d.review&&!d.markLearned&&!log.length){log=[{date:today(),result:'doğru'}];const s=scheduleReview(0,'doğru');stage=s.stage;next=s.nextReview}
+ if(d.reviewed===false&&!d.review&&!d.markLearned){reviewed=0}
  let analysisRaw=row.analysis?String(row.analysis):null;
  if(analysisRaw&&(subject!==String(row.subject)||topic!==String(row.topic))){try{const parsed=JSON.parse(analysisRaw);parsed.subject=subject;parsed.topic=topic;parsed.videos=[];delete parsed.videoNotice;analysisRaw=JSON.stringify(parsed)}catch{}}
  const edited=isLabelEdit(d,{subject:String(row.subject),topic:String(row.topic),exam_type:String(row.exam_type)},{subject,topic});

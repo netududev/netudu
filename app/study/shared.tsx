@@ -5,7 +5,7 @@ import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/compo
 import {topicOptions,mebGrades,gradeOfExam,type Question,type Exam,type Report,type Video,type StudyNote,type Profile} from '@/lib/study';
 import type {PlanState,Lesson} from '@/lib/plan/scheduler';
 import type {PlaylistItem} from '@/lib/plan/resources';
-export type View='home'|'program'|'resources'|'archive'|'report'|'exams'|'notes'|'settings';
+export type View='home'|'program'|'resources'|'archive'|'report'|'exams'|'notes'|'settings'|'swipe';
 export type AiKind='solve'|'note'|'report'|'video'|'quote'|'playlist'|'classify';
 export type Usage=Record<AiKind,{used:number;limit:number}>&{unlimited:boolean};
 export type Account={
@@ -90,7 +90,7 @@ export function SampleSkeleton({kind='rows',label='Önizleme'}:{kind?:'rows'|'ch
    :[0,1,2].map(i=><div className="sample-row" key={i}><i className="sk-time"/><i className="sk-pip"/><div className="sk-stack"><i className="sk-bar w60"/><i className="sk-bar w40 thin"/></div><i className="sk-box"/></div>)}
   </div></figure>}
 // Boş durum: başlık, açıklama, isteğe bağlı "ne olacak" adımları ve örnek iskeleti
-export function Empty({title='Henüz yanlış yok.',children,icon,action,steps,sample,sampleLabel}:{title?:string;children:React.ReactNode;icon?:React.ReactNode;action?:React.ReactNode;steps?:string[];sample?:'rows'|'chart'|'table';sampleLabel?:string}){return <div className={'empty'+(steps||sample?' rich':'')}><span className="empty-ico">{icon||<BookOpen/>}</span><h3>{title}</h3><p>{children}</p>{action}{sample&&<SampleSkeleton kind={sample} label={sampleLabel}/>}{steps&&<ol className="empty-steps">{steps.map((t,i)=><li key={t}><b>{i+1}</b><span>{t}</span></li>)}</ol>}</div>}
+export function Empty({title='Henüz yanlış yok.',children,icon,action,footer,steps,sample,sampleLabel}:{title?:string;children:React.ReactNode;icon?:React.ReactNode;action?:React.ReactNode;footer?:React.ReactNode;steps?:string[];sample?:'rows'|'chart'|'table';sampleLabel?:string}){return <div className={'empty'+(steps||sample?' rich':'')}><span className="empty-ico">{icon||<BookOpen/>}</span><h3>{title}</h3><p>{children}</p>{action}{sample&&<SampleSkeleton kind={sample} label={sampleLabel}/>}{steps&&<ol className="empty-steps">{steps.map((t,i)=><li key={t}><b>{i+1}</b><span>{t}</span></li>)}</ol>}{footer}</div>}
 // Başlık altı özet şeridi: yalnız gerçek veriden hesaplanan değerler
 export function StatStrip({items}:{items:{label:string;value:React.ReactNode;sub?:string}[]}){return <dl className="stat-strip">{items.map(x=><div key={x.label}><dt>{x.label}</dt><dd>{x.value}</dd>{x.sub&&<small>{x.sub}</small>}</div>)}</dl>}
 export const mistakeLabel:Record<string,string>={'yanlış':'Yanlış işaretledim','boş':'Boş bıraktım','emin değildim':'Doğru ama emin değildim'};
