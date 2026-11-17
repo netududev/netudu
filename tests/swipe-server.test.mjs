@@ -12,7 +12,8 @@ await t('route bağlantısı: PATCH şeması markLearned alır ve learnedState k
   const s=route('[id]/route.ts');assert.match(s,/markLearned:z\.boolean\(\)\.optional\(\)/);assert.match(s,/if\(d\.markLearned\)\{const l=learnedState\(\);stage=l\.stage;next=l\.next;reviewed=l\.reviewed\}/);
   const seg=s.match(/if\(d\.markLearned\)\{[^}]*\}/)[0];assert.ok(!/log/.test(seg))});
 await t('route bağlantısı: reviewed===true dalı markLearned iken log satırı eklemez (markLearned sözleşmesi)',()=>{
-  const s=route('[id]/route.ts');assert.match(s,/if\(d\.reviewed===true&&!d\.review&&!d\.markLearned&&!log\.length\)\{/)});
+  const s=route('[id]/route.ts');assert.match(s,/if\(d\.reviewed===true&&!d\.review&&!d\.markLearned&&!log\.length\)\{/);
+  assert.match(s,/if\(d\.reviewed===false&&!d\.review&&!d\.markLearned\)\{reviewed=0\}/)});
 await t('route bağlantısı: fotoğraf GET Cache-Control sabitini kullanır; 404 yolları (AppError) korunur',()=>{
   const s=route('[id]/image/route.ts');assert.match(s,/'Cache-Control':IMAGE_CACHE_CONTROL/);assert.ok(!s.includes('no-store'));assert.equal((s.match(/AppError\('Fotoğraf bulunamadı\.',404\)/g)||[]).length,2)});
 console.log(n+' test geçti');

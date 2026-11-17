@@ -10,7 +10,7 @@ export async function PATCH(req:Request,{params}:{params:Promise<{id:string}>}){
  if(d.markLearned){const l=learnedState();stage=l.stage;next=l.next;reviewed=l.reviewed}
  if(d.resetReview){stage=0;next=today();log=[];reviewed=0}
  if(d.reviewed===true&&!d.review&&!d.markLearned&&!log.length){log=[{date:today(),result:'doğru'}];const s=scheduleReview(0,'doğru');stage=s.stage;next=s.nextReview}
- if(d.reviewed===false&&!d.review){reviewed=0}
+ if(d.reviewed===false&&!d.review&&!d.markLearned){reviewed=0}
  let analysisRaw=row.analysis?String(row.analysis):null;
  if(analysisRaw&&(subject!==String(row.subject)||topic!==String(row.topic))){try{const parsed=JSON.parse(analysisRaw);parsed.subject=subject;parsed.topic=topic;parsed.videos=[];delete parsed.videoNotice;analysisRaw=JSON.stringify(parsed)}catch{}}
  const edited=isLabelEdit(d,{subject:String(row.subject),topic:String(row.topic),exam_type:String(row.exam_type)},{subject,topic});

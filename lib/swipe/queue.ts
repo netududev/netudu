@@ -31,7 +31,7 @@ export function startSession(rows:Question[],today:string,o:PoolOptions){
 // Yeniden yüklemede (restore sonrası) henüz sonuç işlenmemiş kuyruk/güncel kartların katmanı satırlara bakarak yeniden hesaplanır
 // (başka pencerede vadesi taşınmış olabilir); sonucu işlenmiş kartlar donmuş kalır
 export function reclassify(s:SwipeSession,rows:Map<string,Question>,today:string):SwipeSession{
-  const tiers={...s.tiers};for(const id of [...s.queue,...(s.current?[s.current]:[])]){const q=rows.get(id);if(q&&!s.results[id])tiers[id]=tierOf(q,today)}
+  const tiers={...s.tiers};for(const id of [...s.queue,...(s.current?[s.current]:[])]){const q=rows.get(id);if(q&&!s.results[id]?.first)tiers[id]=tierOf(q,today)}
   return {...s,tiers};
 }
 const tierIn=(tiers:Record<string,Tier>,id:string)=>tiers[id]??DEFAULT_TIER;

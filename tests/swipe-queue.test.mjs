@@ -103,7 +103,7 @@ await t('Bilemedim + upsert simülasyonu: yeniden çıkma 4 kart sonra, son iki 
       s=Q.advance(s,map())}
     return order};
   const a=run(false),b=run(true);assert.deepEqual(b,a,'upsert sırayı değiştirmemeli');
-  // kuyrukta 4. konuma girer; 4. kart q3 yerine q4 seçildiği ve q0 (Türev) son ikiyle (q4 Türev, q3 Limit) çakıştığı için q5'ten sonra gelir
+  // ekleme konumu 4 (0 tabanlı indeks 4 = 5. sıra); gösterimde karıştırma kuralı öne/arkaya kaydırabilir; 4. kart q3 yerine q4 seçildiği ve q0 (Türev) son ikiyle (q4 Türev, q3 Limit) çakıştığı için q5'ten sonra gelir
   assert.deepEqual(a,['q0','q1','q2','q4','q3','q5','q0','q6']);
   const T=id=>topics[+id.slice(1)];const k=a.lastIndexOf('q0');assert.ok(![T(a[k-1]),T(a[k-2])].includes(T('q0')),'yeniden çıkan kart son iki konudan farklı');
   assert.equal(a.length,8);});
@@ -111,6 +111,10 @@ await t('reclassify: sonucu işlenmemiş kartlar satırlara göre yeniden sını
   const rows=new Map([q('a'),q('b'),q('c')].map(r=>[r.id,r]));rows.set('a',{...rows.get('a'),next_review:'2026-11-20'});
   const s={...sess(['a','b'],'c',{a:'A',b:'A',c:'A'}),results:{b:{first:'bilemedim',wrong:1,skips:0}}};
   const r=Q.reclassify(s,rows,TODAY);assert.deepEqual(r.tiers,{a:'B',b:'A',c:'A'})});
+await t('reclassify: yalnız atlanmış kart (first yok) yeniden sınıflanır; ilk sonucu olan donuk kalır',()=>{
+  const rows=new Map([q('a'),q('b')].map(r=>[r.id,{...r,next_review:'2026-11-20'}]));
+  const s={...sess(['a','b'],'cur',{a:'A',b:'A',cur:'A'}),results:{a:{wrong:0,skips:1},b:{first:'doğru',wrong:0,skips:0}}};
+  assert.deepEqual(Q.reclassify(s,rows,TODAY).tiers,{a:'B',b:'A',cur:'A'})});
 // summary
 await t('özet: sayılar, çalışılacaklar, sıradaki tekrar tarihi (next_review min, bugünden sonra)',()=>{
   const rows=[q('a',{next_review:'2026-11-19'}),q('b',{next_review:'2026-11-19'}),q('c',{next_review:'2026-11-24'})];

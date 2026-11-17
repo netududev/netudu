@@ -10,7 +10,7 @@
 - [x] Yazma kuralı: A iki sonucu da, B/C yalnız Bilemedim; oturumdaki yalnız ilk (atlama olmayan) sonuç `pending`'e girer; "Sonucu değiştir" (`markCurrent`) istek üretmez, `leaveCard` tek kayıt bırakır.
 - [x] `lib/swipe/session.ts`: serialize/restore gidiş-dönüş; bozuk JSON, eski gün, yanlış şekil → null; silinmiş soru kimlikleri her listeden ayıklanır; depolama hatası/yokluğu fırlatmaz; anahtar `kaydir:<kullanıcı>:<gün>`; eski gün anahtarları silinir; bekleyen yazma en fazla 3 deneme.
 - [x] `lib/swipe/answer.ts`: "B", "b)", " B " → "B"; "12", "x=3", boş → null.
-- [x] PATCH `markLearned`: aşama = `reviewIntervals.length` (6), `next_review` = null, `reviewed` = 1, `review_log`'a satır eklenmez; mevcut review/resetReview/reviewed akışlarına dokunulmadı (tek satır eklendi).
+- [x] PATCH `markLearned`: aşama = `reviewIntervals.length` (6), `next_review` = null, `reviewed` = 1, `review_log`'a satır eklenmez; mevcut review/resetReview akışları aynen; `reviewed===true` ve `reviewed===false` dallarına `!d.markLearned` koruması eklendi (markLearned ile çelişen `reviewed` değeri öğrenildi durumunu bozmaz; regex testiyle sabit).
 - [x] Fotoğraf yanıtı `Cache-Control: private, max-age=604800, immutable`; 404 yolları değişmedi.
 - [x] Yeni npm paketi yok, arayüz (React/CSS) dosyası yok; `lib/study.ts` yardımcıları yeniden kullanıldı (kopya yok).
 
@@ -18,17 +18,17 @@
 Davranışsal "önce" yok (arayüz yok; yeni modüller). Test dosyaları önce yazıldı ve modüller yokken kırmızıydı: `node --experimental-strip-types --import ./tests/reg.mjs --test tests/swipe-*.test.mjs` → `# fail 4`. Route kaynak-bağlantı testleri route düzenlenene kadar kırmızıydı (PATCH şemasında `markLearned` yok, görsel yanıtta `no-store`).
 
 ## Sonra
-`node --experimental-strip-types --import ./tests/reg.mjs --test tests/swipe-*.test.mjs` → `# tests 4 / # pass 4 / # fail 0` (dosya başına bir; içlerinde 35 `t(...)` durumu: queue 21, session 7, answer 2, server 5; hepsi `ok`).
+`node --experimental-strip-types --import ./tests/reg.mjs --test tests/swipe-*.test.mjs` → `# tests 4 / # pass 4 / # fail 0` (dosya başına bir; içlerinde 42 `t(...)` durumu: queue 25, session 9, answer 3, server 5; hepsi `ok`).
 
 ## Test / Ölçüm
 | Komut | Beklenen | Gerçek | Çıkış kodu | Sonuç |
 |---|---|---|---|---|
-| `node --experimental-strip-types --import ./tests/reg.mjs --test tests/swipe-*.test.mjs` (ND_ZOD_PATH ile) | 4 dosya yeşil | 4/4 geçti, 35 durum `ok` | 0 | PASS |
+| `node --experimental-strip-types --import ./tests/reg.mjs --test tests/swipe-*.test.mjs` (ND_ZOD_PATH ile) | 4 dosya yeşil | 4/4 geçti, 42 durum `ok` | 0 | PASS |
 | `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` | tümü yeşil | 103 test, 103 geçti (Tur 1 doğrulamasında taban dalın tarihe bağlı testi düzeltildi; bkz. Orkestratör doğrulaması) | 0 | PASS |
 | Aynı `npm test`, bu PR'dan ÖNCEKİ HEAD'in geçici `--detach` worktree'sinde | taban yeşil (99) | 99 test, 98 geçti, aynı test kaldı | 1 | Hata taban dalda zaten var |
 
 ## Kapsam dışı / bilinen eksikler
-- **Taban dalda kırmızı test:** `program-render.test.mjs` "Bugün: gün tamamsa .td-focus.is-done…" bu PR'ın değişikliklerinden önce de kalıyor (aynı komut, temiz HEAD'de kanıtlandı). Nedeni araştırılmadı (görev kapsamı dışı; bu ortamın tarihi/ortamıyla ilgili olabilir). Görevdeki "99 yeşil" beklentisi bu ortamda tutmuyor; yeni testlerle 103/103 (taban test düzeltmesi sonrası).
+- **Taban dalda kırmızı test (giderildi):** `program-render.test.mjs` "Bugün: gün tamamsa .td-focus.is-done…" tarihe bağlıydı (fixture `next_review` 2026-11-17; 17 Kasım'dan sonra kırmızı). fb3bc3d ile test tarihten bağımsız yapıldı; güncel `npm test` 103/103 yeşil. Yukarıdaki "99 test, 98 geçti" satırı düzeltmeden ÖNCEKİ tabanın ölçümüdür.
 - **Route gerçekten çalıştırılmadı.** PATCH ve fotoğraf GET oturum (`owner`) ve D1/R2 ister; mevcut testlerde route çağıran kalıp yok. Bu yüzden kural saf yardımcıya çıkarıldı (`lib/swipe/server.ts`: `learnedState()`, `IMAGE_CACHE_CONTROL`) ve o sınandı; route'un yardımcıyı kullandığı yalnız kaynak metni regex testiyle (`route bağlantısı`) sabitlendi. Gerçek HTTP yanıtı/başlığı ve SQL güncellemesi doğrulanmadı (Vercel/yerel çalıştırma gerekir).
 - `tsc` çalıştırılmadı; tip hataları yakalanmadı (testler `--experimental-strip-types` ile tipleri siler).
 - Radix/React yok bu PR'da; arayüz doğrulaması K2'de.
@@ -61,3 +61,13 @@ Davranışsal "önce" yok (arayüz yok; yeni modüller). Test dosyaları önce y
 ## Orkestratör doğrulaması (Tur 2)
 
 - `npm test` yeniden koşuldu: 103/103, çıkış 0.
+
+## Tur 3 (küçük kalanlar, inceleme 2 SKOR 5 sonrası)
+- `reclassify` koşulu `!s.results[id]?.first`: yalnız atlanmış (ilk sonucu olmayan) kart da yeniden sınıflanır; aksi halde başka pencerede `doğru` alan kart yeniden yüklemede A sayılıp ikinci kez yazılabilirdi. Atlanmış kart için test eklendi.
+- `route.ts` `reviewed===false` dalına `&&!d.markLearned` eklendi (markLearned:true + reviewed:false çelişkisinde öğrenildi durumu yarım kalmaz); `swipe-server.test.mjs` regex'i sabitler.
+- Ekleme konumu 4/8 (0 tabanlı); gösterim, karıştırma kuralıyla ölçülen aralıkta (1. Bilemedim: 2–11 kart, 2.: 2–17; medyan 4/9) öne/arkaya kayar; sonsuz itme yok (3000 oturum simülasyonu). Testteki "4. konum" = 0 tabanlı indeks 4 (5. sıra).
+- **Test (Tur 3):** `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` → 103 test, 103 geçti, çıkış 0 (`t(...)` durumları: queue 25, session 9, answer 3, server 5 = 42).
+
+## Orkestratör doğrulaması (Tur 3)
+
+- `npm test` yeniden koşuldu: 103/103, çıkış 0. İnceleme 2 (opus yedek, Fable kredi yok): SKOR 5.
