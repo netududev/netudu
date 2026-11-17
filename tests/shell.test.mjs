@@ -21,11 +21,11 @@ test('kenar çubuğu gezinmesinde "Programı oluştur" yok',()=>{
 });
 
 test('sayfa başlığı eylemleri: Programı düzenle yalnız Bugün + program varken',()=>{
-  for(const v of views)for(const plan of [true,false])assert.ok(pageActions(v,{plan}).every(a=>['print','edit-plan'].includes(a)),v);
+  for(const v of views)for(const plan of [true,false])assert.ok(pageActions(v,{plan}).every(a=>['month','print','edit-plan','add-exam'].includes(a)),v);
   assert.deepEqual(pageActions('home',{plan:true}),['edit-plan']);
   assert.deepEqual(pageActions('home',{plan:false}),[]);
   assert.deepEqual(pageActions('archive',{plan:true}),[],'Defter: Yazdır/PDF artık "Dışa aktar" menüsünde');
-  assert.deepEqual(pageActions('report',{plan:false}),['print']);
+  assert.deepEqual(pageActions('report',{plan:false}),['month','print']);
   assert.deepEqual(pageActions('settings',{plan:true}),[]);
 });
 

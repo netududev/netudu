@@ -20,12 +20,14 @@ export const headings:Record<View,{title:string;description:string}>={
  settings:{title:'Ayarlar.',description:'Profilin, üyeliğin, programın ve yedeğin.'},
 };
 
-export type PageAction='print'|'edit-plan';
+export type PageAction='month'|'print'|'edit-plan'|'add-exam';
 // "Yanlış ekle" tek yerde durur: üst çubuk. Burada yalnız ikincil eylemler kalır.
 export function pageActions(view:View,{plan}:{plan:boolean}):PageAction[]{
  const out:PageAction[]=[];
  // Defter'de "Yazdır / PDF" "Dışa aktar" menüsündedir; başlıkta yalnız Aylık rapor'da kalır
- if(view==='report')out.push('print');
+ // Aylık rapor: ay seçici (ikincil) "Yazdır / PDF"in yanında; Denemeler: tek birincil "Deneme ekle"
+ if(view==='report')out.push('month','print');
+ if(view==='exams')out.push('add-exam');
  if(view==='home'&&plan)out.push('edit-plan');
  return out;
 }
