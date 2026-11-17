@@ -11,3 +11,4 @@ function App({rows0}:{rows0:any[]}){
   return <StudyContext.Provider value={study}><main className="workspace"><div className="view" data-view="swipe" data-width="wide"><SwipeView/></div></main></StudyContext.Provider>;
 }
 (window as any).__mount=(rows:any[]=sampleRows)=>{createRoot(document.getElementById('root')!).render(<App rows0={rows}/>)};
+(window as any).__sample=sampleRows;

@@ -33,17 +33,26 @@ export function restore(raw:string|null|undefined,ctx:{day:string;ids:Iterable<s
 // Depolama yoksa ya da hata verirse oturum yalnız bellekte yaşar: hiçbiri fırlatmaz
 export function loadSession(st:Storage|null|undefined,user:string,day:string,ids:Iterable<string>):SwipeSession|null{try{return st?restore(st.getItem(sessionKey(user,day)),{day,ids}):null}catch{return null}}
 export function saveSession(st:Storage|null|undefined,user:string,s:SwipeSession):boolean{try{if(!st)return false;st.setItem(sessionKey(user,s.day),serialize(s));return true}catch{return false}}
-// Eski günlerin gönderilmemiş (tries<MAX_TRIES) bekleyen yazmaları; K2 anahtarları silmeden ÖNCE bunları göndermelidir
+// Eski günlerin bekleyen yazmaları (tries>=MAX_TRIES olanlar dahil: gün değişimi yeni bir şans verir); anahtarlar silinmeden ÖNCE bunlar gönderilmelidir
 export function collectPending(st:Storage|null|undefined,user:string,day:string):{day:string;pending:Pending[]}[]{
   const out:{day:string;pending:Pending[]}[]=[];
   try{if(!st)return out;const prefix=`kaydir:${user}:`,keep=sessionKey(user,day);
     for(let i=0;i<st.length;i++){const k=st.key(i);if(!k||!k.startsWith(prefix)||k===keep)continue;
       try{const p=JSON.parse(st.getItem(k)??'null');if(!p||!Array.isArray(p.pending))continue;
-        const pending:Pending[]=duePending(p.pending.filter((x:any)=>x&&typeof x.id==='string'&&(x.review==='doğru'||x.review==='yanlış')&&typeof x.tries==='number').map((x:any)=>({id:x.id,review:x.review,tries:x.tries})));
+        const pending:Pending[]=(p.pending.filter((x:any)=>x&&typeof x.id==='string'&&(x.review==='doğru'||x.review==='yanlış')&&typeof x.tries==='number').map((x:any)=>({id:x.id,review:x.review,tries:x.tries})) as Pending[]);
         if(pending.length)out.push({day:k.slice(prefix.length),pending})}catch{}}}catch{}
   return out;
 }
-export function purgeOldSessions(st:Storage|null|undefined,user:string,day:string){try{if(!st)return;const prefix=`kaydir:${user}:`,keep=sessionKey(user,day);const old:string[]=[];for(let i=0;i<st.length;i++){const k=st.key(i);if(k&&k.startsWith(prefix)&&k!==keep)old.push(k)}for(const k of old)st.removeItem(k)}catch{}}
+// keepPending: bekleyen yazması olan eski anahtarlar korunur (gönderim bitene dek); boş ve bozuk olanlar yine silinir
+export function purgeOldSessions(st:Storage|null|undefined,user:string,day:string,keepPending=false){try{if(!st)return;const prefix=`kaydir:${user}:`,keep=sessionKey(user,day);const old:string[]=[];for(let i=0;i<st.length;i++){const k=st.key(i);if(k&&k.startsWith(prefix)&&k!==keep)old.push(k)}
+  for(const k of old){if(keepPending){try{const p=JSON.parse(st.getItem(k)??'null');if(p&&Array.isArray(p.pending)&&p.pending.length)continue}catch{}}st.removeItem(k)}}catch{}}
+// Eski günün bir bekleyen yazması denendi: başarılıysa anahtardan çıkar, başarısızsa tries artar; bekleyen kalmayınca anahtar silinir
+export function settleOldSessions(st:Storage|null|undefined,user:string,day:string,oldDay:string,id:string,ok:boolean){
+  try{if(!st||oldDay===day)return;const k=sessionKey(user,oldDay);const raw=st.getItem(k);if(raw==null)return;
+    const p=JSON.parse(raw);if(!p||!Array.isArray(p.pending)){st.removeItem(k);return}
+    const pending=ok?p.pending.filter((x:any)=>x?.id!==id):p.pending.map((x:any)=>x?.id===id&&typeof x.tries==='number'?{...x,tries:x.tries+1}:x);
+    if(pending.length)st.setItem(k,JSON.stringify({...p,pending}));else st.removeItem(k)}catch{}
+}
 
 // Bekleyen yazma listesi: soru başına tek kayıt (ilk sonuç); en fazla MAX_TRIES deneme
 export const addPending=(p:Pending[],id:string,review:Review):Pending[]=>p.some(x=>x.id===id)?p:[...p,{id,review,tries:0}];

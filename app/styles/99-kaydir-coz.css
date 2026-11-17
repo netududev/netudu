@@ -1,10 +1,10 @@
 /* PR K2: Kaydır Çöz ekranı (başlangıç, akış, soru / çözüm / bitiş kartları). Seçiciler .view[data-view=swipe] altındadır; tek istisna: başlık ve boşluk kabuk öğeleri (.view'ın kardeşi) :has ile ele alınır. */
 /* Kabuk: sayfa başlığı ekran okuyucu için kalır (h1), görsel olarak gizlenir; akış çalışma alanını doldurur */
 .workspace:has(.view[data-view=swipe]) .page-heading{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.workspace:has(.view[data-view=swipe]){padding-top:var(--s5);padding-bottom:var(--s5)}
-@media(max-width:767px){.workspace:has(.view[data-view=swipe]){padding:0 0 calc(var(--sw-bar) + env(safe-area-inset-bottom))}}
-.view[data-view=swipe]{--sw-top:64px;--sw-bar:66px;--sw-h:calc(100dvh - var(--sw-top) - 2*var(--s5));--sw-col:560px}
-@media(max-width:767px){.view[data-view=swipe]{--sw-top:57px;--sw-h:calc(100dvh - var(--sw-top) - var(--sw-bar) - env(safe-area-inset-bottom))}}
+.workspace:has(.view[data-view=swipe]){--sw-top:64px;--sw-bar:66px;padding-top:var(--s5);padding-bottom:var(--s5)}
+@media(max-width:767px){.workspace:has(.view[data-view=swipe]){--sw-top:57px;padding:0 0 calc(var(--sw-bar) + env(safe-area-inset-bottom))}}
+.view[data-view=swipe]{--sw-h:calc(100dvh - var(--sw-top) - 2*var(--s5));--sw-col:560px}
+@media(max-width:767px){.view[data-view=swipe]{--sw-h:calc(100dvh - var(--sw-top) - var(--sw-bar) - env(safe-area-inset-bottom))}}
 
 /* Başlangıç ekranı */
 .view[data-view=swipe] .sw-start{display:grid;gap:var(--s4);width:100%;max-width:var(--sw-col);margin-inline:auto;padding:var(--s5) var(--s4)}

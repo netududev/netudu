@@ -20,7 +20,7 @@ export function Feed({w,onHome}:{w:SwipeApi;onHome:()=>void}){
   const [active,setActive]=useState(()=>Math.max(0,2*(H-1)));const [msg,setMsg]=useState('');const activeRef=useRef(active);activeRef.current=active;
   const curQ=2*(H-1);const hasCurrent=ss.current!==null;
 
-  const goTo=useCallback((i:number,instant=false)=>{const el=feedRef.current;if(!el)return;const n=Math.max(0,Math.min(i,slots-1));el.scrollTo({top:n*el.clientHeight,behavior:instant||reducedMotion()?'auto':'smooth'})},[slots]);
+  const goTo=useCallback((i:number,instant=false)=>{const el=feedRef.current;if(!el)return;const n=Math.max(0,Math.min(i,slots-1));el.scrollTo({top:n*el.clientHeight,behavior:instant?'instant':reducedMotion()?'auto':'smooth'})},[slots]);
   // Açılış / devam: etkin soru kartına anında konumlan
   useEffect(()=>{goTo(Math.max(0,2*(H-1)),true)},[]);// eslint-disable-line react-hooks/exhaustive-deps
   // Etkin kartı bul
@@ -54,6 +54,8 @@ export function Feed({w,onHome}:{w:SwipeApi;onHome:()=>void}){
       const t=e.target as HTMLElement;const k=e.key;const onBtn=!!t.closest?.('button,a,[role=menuitem]');const inScroll=!!t.closest?.('.scroll-body');
       const a=activeRef.current;const onCur=hasCurrent&&(a===curQ||a===curQ+1);
       if(k==='Escape'){e.preventDefault();w.exit();return}
+      const sb=t.closest?.('.scroll-body') as HTMLElement|null;const atEnd=!!sb&&sb.scrollTop+sb.clientHeight>=sb.scrollHeight-1;
+      if(inScroll&&(k==='ArrowDown'||(k===' '&&!onBtn))&&atEnd){e.preventDefault();goTo(activeRef.current+1);return}// kart içi kaydırma bitince sonraki karta
       if(['ArrowDown','ArrowUp'].includes(k)&&inScroll)return;// kart içi kaydırma
       if((k===' '&&(onBtn||inScroll))||(k==='Enter'))return;
       if(k==='ArrowDown'||k===' '||k==='j'||k==='J'){e.preventDefault();goTo(a+1)}

@@ -36,7 +36,7 @@ test('başlangıç: başlık, ders çipleri (yalnız sorusu olan dersler, sayı)
   assert.match(h,/role="group" aria-label="Ders"/);
   for(const d of ['Matematik','Fizik','Kimya','Biyoloji'])assert.match(t,new RegExp(d));
   assert.doesNotMatch(h,/Türk Dili/);
-  assert.match(t,/Yalnız bugünkü/);assert.match(t,/Tümü/);
+  assert.match(t,/Yalnız bugünküler/);assert.match(t,/Tümü/);
   assert.equal(count(h,/class="primary"/g),1);assert.match(t,/Başla/);assert.doesNotMatch(t,/Kaldığın yerden/);
 });
 test('boş durum: "Kaydırmak için önce yanlış ekle" ve tek birincil "Yanlış ekle"',async()=>{

@@ -50,14 +50,14 @@ Tam ölçüm: `olcum-sonraki.json` (88 ekran); klavye akışı kaydı: `klavye.j
 - Metin kontrastı 4,5:1 ayrıca ölçülmedi (mevcut jetonlar kullanıldı).
 - "Konu videosu": çözümde kayıtlı video varsa ilki yeni sekmede açılır, yoksa soru penceresi (s.select) açılır; soru penceresindeki sekme seçimi dışarıdan ayarlanamadığından doğrudan "Konu videosu" sekmesi açılmaz.
 - "Sonucu değiştir" yalnız Bildim↔Bilemedim arasında çevirir; kart terk edildikten sonra (ilk sonuç yazıldı) yeniden değiştirilemez (K1 kuralı: yalnız ilk sonuç yazılır).
-- Sekme gizlenirken keepalive ile gönderilen sonuçlar yanıt beklenmeden bekleyen listesinden düşer (başarı bilinemez); kayıp ihtimali kabul edildi.
+- (Tur 2'de giderildi) Sekme gizlenirken keepalive sonuçları artık yanıt başarılı olunca bekleyenden çıkar; bkz. Tur 2, madde 2.
 
 ## Plandaki gerçek cihaz kontrol listesi (Vercel önizlemesinde işaretlenecek)
-- [x] iPhone Safari: adres çubuğu açılıp kapanırken kart kaymıyor; hızlı fiske tek kart geçiyor.
-- [x] Android Chrome: yukarıdan çekince sayfa yenilenmiyor (overscroll-behavior).
-- [x] Uzun çözümün içi kayıyor, en alta gelince akış devralıyor.
-- [x] Ekran okuyucu (VoiceOver / TalkBack) kart sırasını ve sonucu duyuruyor.
-- [x] Sekme kapatılırken bekleyen sonuç kaydediliyor (soru penceresinin Tekrar sekmesinde görünüyor).
+- [ ] iPhone Safari: adres çubuğu açılıp kapanırken kart kaymıyor; hızlı fiske tek kart geçiyor.
+- [ ] Android Chrome: yukarıdan çekince sayfa yenilenmiyor (overscroll-behavior).
+- [ ] Uzun çözümün içi kayıyor, en alta gelince akış devralıyor.
+- [ ] Ekran okuyucu (VoiceOver / TalkBack) kart sırasını ve sonucu duyuruyor.
+- [ ] Sekme kapatılırken bekleyen sonuç kaydediliyor (soru penceresinin Tekrar sekmesinde görünüyor).
 
 ## Yeniden üretme
 1. Bu turun commit'ini checkout et (SHA: REVIEW-<n>.md başlığı / PR head'i).
@@ -69,3 +69,30 @@ Tam ölçüm: `olcum-sonraki.json` (88 ekran); klavye akışı kaydı: `klavye.j
 - `npm test`: 117/117, çıkış 0. Ölçüm (88 ekran) yazar tarafından üretildi; bağımsız yeniden üretimi inceleyiciye bırakıldı.
 - Şıkla işaretlenen sonuçta otomatik sonraki karta geçilmemesi (sapma 5): plandaki iki kural (şık→çözüm kartına kayar; işaretleyince 400 ms sonra otomatik geçer) birbiriyle çeliştiği için çözümü okuma fırsatı korunarak yazar tarafından seçildi; inceleyici değerlendirir.
 - Gerçek cihaz, Radix, IntersectionObserver, ekran okuyucu ve tsc bu ortamda doğrulanamadı.
+
+## Tur 2 (inceleme 1 bulguları; SKOR 2 → düzeltmeler)
+
+Yeni testler önce yazıldı ve düzeltmeden ÖNCE kırmızı koştu (tests/swipe-browser.test.mjs: gerçek SwipeView + kanca, Playwright, taklit ağ; tests/swipe-session.test.mjs: saf mantık). 1b için hideSent sıfırlaması geçici kaldırılıp test yeniden kırmızıya döndürüldü, sonra geri konuldu.
+
+| # | Bulgu | Yapılan | Test |
+|---|---|---|---|
+| 1 | hideFlush aynı sonucu her gizlemede yeniden gönderiyordu | `hideSent` kontrolü + yanıt beklenirken `inflight`; `hideSent` her yeni oturumda (`open`) sıfırlanır, böylece "yeniden geç" oturumunda aynı soru yazılır | `1` (gizle ×3 + pagehide → 1 PATCH; önce 3), `1b` (yeni oturumda yazma düşmez) |
+| 2 | hideFlush bekleyeni yanıtsız siliyordu | Çevrimdışıyken (`navigator.onLine===false`) hiçbir şey göndermez/silmez; keepalive `fetch` yanıtı dinlenir: başarılıysa pending'den çıkar, değilse kalır (tries artar); güncel kartın gizleme yazması başarısızsa kart terk edilmişse pending'e girer | `2a` (çevrimdışı: pending kalır, bağlantı gelince gider), `2b` (keepalive başarısız: kalır + tries artar; başarılı: çıkar) |
+| 3 | Yeni oturumda Feed yeniden kurulmuyordu (ilk kart atlanıyordu) | Hook `epoch` sayacı (her `open`'da artar); `<Feed key={w.epoch}>` | `3` ("Bilemediklerini yeniden geç": history=1, atlandı sayılmadı; önce history=2) |
+| 4 | Eski gün kısmi başarısızlığı | `settleOldSessions` (lib/swipe/session.ts): her deneme sonucu anında anahtara işlenir; gidenler çıkar, başarısızlar kalır ve tries+1; boşalan anahtar silinir; `purgeOldSessions(…,keepPending)` bekleyeni olanı korur | `settleOldSessions`, `purgeOldSessions` (saf), `4+9` (tarayıcı) |
+| 5 | 320 px'te sabit `--sw-bar/--sw-top` tutmuyordu | `chrome-vars.ts` `watchChrome`: `.topbar`/`.mobile-bar` yüksekliğini ResizeObserver + resize ile ölçüp `.workspace`'e yazar, unmount'ta temizler; CSS sabitleri yedek. Önizlemeye 320×640 eklendi; statik ekranlarda aynı gerçek kod (`kaydir-chrome.ts` paketi) çalıştırılır | `5` (70px/80px ölçülür, alt çubuk 96px olunca izlenir; önce boş) ; önizleme ölçümü |
+| 6 | Gerçek cihaz kutuları [x] idi | Hepsi [ ] yapıldı | - |
+| 7 | instant için `'auto'` (CSS smooth ezerdi) | `behavior:'instant'` | `7` (hareket azaltma kapalı; devamda iki kare sonra konum hedefte; önce top=2) |
+| 8 | `.workspace` üzerindeki `var(--sw-bar)` tanımsızdı | `--sw-top/--sw-bar` `.workspace:has(.view[data-view=swipe])` üzerine taşındı (`.view` miras alır) | `5` (değişkenler `.workspace`'te okunur), mevcut CSS testleri |
+| 9 | tries>=3 kayıtlar gün değişiminde silinirdi | `collectPending` tries>=3'ü de toplar; açılışta bir kez denenir (başarısızsa tries artar) | `collectPending` (güncellendi), `4+9` (q2 tries=3 gönderildi) |
+| 10 | `.scroll-body` en alttayken ↓/Boşluk akışa geçmiyordu | Odak `.scroll-body` içindeyken ve en alttayken ↓ / Boşluk (düğme üstünde değilken) `goTo(active+1)` | `10` (↓ ve Boşluk: ortada kart değişmez, en altta sonraki kart). DÜRÜST NOT: bu test düzeltmeden önce de yeşildi (Chromium'un yerel zincirleme+snap davranışı); açık işleyici tarayıcıdan bağımsız davranış için eklendi |
+| 11 | Kapsam düğmesi metni | "Yalnız bugünküler" | `swipe-render` (/Yalnız bugünküler/; önce kırmızı) |
+
+### Ölçümler (Tur 2)
+- `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test`: 126/126 geçti, 0 kırmızı, çıkış 0.
+- `node scripts/kaydir-preview.mjs`: ekran sayısı 110 (11 ekran × 5 boyut [320, 390, 768, 1100, 1440] × açık/koyu), sorunlu 0. 320'de 22 ekranın hepsinde görüntü alanı alt=0, üst=0, taşma/kırık düğme/kırpılma yok (önceki turda 18/22 ekranda alt=-14).
+- Klavye akışı (kısayol-390/1100, otomatik-geçiş-390, tekerlek, devam) tekrar koştu; 6 soru 6 PATCH (tekrar yok).
+
+### Tur 2 sınırları
+- `keepalive` yanıtı/pagehide gerçek ağda ve gerçek sayfa kapanışında denenmedi; taklit ağda `visibilitychange`/`pagehide` olayları elle tetiklendi, çevrimdışılık `context.setOffline` ile.
+- Gerçek cihaz kutuları (madde 6) hâlâ doğrulanmadı; orkestratör/kullanıcı işaretler.

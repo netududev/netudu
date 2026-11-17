@@ -10,6 +10,8 @@ const common={bundle:true,jsx:'automatic',logLevel:'error',define:{'process.env.
  plugins:[{name:'stubs',setup(b){b.onResolve({filter:/^@\/components\/ui\/(dialog|select|alert-dialog|table|sidebar|sonner|dropdown-menu|tabs)$/},()=>({path:STUB}));b.onResolve({filter:/^recharts$/},()=>({path:STUB}));b.onResolve({filter:/^react(-dom)?(\/.*)?$/},a=>({path:require.resolve(a.path,{paths:[NM]})}))}}]};
 await esbuild.build({...common,entryPoints:[W+'scripts/preview/kaydir-entry.tsx'],platform:'node',format:'cjs',outfile:tmp+'/ssr.cjs'});
 await esbuild.build({...common,entryPoints:[W+'scripts/preview/kaydir-client.tsx'],platform:'browser',format:'iife',outfile:tmp+'/client.js'});
+await esbuild.build({...common,entryPoints:[W+'scripts/preview/kaydir-chrome.ts'],platform:'browser',format:'iife',outfile:tmp+'/chrome.js'});
+const chromeJs=fs.readFileSync(tmp+'/chrome.js','utf8');
 const S=require(tmp+'/ssr.cjs');const clientJs=fs.readFileSync(tmp+'/client.js','utf8');
 const css=fs.readdirSync(W+'app/styles').sort().map(f=>fs.readFileSync(W+'app/styles/'+f,'utf8')).join('').replace(/@import[^;]*;/g,'').replace(/@theme inline\{[^\n]*\n/,'');
 const reset='*,::before,::after{box-sizing:border-box;border-width:0;border-style:solid}button,input,select,textarea{font:inherit;color:inherit;background-color:transparent;border-radius:0}button{cursor:pointer}ol,ul{list-style:none;margin:0;padding:0}h1,h2,h3,h4,p,dl,dd,figure{margin:0}a{color:inherit;text-decoration:inherit}img,svg{display:block}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}hr{border:0;border-top:1px solid #8884;margin:4px 0}';
@@ -27,7 +29,7 @@ const screens=[
  ['cozum-kisa',()=>S.kart('q0'),1],['cozum-uzun',()=>S.kart('q1'),1],['cozumsuz',()=>S.kart('q2'),1],['cozum-yanlis-sik',()=>S.kart('q0',{pick:'D',mark:'bilemedim'}),1],['cozum-okunamadi',()=>S.kart('q3'),1],
  ['bitis',()=>S.bitis({hard:true,early:3}),6],
 ];
-const sizes=[[390,844],[768,1024],[1100,800],[1440,900]];const only=process.env.ONLY;
+const sizes=[[320,640],[390,844],[768,1024],[1100,800],[1440,900]];const only=process.env.ONLY;
 const measure=([kind])=>{const vis=e=>{const r=e.getBoundingClientRect(),cs=getComputedStyle(e);return r.width>0&&r.height>0&&cs.visibility!=='hidden'&&cs.display!=='none'&&!e.closest('[hidden]')};
  const cw=document.documentElement.clientWidth,mob=cw<768;const feed=document.querySelector('.sw-feed');const bar=document.querySelector('.mobile-bar'),top=document.querySelector('.topbar');
  const fr=feed?feed.getBoundingClientRect():null;const arts=[...document.querySelectorAll('.sw-feed>article')];
@@ -48,7 +50,7 @@ const fake=(writes=[])=>r=>{const rq=r.request();const body=rq.postDataJSON?.()|
 const b=await chromium.launch();const meas={};let bad=0;
 for(const [name,mk,idx,kind] of screens){if(only&&!name.includes(only))continue;const html=mk();
  for(const [w,h] of sizes)for(const dark of [false,true]){
-  const p=await open(b,w,h,wrap(html,dark));
+  const p=await open(b,w,h,wrap(html,dark));await p.addScriptTag({content:chromeJs});await p.evaluate(()=>window.__watchChrome());await p.waitForTimeout(60);
   await p.evaluate(i=>{const f=document.querySelector('.sw-feed');if(f)f.scrollTo({top:i*f.clientHeight,behavior:'instant'})},idx);await p.waitForTimeout(60);
   const key=`${name}-${w}-${dark?'koyu':'acik'}`;const m=await p.evaluate(measure,[kind||'feed']);meas[key]=m;
   const fail=m.tasma||!m.kartOturuyor||m.kirikDugme.length||m.kucukHedef.length||m.kirpilan.length||m.birincil>1||(m.goruntuAlani&&(m.goruntuAlani.ust<-1||m.goruntuAlani.alt<-1))||m.sayfaKayar&&kind!=='start';
