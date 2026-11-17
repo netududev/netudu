@@ -3,10 +3,11 @@
 import * as React from 'react';
 const P=({children}:any)=><>{children}</>;
 export const Dialog=P,DialogContent=({className,children}:any)=><div data-slot="dialog-content" className={className}>{children}</div>,DialogHeader=P,DialogTitle=({children}:any)=><h2>{children}</h2>,DialogDescription=({children}:any)=><p>{children}</p>,DialogFooter=P,DialogTrigger=P,DialogClose=P;
-export const AlertDialog=P,AlertDialogContent=P,AlertDialogHeader=P,AlertDialogTitle=P,AlertDialogDescription=P,AlertDialogFooter=P,AlertDialogAction=P,AlertDialogCancel=P,AlertDialogTrigger=P;
-export const Select=P,SelectTrigger=({children}:any)=><div className="choice">{children}</div>,SelectValue=()=>null,SelectContent=()=>null,SelectItem=()=>null;
+export const AlertDialog=P,AlertDialogContent=()=>null,AlertDialogHeader=P,AlertDialogTitle=P,AlertDialogDescription=P,AlertDialogFooter=P,AlertDialogAction=P,AlertDialogCancel=P,AlertDialogTrigger=P;
+const SelCtx=React.createContext<string>('');
+export const Select=({value,children}:any)=><SelCtx.Provider value={value??''}>{children}</SelCtx.Provider>,SelectTrigger=({children}:any)=><div className="choice">{children}</div>,SelectValue=()=>{const v=React.useContext(SelCtx);return <span>{v}</span>},SelectContent=()=>null,SelectItem=()=>null;
 export const Table=({children,className}:any)=><table className={className} style={{width:'100%',borderCollapse:'collapse'}}>{children}</table>,TableHeader=({children}:any)=><thead>{children}</thead>,TableBody=({children}:any)=><tbody>{children}</tbody>,TableRow=({children,className}:any)=><tr className={className}>{children}</tr>,TableHead=({children,className}:any)=><th className={className} style={{textAlign:'left',padding:'10px 12px'}}>{children}</th>,TableCell=({children,className}:any)=><td className={className} style={{padding:'10px 12px'}}>{children}</td>;
-export const toast:any=Object.assign(()=>{},{error(){},success(){},message(){}});
+export const toast:any=Object.assign(()=>{},{error(){},success(){},message(){},warning(){}});
 export const Toaster=()=>null;
 const Ctx=React.createContext<any>({isMobile:false,setOpenMobile(){}});
 export const useSidebar=()=>React.useContext(Ctx);
@@ -23,3 +24,10 @@ export const SidebarTrigger=()=><button data-slot="sidebar-trigger" className="s
 // recharts düz karşılıkları (grafik çizilmez; yalnız yerleşim kutusu)
 export const ResponsiveContainer=({children,height}:any)=><div className="chart-stub" style={{width:'100%',height:height||240}}>{children}</div>;
 export const LineChart=()=>null,BarChart=()=>null,Line=()=>null,Bar=()=>null,XAxis=()=>null,YAxis=()=>null,Tooltip=()=>null,CartesianGrid=()=>null;
+
+// Açılır menü düz karşılığı: tetikleyici olduğu gibi çizilir, içerik gizli (hidden) bir kapta durur; önizleme betiği açık hâli için hidden'ı kaldırır
+export const DropdownMenu=P,DropdownMenuTrigger=({children}:any)=><>{children}</>,DropdownMenuContent=({children,className}:any)=><div data-slot="dropdown-menu-content" role="menu" className={className} hidden>{children}</div>,DropdownMenuItem=({children,disabled,variant,className}:any)=><div data-slot="dropdown-menu-item" role="menuitem" data-variant={variant||'default'} aria-disabled={disabled?'true':undefined} className={className}>{children}</div>,DropdownMenuSeparator=()=><hr/>;
+
+// Sekmeler düz karşılığı: yalnız etkin sekmenin içeriği çizilir
+const TabsCtx=React.createContext<string>('');
+export const Tabs=({children,value,defaultValue}:any)=><TabsCtx.Provider value={value??defaultValue??''}><div data-slot="tabs">{children}</div></TabsCtx.Provider>,TabsList=({children,className}:any)=><div role="tablist" className={className}>{children}</div>,TabsTrigger=({children,value}:any)=>{const cur=React.useContext(TabsCtx);return <button role="tab" aria-selected={cur===value} data-state={cur===value?'active':'inactive'}>{children}</button>},TabsContent=({children,value}:any)=>{const cur=React.useContext(TabsCtx);return cur===value?<div role="tabpanel">{children}</div>:null};

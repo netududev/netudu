@@ -10,7 +10,7 @@ const W=process.env.ND_ROOT+'/',MODE=process.env.MODE||'sonraki',OUT=process.env
 const SRC=process.env.SRC_ROOT?process.env.SRC_ROOT+'/':W; // bileşen/stub kaynağı (before-frame.tsx ve entry)
 const tmp=fs.mkdtempSync('/tmp/nd-shell-');const STUB=SRC+'scripts/preview/ui-stubs.tsx';
 await esbuild.build({entryPoints:[SRC+'scripts/preview/'+(MODE==='onceki'?'shell-entry-onceki.tsx':'shell-entry.tsx')],bundle:true,platform:'node',format:'cjs',outfile:tmp+'/ssr.cjs',jsx:'automatic',logLevel:'error',define:{'process.env.NODE_ENV':'"production"'},nodePaths:[NM],
- alias:{'@':W.replace(/\/$/,''),'sonner':STUB},plugins:[{name:'stubs',setup(b){b.onResolve({filter:/^@\/components\/ui\/(dialog|select|alert-dialog|table|sidebar|sonner)$/},()=>({path:STUB}));b.onResolve({filter:/^recharts$/},()=>({path:STUB}));b.onResolve({filter:/^@\/docs\/proof\//},a=>({path:SRC+a.path.slice(2)+'.tsx'}));b.onResolve({filter:/^react(-dom)?(\/.*)?$/},a=>({path:require.resolve(a.path,{paths:[NM]})}))}}]});
+ alias:{'@':W.replace(/\/$/,''),'sonner':STUB},plugins:[{name:'stubs',setup(b){b.onResolve({filter:/^@\/components\/ui\/(dialog|select|alert-dialog|table|sidebar|sonner|dropdown-menu|tabs)$/},()=>({path:STUB}));b.onResolve({filter:/^recharts$/},()=>({path:STUB}));b.onResolve({filter:/^@\/docs\/proof\//},a=>({path:SRC+a.path.slice(2)+'.tsx'}));b.onResolve({filter:/^react(-dom)?(\/.*)?$/},a=>({path:require.resolve(a.path,{paths:[NM]})}))}}]});
 const S=require(tmp+'/ssr.cjs');
 const parts=fs.readdirSync(W+'app/styles').sort().map(f=>fs.readFileSync(W+'app/styles/'+f,'utf8')).join('');
 const css=parts.replace(/@import[^;]*;/g,'').replace(/@theme inline\{[^\n]*\n/,'');

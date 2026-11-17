@@ -18,9 +18,10 @@ import {Landing,type AuthMode} from './study/landing';
 import {BootScreen} from './study/logo';
 import {ArchiveView} from './study/archive';
 import {ReportView} from './study/report';
-import {ExamsView} from './study/exams';
+import {ExamsView,focusExamForm} from './study/exams';
 import {SettingsView} from './study/settings';
 import {NotesView} from './study/notes';
+import {SwipeView} from './study/swipe/swipe-view';
 import {UploadDialog} from './study/upload-dialog';
 import {QuestionDialog} from './study/question-dialog';
 // Açılış kapısı: logo animasyonunun bitişi (.logo-anim wordmark .86s+.3s=1.16s; .boot .1s+.25s=.35s) + ~250ms nefes payı (globals.css ile birlikte güncelle)
@@ -96,15 +97,16 @@ export default function StudyApp(){
  if(authed===false)return <><Toaster position="top-center"/>{authMode?<AuthScreen initialMode={authMode} onBack={()=>setAuthMode(null)} onDone={()=>{setAuthed(null);setAuthMode(null);void load()}}/>:<Landing onAuth={setAuthMode}/>}</>;
  const examDays=daysUntil(profile.examDate);
  return <StudyContext.Provider value={study}><Toaster position="top-center"/>
- <AppFrame view={view} setView={setView} plan={plan} due={due} rows={rows} profile={profile} user={user} examDays={examDays} error={error} onRetry={()=>void load()} openUpload={()=>openUpload()} openWizard={()=>setWizard(true)} onPrint={()=>print()} setSubject={setSubject}>
+ <AppFrame view={view} setView={setView} plan={plan} due={due} rows={rows} loading={loading} profile={profile} user={user} examDays={examDays} error={error} onRetry={()=>void load()} openUpload={()=>openUpload()} openWizard={()=>setWizard(true)} onPrint={()=>print()} setSubject={setSubject} month={month} setMonth={setMonth} onAddExam={focusExamForm}>
  {view==='home'&&<TodayView/>}
  {view==='program'&&<ProgramView/>}
  {view==='resources'&&<ResourcesView/>}
- {view==='archive'&&<ArchiveView subject={subject} setSubject={setSubject} filteredRef={filteredRef}/>}
- {view==='report'&&<ReportView month={month} setMonth={setMonth} notes={notes} setNotes={setNotes} goals={goals} setGoals={setGoals} onPrint={()=>print()}/>}
+ {view==='archive'&&<ArchiveView subject={subject} setSubject={setSubject} filteredRef={filteredRef} onPrint={()=>print()}/>}
+ {view==='report'&&<ReportView month={month} notes={notes} setNotes={setNotes} goals={goals} setGoals={setGoals} onPrint={()=>print()}/>}
  {view==='exams'&&<ExamsView/>}
  {view==='notes'&&<NotesView preset={notesPreset}/>}
  {view==='settings'&&<SettingsView/>}
+ {view==='swipe'&&<SwipeView/>}
  </AppFrame>
  <UploadDialog open={upload} files={uploadFiles} preset={uploadPreset} onClose={()=>setUpload(false)}/>
  <PlanWizard open={wizard} onClose={()=>setWizard(false)}/>

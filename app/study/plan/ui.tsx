@@ -29,7 +29,7 @@ export function LessonActions({day,compact=false}:{day:DayPlan;compact?:boolean}
  const noteBtn=l&&<button className="secondary" onClick={()=>{const sub=noteSubject(l.subj);s.openNotes({subject:sub,topic:resolveTopic(sub,l.topic),examType:'TYT'})}}><NotebookPen size={16}/> Ders notu hazırla</button>;
  const share=<a className="text-button" href={telegramUrl(dayShareText(day))} target="_blank" rel="noreferrer"><Send size={15}/> Paylaş</a>;
  return <div className={'lesson-actions'+(compact?' compact':'')}>
-  {l&&<button className={isDone?'secondary':'primary'} onClick={()=>void s.planOp({action:isDone?'undone':'done',lesson:l.index},isDone?'Ders yeniden açıldı.':'Ders tamamlandı.')}>{isDone?<><Undo2 size={16}/> Geri al</>:<><Check size={16}/> Tamamla</>}</button>}
+  {l&&<button className={isDone||compact?'secondary':'primary'} onClick={()=>void s.planOp({action:isDone?'undone':'done',lesson:l.index},isDone?'Ders yeniden açıldı.':'Ders tamamlandı.')}>{isDone?<><Undo2 size={16}/> Geri al</>:<><Check size={16}/> Tamamla</>}</button>}
   {day.isOff?<button className="secondary" onClick={()=>void s.planOp({action:'unshift',slot:day.slot},'Kaydırma geri alındı.')}><Undo2 size={16}/> Kaydırmayı geri al</button>:l&&!isDone&&<button className="secondary" onClick={()=>void s.planOp({action:'shift',slot:day.slot},'Ders yarına kaydırıldı; program bir gün uzadı.')} title="Bugün çalışamayacaksan dersler bir gün ileri kayar"><Umbrella size={16}/> Günü kaydır</button>}
   {l&&<button className="secondary" onClick={()=>s.openLessonVideo(l)}><Play size={16}/> {compact?'Video':`Videoyu izle · ${l.teacher.split(/[&/]/)[0].trim()}`}</button>}
   {!compact&&<details className="la-more"><summary>Daha fazla</summary><div>{askBtn}{noteBtn}{share}</div></details>}
