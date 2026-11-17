@@ -3,7 +3,7 @@
 // sorgularını, kimlik doğrulama (Authentication) işlemlerini, çoklu çalışma alanı (Tenant) yönetimini
 // ve soru fotoğrafı depolamasını Supabase üzerinden çalıştırır; yerel D1 ile senkronize tutar.
 
-import {putObject,getObject} from './supabase-storage';
+import {putObject,getObject,STORAGE_BUCKET} from './supabase-storage';
 
 export type SupabaseConfig={url:string;key:string;source:'env'|'runtime'};
 
@@ -79,7 +79,7 @@ export function getSupabaseConfig(envObj?:Record<string,unknown>):SupabaseConfig
  return null;
 }
 
-export const SUPABASE_BUCKET_NAME='question-images';
+export const SUPABASE_BUCKET_NAME=STORAGE_BUCKET;
 
 function headers(cfg:SupabaseConfig,extra?:Record<string,string>):Record<string,string>{
  const base:Record<string,string>={
@@ -859,11 +859,11 @@ export function createSupabaseD1(cfg:SupabaseConfig,fallback:D1Database|null):D1
 }
 
 // Supabase Storage bağdaştırıcısı (R2Bucket uyumlu); ayrıntı lib/supabase-storage.ts içinde.
-// put başarısızsa StorageError (502) fırlatır; get bulunamazsa null döner.
+// put başarısızsa StorageError fırlatır (route: ağ/5xx => 502, Supabase 4xx => 424); get bulunamazsa null döner.
 export function createSupabaseBucket(cfg:SupabaseConfig,fallback:R2Bucket|null):R2Bucket{
  const hdr=(extra?:Record<string,string>)=>headers(cfg,extra);
  return {
-  async put(key:string,value:Uint8Array|ArrayBuffer|ReadableStream|string,options?:{httpMetadata?:{contentType?:string}}){
+  async put(key:string,value:Uint8Array|ArrayBuffer|string,options?:{httpMetadata?:{contentType?:string}}){
    const contentType=options?.httpMetadata?.contentType||'application/octet-stream';
    await putObject(cfg,hdr,key,value,contentType,fallback as any);
    return null as unknown as R2Object;
