@@ -42,9 +42,18 @@ test('Bugün: plan yokken tekrarlar ve cümle eski iki sütunlu dashboard-grid i
   const S=await load();const h=S.bugunBos();
   assert.doesNotMatch(h,/class="td-columns"/);assert.match(h,/class="dashboard-grid"/);
 });
-test('Bugün: gün tamamsa .td-focus.is-done ve kum ışıma sınıfı',{skip},async()=>{
-  const S=await load();const h=S.bugun({doneToday:true});
-  assert.match(h,/class="td-focus is-done/);
+// Gün tamamlanma, tekrar sorularından bağımsız denetlenir (rows:[]) ve sahte saatle haftanın 7 gününde koşar;
+// örnek soruların next_review tarihi sabit olduğundan gerçek tarihe bağlı olmamalıdır.
+test('Bugün: gün tamamsa .td-focus.is-done ve kum ışıma sınıfı (haftanın 7 günü, sabit saat)',{skip},async()=>{
+  const RealDate=Date;
+  try{
+    for(let d=16;d<=22;d++){ // 2026-11-16 Pzt .. 2026-11-22 Paz
+      const fixed=new RealDate(2026,10,d,12,0,0).getTime();
+      globalThis.Date=class extends RealDate{constructor(...a){a.length?super(...a):super(fixed)}static now(){return fixed}};
+      S=null;const SS=await load();const h=SS.bugun({doneToday:true,rows:[]});
+      assert.match(h,/class="td-focus is-done/,'2026-11-'+d);
+    }
+  }finally{globalThis.Date=RealDate;S=null}
 });
 test('Program: 7 gün sekmesi, tam bir seçili kart; kartlardaki Tamamla ikincil, ekranda birincil yok',{skip},async()=>{
   const S=await load();const h=S.program({resources:S.sampleResources});
