@@ -17,12 +17,13 @@ export function resultNote(q:Question,tier:Tier,outcome:Outcome,repeat:boolean):
   const next=scheduleReview(q.review_stage,'doğru').nextReview;return next?`Bir sonraki tekrar ${longDay(next)}.`:'Bu soru öğrenildi olarak işaretlenecek.';
 }
 export const outcomeLabel=(o:Outcome|null)=>o==='bildim'?'Bildim':o==='bilemedim'?'Bilemedim':'Atlandı';
+const oldSending=new Set<string>();// modül düzeyi: eski gün kayıtlarını şu an gönderen kullanıcılar
 export type SwipeApi=ReturnType<typeof useSwipeSession>;
 
 export function useSwipeSession(){
   const s=useStudy();const sRef=useRef(s);sRef.current=s;
   const uid=s.user?.id||s.user?.email||'anon';const uidRef=useRef(uid);uidRef.current=uid;
-  const [sess,setSess]=useState<SwipeSession|null>(null),[saved,setSaved]=useState<SwipeSession|null>(null),[picks,setPicks]=useState<Record<number,string>>({}),[learned,setLearned]=useState<Set<string>>(new Set()),[live,setLive]=useState(''),[online,setOnline]=useState(true),[epoch,setEpoch]=useState(0);
+  const [sess,setSess]=useState<SwipeSession|null>(null),[saved,setSaved]=useState<SwipeSession|null>(null),[picks,setPicks]=useState<Record<number,string>>({}),[learned,setLearned]=useState<Set<string>>(new Set()),[live,setLive]=useState(''),[online,setOnline]=useState(true),[epoch,setEpoch]=useState(0),[,setSentTick]=useState(0);
   const sessRef=useRef<SwipeSession|null>(null);const activeRef=useRef(false);const picksRef=useRef<Record<number,string>>({});const inflight=useRef(new Set<string>());const hideSent=useRef(new Set<string>());const learnedRef=useRef(new Set<string>());const loaded=useRef(false);
   const map=()=>new Map(sRef.current.rows.map(q=>[q.id,q]));
   // Oturum bellekte (sessRef) çıkıştan sonra da güncel kalır; ekranda yalnız etkinken (activeRef) görünür
@@ -47,14 +48,15 @@ export function useSwipeSession(){
     if(typeof navigator!=='undefined'&&navigator.onLine===false)return;
     const c=sessRef.current;if(!c)return;
     const list:{id:string;review:Review;cur:boolean}[]=duePending(c.pending).filter(p=>!inflight.current.has(p.id)).map(p=>({id:p.id,review:p.review,cur:false}));
-    if(c.current&&c.mark&&!c.results[c.current]?.first&&!hideSent.current.has(c.current)&&!inflight.current.has(c.current)&&!list.some(p=>p.id===c.current)){const rev=shouldWrite(c.tiers[c.current]??'B',c.mark);if(rev){list.push({id:c.current,review:rev,cur:true});hideSent.current.add(c.current)}}
+    if(c.current&&c.mark&&!c.results[c.current]?.first&&!hideSent.current.has(c.current)&&!inflight.current.has(c.current)&&!list.some(p=>p.id===c.current)){const rev=shouldWrite(c.tiers[c.current]??'B',c.mark);if(rev){list.push({id:c.current,review:rev,cur:true});hideSent.current.add(c.current);setSentTick(t=>t+1)}}
     for(const p of list){
       inflight.current.add(p.id);
       void(async()=>{let ok=false;
         try{const r=await fetch(`/api/questions/${p.id}`,{method:'PATCH',keepalive:true,credentials:'include',headers:authHeaders({'Content-Type':'application/json'}),body:JSON.stringify({review:p.review})});ok=r.ok||r.status===404;if(r.ok){try{sRef.current.upsert((await r.json()).question)}catch{}}}catch{}
         inflight.current.delete(p.id);const cur=sessRef.current;if(!cur)return;
         if(!p.cur)commit({...cur,pending:afterAttempt(cur.pending,p.id,ok)});
-        else if(!ok){if(cur.current===p.id)hideSent.current.delete(p.id);else commit({...cur,pending:addPending(cur.pending,p.id,p.review)})}// kart terk edilmişse sonuç şimdi bekleyene girer
+        else if(!ok){hideSent.current.delete(p.id);// kayıt artık "gönderildi" sayılmaz: sonraki leave() onu silmemeli
+          if(!(cur.current===p.id&&!cur.results[p.id]?.first))commit({...cur,pending:addPending(cur.pending,p.id,p.review)})}// kart terk edilmişse (ya da oturum değişmişse) sonuç şimdi bekleyene girer; hâlâ güncel ve işlenmemişse leave() ekler
       })();
     }
   },[commit]);
@@ -63,8 +65,9 @@ export function useSwipeSession(){
   useEffect(()=>{
     if(s.loading||loaded.current)return;loaded.current=true;const st=store(),day=today();
     setSaved(loadSession(st,uid,day,s.rows.map(q=>q.id)));
-    const old=collectPending(st,uid,day);purgeOldSessions(st,uid,day,true);if(!old.length)return;
-    void(async()=>{for(const o of old)for(const p of o.pending){let ok=false;try{const d=await postJson(`/api/questions/${p.id}`,{review:p.review},'PATCH');sRef.current.upsert(d.question);ok=true}catch(e){ok=e instanceof ApiError&&e.status===404}settleOldSessions(st,uid,day,o.day,p.id,ok)}})();
+    const old=collectPending(st,uid,day);purgeOldSessions(st,uid,day,true);if(!old.length||oldSending.has(uid))return;// görünümden çıkıp dönünce aynı gönderim ikinci kez başlamaz
+    oldSending.add(uid);
+    void(async()=>{try{for(const o of old)for(const p of o.pending){let ok=false;try{const d=await postJson(`/api/questions/${p.id}`,{review:p.review},'PATCH');sRef.current.upsert(d.question);ok=true}catch(e){ok=e instanceof ApiError&&e.status===404}settleOldSessions(st,uid,day,o.day,p.id,ok)}}finally{oldSending.delete(uid)}})();
   },[s.loading,s.rows,uid]);
   useEffect(()=>{
     setOnline(typeof navigator==='undefined'||navigator.onLine!==false);
@@ -84,17 +87,20 @@ export function useSwipeSession(){
   };
   const next=useCallback(()=>{const c=sessRef.current;if(!c||!c.current)return;commit(advance(leave(c),map()));flush()},[commit,flush]);// eslint-disable-line react-hooks/exhaustive-deps
   // Her açılış (başla / devam / bitiş kartı eylemleri) yeni bir epoch: Feed anahtarı değişir, akış baştan kurulur; hideSent oturumla sıfırlanır
-  const open=(n:SwipeSession)=>{activeRef.current=true;hideSent.current.clear();resetPicks();setSaved(null);setEpoch(e=>e+1);commit(n)};
+  const open=(n:SwipeSession)=>{activeRef.current=true;setLive('');hideSent.current.clear();resetPicks();setSaved(null);setEpoch(e=>e+1);commit(n)};
   const begin=(n:SwipeSession)=>open(advance({...n,pending:sessRef.current?.pending??saved?.pending??[]},map()));
   const start=useCallback((o:PoolOptions)=>{const r=startSession(sRef.current.rows,today(),o);if(!r.queue.length)return false;begin(r);return true},[saved]);// eslint-disable-line react-hooks/exhaustive-deps
   const resume=useCallback(()=>{const base=sessRef.current??saved;if(!base)return;let n=reclassify(base,map(),today());if(!n.current)n=advance(n,map());open(n)},[saved]);// eslint-disable-line react-hooks/exhaustive-deps
   const exit=useCallback(()=>{
-    const c=sessRef.current;if(!c)return;const n={...leave(c),current:null};
-    commit(n);flush();activeRef.current=false;setSess(null);resetPicks();setSaved(n.queue.length?n:null);
+    const c=sessRef.current;if(!c)return;
+    // Çıkış kart geçişi değildir: işaretsiz güncel kart olduğu gibi kalır (atlandı sayılmaz), devam aynı karttan sürer; işaretliyse sonuç işlenir ve sonraki karta geçilir
+    const n=c.current&&!c.mark?c:advance(leave(c),map());
+    commit(n);flush();activeRef.current=false;setSess(null);resetPicks();setSaved(n.queue.length||n.current?n:null);
   },[commit,flush]);// eslint-disable-line react-hooks/exhaustive-deps
   const mark=useCallback((o:Outcome)=>{
     const c=sessRef.current;if(!c||!c.current)return;const q=map().get(c.current);if(!q)return;
-    commit(markCurrent(c,o));setLive(`${outcomeLabel(o)}. ${resultNote(q,c.tiers[q.id]??'B',o,!!c.results[q.id]?.first)}`);
+    commit(markCurrent(c,o));// gizlemede gönderilen sonuç sunucuda kalır: sonradan değiştirmek yalnız yereli etkiler
+    setLive(`${outcomeLabel(o)}. ${resultNote(q,c.tiers[q.id]??'B',o,!!c.results[q.id]?.first||hideSent.current.has(q.id))}`);
   },[commit]);// eslint-disable-line react-hooks/exhaustive-deps
   // Şık dokunuşu: seçimi kilitler ve doğru → Bildim, yanlış → Bilemedim işaretler
   const pick=useCallback((i:number,letter:string,key:string)=>{if(picksRef.current[i])return;picksRef.current={...picksRef.current,[i]:letter};setPicks(picksRef.current);mark(letter===key?'bildim':'bilemedim')},[mark]);
@@ -112,5 +118,5 @@ export function useSwipeSession(){
   const restartWithLearned=useCallback(()=>{const c=sessRef.current;if(!c)return;const r=startSession(sRef.current.rows,today(),{subject:c.subject,scope:'all',includeLearned:true});if(r.queue.length)begin(r)},[]);// eslint-disable-line react-hooks/exhaustive-deps
   const retryStruggled=useCallback(()=>{const c=sessRef.current;if(!c)return;const ids=new Set(Object.entries(c.results).filter(([,r])=>r.first==='bilemedim').map(([id])=>id));
     const pool=buildPool(sRef.current.rows.filter(q=>ids.has(q.id)),today(),{subject:'Tüm dersler',scope:'all',includeLearned:true});if(pool.length)begin(fresh(pool,'Tüm dersler',true))},[]);// eslint-disable-line react-hooks/exhaustive-deps
-  return {session:sess,epoch,saved,rows:map(),picks,learned,live,setLive,online,failed,start,resume,exit,next,mark,pick,markLearned,continueEarly,restartWithLearned,retryStruggled,earlyCount:(c:SwipeSession)=>earlyPool(c).length,learnedCount:(c:SwipeSession)=>learnedPool(c).length};
+  return {session:sess,epoch,sentFirst:(id:string)=>hideSent.current.has(id),saved,rows:map(),picks,learned,live,setLive,online,failed,start,resume,exit,next,mark,pick,markLearned,continueEarly,restartWithLearned,retryStruggled,earlyCount:(c:SwipeSession)=>earlyPool(c).length,learnedCount:(c:SwipeSession)=>learnedPool(c).length};
 }

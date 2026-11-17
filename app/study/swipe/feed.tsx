@@ -38,7 +38,7 @@ export function Feed({w,onHome}:{w:SwipeApi;onHome:()=>void}){
     const i=active>>1;const q=w.rows.get(ss.history[i]??'');
     if(q&&active<tail)setMsg(`${active%2?'Çözüm':'Soru'} ${i+1} / ${total}: ${q.subject}, ${q.topic}`);else if(active===tail&&!hasCurrent)setMsg('Oturum bitti.');
     const nx=ss.queue[0]?w.rows.get(ss.queue[0]):null;if(nx?.image_key&&typeof Image!=='undefined')new Image().src=`/api/questions/${nx.id}/image`;
-  },[active,H]);// eslint-disable-line react-hooks/exhaustive-deps
+  },[active,H,hasCurrent]);// eslint-disable-line react-hooks/exhaustive-deps
   useEffect(()=>()=>{if(timer.current)clearTimeout(timer.current)},[]);
   useEffect(()=>{if(w.live)setMsg(w.live)},[w.live]);
 
@@ -82,7 +82,7 @@ export function Feed({w,onHome}:{w:SwipeApi;onHome:()=>void}){
     return <React.Fragment key={idx}>{idx%2===0
       ?<QuestionCard meta={meta} headRef={hd} current={isCur} picked={w.picks[i]??null} hint={i<HINT_CARDS} onClose={w.exit} onShowSolution={()=>goTo(idx+1)} onPick={pickLetter}/>
       :<SolutionCard meta={meta} headRef={hd} current={isCur} mark={isCur?ss.mark:null} result={ss.results[q.id]} picked={w.picks[i]??null} learned={w.learned.has(q.id)} online={w.online}
-        note={isCur&&ss.mark?resultNote(q,ss.tiers[q.id]??'B',ss.mark,!!ss.results[q.id]?.first):''}
+        note={isCur&&ss.mark?resultNote(q,ss.tiers[q.id]??'B',ss.mark,!!ss.results[q.id]?.first||w.sentFirst(q.id)):''}
         onClose={w.exit} onMark={o=>doMark(o,true)} onChange={change} onNext={()=>goTo(idx+1)} onLearned={()=>void w.markLearned(q)}/>}</React.Fragment>;
   });
   return <><div className="sw-feed" role="feed" aria-label="Kaydır Çöz soruları" aria-busy="false" ref={feedRef} tabIndex={-1}>{cards}</div>

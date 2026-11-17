@@ -36,9 +36,11 @@ async function page(o={}){
   const modes=o.modes??{};const writes=[];let ROWS=[];
   const chrome=o.chrome?'<header class="topbar" style="height:70px">üst</header><nav class="mobile-bar" id="bar" style="height:80px">alt</nav>':'';
   const html=`<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${reset}</style><style>${css}</style><style>${calm}</style></head><body>${chrome}<main class="workspace"><div class="view" data-view="swipe" data-width="wide" id="root"></div></main><script>${clientJs.replace(/<\/script>/g,'<\\/script>')}</script></body></html>`;
-  await p.route('http://nd.test/**',r=>{const u=new URL(r.request().url()),m=r.request().method();
+  await p.route('http://nd.test/**',async r=>{const u=new URL(r.request().url()),m=r.request().method();
     if(/\/image$/.test(u.pathname))return r.fulfill({contentType:'image/svg+xml',body:svg});
     if(m==='PATCH'&&u.pathname.startsWith('/api/')){const id=u.pathname.split('/')[3];const body=r.request().postDataJSON();writes.push({id,body});const mode=typeof modes[id]==='function'?modes[id]():(modes[id]??'ok');
+      if(mode==='slow500'){await new Promise(f=>setTimeout(f,1500));return r.fulfill({status:500,contentType:'application/json',body:'{"error":"x"}'})}
+      if(mode==='slow')await new Promise(f=>setTimeout(f,800));
       if(mode==='abort')return r.abort();if(mode==='500')return r.fulfill({status:500,contentType:'application/json',body:'{"error":"x"}'});
       if(mode==='same')return r.fulfill({contentType:'application/json',body:JSON.stringify({question:ROWS.find(q=>q.id===id)})});
       return r.fulfill({contentType:'application/json',body:JSON.stringify({question:{...ROWS.find(q=>q.id===id),review_stage:2,next_review:'2099-01-01'}})})}
@@ -126,4 +128,48 @@ test('5: üst çubuk ve mobil alt çubuk yüksekliği ölçülüp --sw-top/--sw-
   assert.deepEqual(await v(),['70px','80px']);
   await p.evaluate(()=>{document.getElementById('bar').style.height='96px'});await p.waitForTimeout(300);assert.deepEqual(await v(),['70px','96px']);
   await ctx.close();
+});
+
+const live=p=>p.evaluate(()=>document.querySelector('.sr-only[role=status]')?.textContent||'');
+test('11: gizlemede gönderilen güncel kart yavaş başarısız olur, kart terk edilir: sonuç kaybolmaz, sonraki geçişte yeniden gider',async()=>{
+  const {p,writes,ctx,modes}=await page();await p.getByRole('button',{name:'Başla'}).click();await p.waitForSelector('.sw-feed');await p.waitForTimeout(200);await press(p,'ArrowDown',500);await press(p,'1',150);
+  const id=(await sessionOf(p)).current;modes[id]='slow500';
+  await hide(p);await hide(p,'visible');await press(p,'ArrowDown',600);
+  let s=await sessionOf(p);assert.deepEqual(s.pending,[],'gizleme gönderdi, terk: pending boş');
+  await p.waitForTimeout(1800);s=await sessionOf(p);assert.deepEqual(s.pending.map(x=>x.id),[id],'yavaş başarısızlık: terk edilmiş kart bekleyene girer: '+JSON.stringify(s.pending));
+  const w0=writes.filter(w=>w.id===id).length;
+  await press(p,'ArrowDown',500);await press(p,'1',150);await press(p,'ArrowDown',600);
+  assert.ok(writes.filter(w=>w.id===id).length>w0,'sonraki geçişte yeniden gönderildi: '+JSON.stringify(writes));
+  s=await sessionOf(p);assert.ok(s.pending.some(x=>x.id===id),'kayıt silinmedi');await ctx.close();
+});
+test('12: Esc işaretlenmemiş kartı atlamaz; devam aynı karttan sürer, skips 0, sayaç şişmez',async()=>{
+  const {p,ctx}=await page();await p.getByRole('button',{name:'Başla'}).click();await p.waitForSelector('.sw-feed');await p.waitForTimeout(200);
+  await press(p,'Escape',300);let s=await sessionOf(p);const id=s.current,total=s.queue.length+1;
+  assert.ok(id,'güncel kart korunur');assert.ok(!Object.values(s.results).some(r=>r.skips>0),'atlandı sayılmadı: '+JSON.stringify(s.results));
+  const btn=p.getByRole('button',{name:/Kaldığın yerden devam et/});assert.equal((await btn.textContent()).replace(/\s/g,''),`Kaldığınyerdendevamet(1/${total})`);
+  await btn.click();await p.waitForSelector('.sw-feed');await p.waitForTimeout(300);s=await sessionOf(p);assert.equal(s.current,id,'aynı kart');assert.equal(s.history.length,1);
+  await press(p,'Escape',300);await p.getByRole('button',{name:/Kaldığın yerden devam et/}).click();await p.waitForTimeout(300);s=await sessionOf(p);
+  assert.equal(s.current,id);assert.ok(!Object.values(s.results).some(r=>r.skips>0),'ikinci çıkışta da atlama yok');await ctx.close();
+});
+test('12b: Esc işaretli kartı işler ve sonraki karta geçer',async()=>{
+  const {p,ctx}=await page();await startMark(p,'1');await press(p,'Escape',300);const s=await sessionOf(p);
+  assert.equal(Object.values(s.results).filter(r=>r.first==='bildim').length,1);assert.equal(s.history.length,2,'sonraki kart güncel');assert.equal(s.current,s.history[1]);await ctx.close();
+});
+test('13: son kartta bitiş kartına odak taşınır ve "Oturum bitti." duyurulur',async()=>{
+  const {p,ctx}=await page({rows:r=>r.filter(q=>q.id==='q1')});await startMark(p,'1');await press(p,'ArrowDown',900);await p.waitForSelector('.sw-end');await p.waitForTimeout(300);
+  assert.equal(await p.evaluate(()=>document.activeElement?.id),'sw-end-h');assert.equal(await live(p),'Oturum bitti.');await ctx.close();
+});
+test('14: devamda eski oturumun duyurusu görünmez',async()=>{
+  const {p,ctx}=await page();await startMark(p,'2');await press(p,'Escape',300);await p.getByRole('button',{name:/Kaldığın yerden devam et/}).click();await p.waitForTimeout(400);
+  const t=await live(p);assert.ok(!/Bilemedim\./.test(t),'eski duyuru yok: '+t);await ctx.close();
+});
+test('15: görünümden çıkıp dönünce eski gün kayıtları ikinci kez gönderilmez',async()=>{
+  const old=JSON.stringify({day:DAY_OLD,subject:'Tüm dersler',scope:'due',includeLearned:false,queue:[],current:null,history:[],mark:null,results:{},struggle:[],pending:[{id:'q0',review:'doğru',tries:0}],tiers:{}});
+  const {p,writes,ctx}=await page({local:{[`kaydir:u1:${DAY_OLD}`]:old},modes:{q0:'slow'}});
+  await p.waitForTimeout(150);await p.evaluate(()=>window.__unmount());await p.evaluate(()=>window.__mount());await p.waitForTimeout(1500);
+  assert.equal(writes.filter(w=>w.id==='q0').length,1,JSON.stringify(writes));await ctx.close();
+});
+test('16: gizlemede gönderilen sonuç sonradan değiştirilirse bildirim ilk sonucun geçerli kaldığını söyler',async()=>{
+  const {p,ctx}=await page();await startMark(p,'1');await hide(p);await p.waitForTimeout(300);await press(p,'2',200);
+  assert.match(await live(p),/ilk sonucun/);assert.match(await p.textContent('.sw-result'),/ilk sonucun/,'görünür not da');await ctx.close();
 });

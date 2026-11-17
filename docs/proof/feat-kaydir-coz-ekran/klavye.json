@@ -36,8 +36,8 @@
    {
     "adim": "oturum sonu",
     "idx": 12,
-    "odak": "sw-s-12",
-    "canli": "Çözüm 6 / 6: Fizik, Basınç",
+    "odak": "sw-end-h",
+    "canli": "Oturum bitti.",
     "bitis": true,
     "slots": 13
    },
@@ -92,8 +92,8 @@
    {
     "adim": "oturum sonu",
     "idx": 12,
-    "odak": "sw-s-12",
-    "canli": "Çözüm 6 / 6: Fizik, Basınç",
+    "odak": "sw-end-h",
+    "canli": "Oturum bitti.",
     "bitis": true,
     "slots": 13
    },
@@ -148,11 +148,11 @@
   "delta600": 1
  },
  "devam": {
-  "baslangicEkrani": "Kaldığın yerden devam et (2/8) | Baştan başla",
+  "baslangicEkrani": "Kaldığın yerden devam et (2/7) | Baştan başla",
   "devamSonrasi": {
-   "idx": 4,
-   "odak": "sw-q-5",
-   "canli": "Bilemedim. Yarın yeniden karşına gelecek."
+   "idx": 2,
+   "odak": "sw-q-3",
+   "canli": "Soru 2 / 7: Fizik, Elektrik ve manyetizma"
   }
  }
 }

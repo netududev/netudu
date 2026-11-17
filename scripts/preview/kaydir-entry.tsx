@@ -12,7 +12,7 @@ export {sampleRows};
 
 const day=today();
 const map=(rows=sampleRows)=>new Map(rows.map(q=>[q.id,q]));
-const mkW=(session:any,extra:any={})=>({session,saved:null,rows:map(),picks:{},learned:new Set(),live:'',setLive(){},online:true,failed:0,start(){return true},resume(){},exit(){},next(){},mark(){},pick(){},markLearned:async()=>{},continueEarly(){},restartWithLearned(){},retryStruggled(){},earlyCount:()=>0,learnedCount:()=>0,...extra});
+const mkW=(session:any,extra:any={})=>({session,saved:null,rows:map(),picks:{},learned:new Set(),live:'',sentFirst:()=>false,setLive(){},online:true,failed:0,start(){return true},resume(){},exit(){},next(){},mark(){},pick(){},markLearned:async()=>{},continueEarly(){},restartWithLearned(){},retryStruggled(){},earlyCount:()=>0,learnedCount:()=>0,...extra});
 // Oturum: ids sırasıyla (pickNext karıştırması yerine sabit sıra) ilk kart güncel
 const session=(ids:string[],o:any={})=>{const s0=startSession(sampleRows,day,{subject:'Tüm dersler',scope:'due',includeLearned:false});
   const base={...s0,queue:ids.slice(1),current:ids[0],history:[ids[0]],tiers:{...s0.tiers,...Object.fromEntries(ids.map(i=>[i,s0.tiers[i]??'A']))},...o};return base;};

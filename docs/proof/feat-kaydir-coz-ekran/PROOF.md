@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | PR K2: Kaydır Çöz ekranı (SwipeView, akış kabı, soru/çözüm/bitiş kartları, use-swipe-session, 99-kaydir-coz.css, gezinme girdisi + SwipeStack glifi, önizleme betiği) | görsel + mantık (karma) | 177a288..bu turun commit'i | 1 | sonnet |
 
-K1 mantığı (lib/swipe/queue.ts, session.ts, answer.ts, server.ts) DEĞİŞTİRİLMEDİ; ekran onu olduğu gibi çağırır. Yeni ekran olduğundan "önce" yoktur.
+K1 mantığı (queue.ts, answer.ts, server.ts) DEĞİŞTİRİLMEDİ; ekran onu olduğu gibi çağırır. `lib/swipe/session.ts` Tur 2'de genişledi (`settleOldSessions`, `purgeOldSessions(keepPending)`, `collectPending` tries>=3) ve Tur 3'te değişmedi. Yeni ekran olduğundan "önce" yoktur.
 
 ## İddia
 - [x] Gezinme: "Kaydır Çöz" kenar çubuğunda "Yanlış defteri"nin hemen altında, `SwipeStack` glifiyle; başlık "Kaydır Çöz." + planın açıklaması; pageActions boş; üst çubuk "Yanlış ekle" ikincil. Mobil alt çubuğa girdi EKLENMEDİ (kenar menüsü "Daha fazla"da vurgulanır).
@@ -13,11 +13,11 @@ K1 mantığı (lib/swipe/queue.ts, session.ts, answer.ts, server.ts) DEĞİŞTİ
 - [x] Soru kartında cevap anahtarı METNİ yok (yalnız A–E harfleri); şık dokunuşu cevabı kilitler, çözüm kartına kaydırır ve doğru→Bildim / yanlış→Bilemedim işaretler; görünür "Çözümü göster" düğmesi; alt ipucu yalnız ilk 3 kartta; fotoğraf alt metni transkripsiyon ya da "Soru fotoğrafı, ders, konu".
 - [x] Çözüm kartı: sonuç bandı ("Doğru cevap: B", şıkta "Sen: D", doğruda kobalt / yanlışta --destructive çerçeve), numaralı adımlar, kum zeminli kritik nokta, konu notu "Devamı"; uzun çözümde kart içi kayar (`.scroll-body`); çözümsüzde cevap anahtarı + ikincil "Yapay zekâyla çöz" (yalnız tıklamayla; kodda tek `.solve(` çağrısı düğmenin onClick'inde); `readable:false` → "Fotoğraf okunamadı"; sabit alt çubuk solda ikincil "Bilemedim", sağda tek birincil "Bildim"; işaretlenmişse "Sonucu değiştir" + "Sonraki"; ⋯ menüsü: Soruyu aç / Konu videosu / Öğrendim, artık gösterme.
 - [x] Bitiş kartı: "N soruyu geçtin", Bildim/Bilemedim/Atladın sayıları, "Sıradaki tekrar", "Çalışman gerekenler"; tek birincil "Bugüne dön"; "Bilemediklerini yeniden geç" yalnız Bilemedim>0; "Erken tekrara devam et" / "Öğrenilenler dahil baştan" yalnız havuz doluyken.
-- [x] Sonuç yazmaları arka planda gider (`PATCH {review}`), akış yanıtı beklemez; başarıda `s.upsert`; başarısız `pending`'de kalır ve sonraki kart geçişinde yeniden denenir (≤3, `duePending/afterAttempt`); `visibilitychange` + `pagehide` → `fetch(...,{keepalive:true})`; açılışta eski günlerin bekleyenleri `collectPending` ile gönderilir, hepsi gittiyse `purgeOldSessions`; oturum `kaydir:<kullanıcı>:<gün>` anahtarıyla `loadSession/saveSession` (try/catch K1'de).
+- [x] Sonuç yazmaları arka planda gider (`PATCH {review}`), akış yanıtı beklemez; başarıda `s.upsert`; başarısız `pending`'de kalır ve sonraki kart geçişinde yeniden denenir (≤3, `duePending/afterAttempt`); `visibilitychange` + `pagehide` → `fetch(...,{keepalive:true})`; açılışta eski günlerin bekleyenleri `collectPending` ile bir kez gönderilir (her deneme `settleOldSessions` ile anahtara işlenir; bekleyeni olan anahtarlar `purgeOldSessions(…,keepPending)` ile korunur, boşalan silinir); oturum `kaydir:<kullanıcı>:<gün>` anahtarıyla `loadSession/saveSession` (try/catch K1'de).
 - [x] Klavye (yalnız odak metin alanında / pencerede değilken): ↓/Boşluk/J sonraki, ↑/K önceki, A–E şık, 1 Bildim, 2 Bilemedim, Esc çık; hareket azaltılmışsa kaydırma anında ve otomatik geçiş yok; aksi hâlde işaretlemeden 400 ms sonra sonraki karta geçer.
 - [x] 99-kaydir-coz.css globals.css'in en sonunda; seçiciler `.view[data-view=swipe]` altında (belgelenmiş 2 istisna: sayfa başlığını gizleyen `.workspace:has(...)` kuralları ve portaldaki fotoğraf penceresi `.sw-viewer`); düz hex yok; `.sw-feed{height:var(--sw-h);overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y mandatory}`, `.sw-card{height:100%;scroll-snap-align:start;scroll-snap-stop:always}`, `.scroll-body{overflow-y:auto}`; mobilde alt çubuk `env(safe-area-inset-bottom)`; masaüstünde kartlar ≤560px sütunda.
-- [x] 88 ekran (11 ekran × 390/768/1100/1440 × açık/koyu): yatay taşma yok, görünür alanda tam bir kart ve kart akış kabına tam oturuyor, sayfa kaymıyor, kırılan/kırpılan düğme yok, dokunma hedefi ≥44 (şık ve alt çubuk mobilde ≥48), birincil ≤1.
-- [x] Klavye akışı (taklit ağ, gerçek SwipeView + kanca): ↓ ile çözüm kartına, 1 ile sonuca, ↓ ile sonraki soruya geçilir; oturum sonunda bitiş kartı çıkar; her Bildim için bir `PATCH {"review":"doğru"}` (6/6) arka planda gider; Esc başlangıca döner; yarım oturumda "Kaldığın yerden devam et (2/8)" çıkar ve devam sonraki karta konumlanır.
+- [x] 110 ekran (11 ekran × 320/390/768/1100/1440 × açık/koyu): yatay taşma yok, görünür alanda tam bir kart ve kart akış kabına tam oturuyor, sayfa kaymıyor, kırılan/kırpılan düğme yok, dokunma hedefi ≥44 (şık ve alt çubuk mobilde ≥48), birincil ≤1.
+- [x] Klavye akışı (taklit ağ, gerçek SwipeView + kanca): ↓ ile çözüm kartına, 1 ile sonuca, ↓ ile sonraki soruya geçilir; oturum sonunda bitiş kartı çıkar; her Bildim için bir `PATCH {"review":"doğru"}` (6/6) arka planda gider; Esc başlangıca döner; yarım oturumda "Kaldığın yerden devam et (2/7)" çıkar ve devam sonraki karta konumlanır.
 
 ## Önce
 Yeni ekran; taban dalda "Kaydır Çöz" yoktur. Önce görüntüsü yok.
@@ -27,23 +27,25 @@ Başlangıç: ![](baslangic-390-acik-sonraki.png) ![](baslangic-1440-acik-sonrak
 Soru: ![](soru-foto-390-acik-sonraki.png) ![](soru-sikli-metin-390-koyu-sonraki.png) ![](soru-foto-768-acik-sonraki.png) ![](soru-foto-1100-acik-sonraki.png)
 Çözüm: ![](cozum-kisa-390-acik-sonraki.png) ![](cozum-uzun-390-acik-sonraki.png) ![](cozumsuz-390-acik-sonraki.png) ![](cozum-okunamadi-390-acik-sonraki.png) ![](cozum-yanlis-sik-1440-koyu-sonraki.png)
 Bitiş: ![](bitis-390-acik-sonraki.png) ![](bitis-1440-koyu-sonraki.png) ![](klavye-bitis-390.png)
-Tam ölçüm: `olcum-sonraki.json` (88 ekran); klavye akışı kaydı: `klavye.json`. Fotoğraflar örnek bir SVG ile değiştirildi ("ÖRNEK GÖRSEL"); veriler örnektir.
+Tam ölçüm: `olcum-sonraki.json` (110 ekran; 320 px'ten 4 örnek görüntü: `*-320-acik-sonraki.png`); klavye akışı kaydı: `klavye.json`. Fotoğraflar örnek bir SVG ile değiştirildi ("ÖRNEK GÖRSEL"); veriler örnektir.
 
 ## Test / Ölçüm
 | Komut | Beklenen | Gerçek | Çıkış kodu | Sonuç |
 |---|---|---|---|---|
-| `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` | tümü yeşil, atlanan yok | 117 test, 117 geçti, 0 kaldı, 0 atlandı (103 + 14 yeni swipe-render; shell/css-split güncellendi) | 0 | PASS |
-| `ND_ROOT=$PWD OUT=<dizin> PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node scripts/kaydir-preview.mjs` | 88 ekranda taşma/kırık/küçük hedef/sayfa kayması yok, birincil ≤1, tek kart oturuyor | 88/88 temiz (taşma 0, kırılan-kırpılan-küçük hedef 0, en çok birincil 1, kartOturuyor 88/88, sayfaKayar 0) | 0 | PASS |
+| `ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test` | tümü yeşil, atlanan yok | 133 test, 133 geçti, 0 kaldı, 0 atlandı (Tur 3 sonu; `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers` ile) | 0 | PASS |
+| `ND_ROOT=$PWD OUT=<dizin> PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node scripts/kaydir-preview.mjs` | 110 ekranda taşma/kırık/küçük hedef/sayfa kayması yok, birincil ≤1, tek kart oturuyor | 110/110 temiz (sorunlu 0; Tur 3 sonu yeniden üretildi) | 0 | PASS |
 | Klavye akışı (aynı betik) | ↓ → çözüm, 1 → sonuç, ↓ → sonraki, sonda bitiş kartı | 390 ve 1100'de 6/6 soru, bitiş kartı göründü, 6 arka plan PATCH; otomatik geçiş (hareket azaltılmamış) 400 ms sonra sonraki karta geçti | 0 | PASS |
 | Tekerlek, 390 (aynı betik) | tek kart geçişi | delta 600 → tam 1 kart; delta 100 ve 300 → geri yaslandı (0) | 0 | KISMİ (aşağıya bak) |
 
 Ölçüm notu: kırık düğme eşiği >46 (768 altı >50), dokunma ≥44 (mobilde şık/alt çubuk ≥48); bitiş ekranında 4 düğme dikey dizilir, her biri tek satır.
 
 ## Orkestratör doğrulaması
-(boş bırakılır)
+- Tur 3 sonrası `npm test` (PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers): 133/133, çıkış 0, atlanan yok; orkestratör bağımsız koştu.
+- Ölçüm (110 ekran) yazar tarafından üretildi; bağımsız yeniden üretim inceleyicide.
+- Gerçek cihaz, Radix, ekran okuyucu, gerçek ağ ve tsc doğrulanamadı (yukarıdaki liste).
 
 ## Kapsam dışı / bilinen eksikler
-- K3 maddeleri yapılmadı: mobil tam ekran (immersive) kipi (kabuk üst/alt çubuğu görünür, akış yüksekliği buna göre `--sw-top/--sw-bar` ile hesaplandı: bu iki değer ölçümle sabitlendi, kabuk yüksekliği değişirse güncellenmeli), Bugün düğmesi, masaüstü yan panel, çevrimdışı cilalar (yalnız "Yapay zekâyla çöz", "Konu videosu", "Öğrendim" çevrimdışıyken pasif ve "Bağlantı yok").
+- K3 maddeleri yapılmadı: mobil tam ekran (immersive) kipi (kabuk üst/alt çubuğu görünür; akış yüksekliği `--sw-top/--sw-bar` ile hesaplanır: değerler artık `watchChrome` ile çalışma anında ölçülür, CSS sabitleri yalnız yedektir), Bugün düğmesi, masaüstü yan panel, çevrimdışı cilalar (yalnız "Yapay zekâyla çöz", "Konu videosu", "Öğrendim" çevrimdışıyken pasif ve "Bağlantı yok").
 - Gerçek cihazda DOĞRULANAMADI: gerçek dokunmatik kaydırma/snap hissi ve hızlı fiskede tek kart; iOS adres çubuğu (`dvh`) ve kart kayması; Android pull-to-refresh (`overscroll-behavior`); uzun çözümde kart içi kaydırmanın en alta inince akışa devri (`.scroll-body` zincirlenmesi; bu turda `.scroll-body`'den `overscroll-behavior:contain` bilerek çıkarıldı, çünkü Chromium'da akışa tekerlek zincirini kesiyordu); Radix menü (⋯) ve Dialog (fotoğraf görüntüleyici: iki parmakla yakınlaştırma, odak tuzağı) gerçek çıktısı; gerçek IntersectionObserver davranışı hızlı kaydırmada (yalnız Chromium headless'ta denendi); ekran okuyucu (VoiceOver/TalkBack) duyuruları; gerçek ağ yazmaları (taklit PATCH ile denendi; `keepalive` ile sekme kapatırken gönderim, yeniden deneme ve çevrimdışı uyarısı gerçek ağda denenmedi); `tsc` (ortamda `node_modules`/`@types` yok, tip denetimi çalıştırılamadı).
 - Tekerlek: headless Chromium'da küçük sentetik delta (100–300px) snap'te geri yaslanır; 600px tam bir kart ilerletti. Gerçek fare tekerleği/dokunma bu ortamda temsil edilmez.
 - Önizleme Radix/shadcn yerine düz karşılıklar kullanır (ui-stubs); Manrope yüklenmez; tailwind derlenmez; ⋯ menü içeriği hidden gelir (ekran görüntülerinde menü açık çizilmez).
@@ -57,6 +59,7 @@ Tam ölçüm: `olcum-sonraki.json` (88 ekran); klavye akışı kaydı: `klavye.j
 - [ ] Android Chrome: yukarıdan çekince sayfa yenilenmiyor (overscroll-behavior).
 - [ ] Uzun çözümün içi kayıyor, en alta gelince akış devralıyor.
 - [ ] Ekran okuyucu (VoiceOver / TalkBack) kart sırasını ve sonucu duyuruyor.
+- [ ] Masaüstü fare tekerleği: tek çentik = tek kart (tekerlek için ek işleyici eklenmedi; yalnız yerel scroll-snap).
 - [ ] Sekme kapatılırken bekleyen sonuç kaydediliyor (soru penceresinin Tekrar sekmesinde görünüyor).
 
 ## Yeniden üretme
@@ -96,3 +99,28 @@ Yeni testler önce yazıldı ve düzeltmeden ÖNCE kırmızı koştu (tests/swip
 ### Tur 2 sınırları
 - `keepalive` yanıtı/pagehide gerçek ağda ve gerçek sayfa kapanışında denenmedi; taklit ağda `visibilitychange`/`pagehide` olayları elle tetiklendi, çevrimdışılık `context.setOffline` ile.
 - Gerçek cihaz kutuları (madde 6) hâlâ doğrulanmadı; orkestratör/kullanıcı işaretler.
+
+## Tur 3 (inceleme 2 bulguları; SKOR 3 → düzeltmeler)
+
+Her davranış için test önce yazıldı ve düzeltmeden ÖNCE kırmızı koştu (7 başarısız / 9 geçti; tests/swipe-browser.test.mjs 11–16). Test 16 ilk koşuda yanlış öğeyi (kart içi `role=status`) okuduğu için yeniden hedeflendi.
+
+| # | Bulgu | Yapılan | Test |
+|---|---|---|---|
+| 1 | Gizlemede gönderilen güncel kart yavaş başarısız olunca (kart terk edildikten sonra) `hideSent` kalıyor, sonraki `leave()` kaydı siliyordu | Başarısız dalda her zaman `hideSent.delete(id)`; kart hâlâ güncel ve sonucu işlenmemişse (`current===id && !results[id].first`) bir şey eklenmez (leave ekler), aksi hâlde (terk edildi ya da oturum değişti) `addPending` | `11` (q0 PATCH 1500 ms sonra 500; gizle, ↓, 1,8 sn sonra pending=[q0]; sonraki geçişte yeniden gönderilir ve pending'de kalır) |
+| 2 | Esc işaretsiz güncel kartı "atlandı" sayıp kuyruğa atıyordu | `exit`: işaretsiz güncel kartta oturum olduğu gibi kalır (atlandı yok), devam aynı karttan sürer; işaretliyse sonuç işlenir ve sonraki karta geçilir. `saved` kuyruk ya da güncel kart varsa tutulur. Sayaç güncel kartı 1 tabanlı gösterir (history zaten güncel kartı içerir) | `12` (Başla, Esc, devam, Esc, devam: aynı kart, skips 0, sayaç (1/toplam)), `12b` (işaretli Esc sonucu işler, sonraki kart güncel) |
+| 3 | Bitiş kartında odak/duyuru yoktu | Feed odak/duyuru efektine `hasCurrent` bağımlılığı | `13` (odak `sw-end-h`, canlı bölge "Oturum bitti.") |
+| 4 | `open` canlı bölgeyi sıfırlamıyordu | `open` içinde `setLive('')` | `14` |
+| 5 | `loaded` kanca örneğine bağlıydı; görünümden çıkıp dönünce eski gün kayıtları iki kez gidebilirdi | Modül düzeyi `oldSending` (kullanıcı başına, gönderim sürerken yeniden başlatmaz) | `15` (`__unmount`/`__mount`; q0 yavaş yanıt, tek PATCH) |
+| 6 | Gizlemede gönderilen sonuç sonradan "Sonucu değiştir" ile yerelde değişebilir | Hook `sentFirst(id)`; `mark` duyurusu ve çözüm kartı notu bu durumda "Bu oturumdaki ilk sonucun geçerli." der | `16` (canlı bölge ve görünür `.sw-result`) |
+| 7 | Tekerlek | Yeni işleyici EKLENMEDİ; gerçek cihaz listesine "masaüstü fare: tek çentik = tek kart" [ ] eklendi; Test/Ölçüm tablosundaki tekerlek KISMİ notu korundu | - |
+| 8 | PROOF tutarlılığı | Satır 7, 16, 19, 35–36, 46 ve "devam (2/7)" düzeltildi; ölçüm 110 ekranla yenilendi | - |
+
+Not (madde 6, kalan sınır): gizlemede sunucuya giden sonuç, kullanıcı sonradan işareti değiştirse bile sunucuda ilk sonuç olarak kalır (K1 kuralı: oturumdaki ilk sonuç); yerel durum değişebilir, kullanıcıya bu bildirilir ama yerel sonuç ile sunucu uyuşmayabilir.
+
+### Ölçümler (Tur 3)
+- `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers ND_ZOD_PATH=/opt/npm-tools/node_modules/zod/index.js npm test`: 133 test, 133 geçti, 0 kaldı, 0 atlandı, çıkış 0.
+- `ND_ROOT=$PWD OUT=<dizin> node scripts/kaydir-preview.mjs`: ekran sayısı 110, sorunlu 0, çıkış 0. `olcum-sonraki.json` (110 ekran), `klavye.json` ve görüntüler yeniden üretildi; 320 px'ten dört örnek eklendi. Klavye akışı: 390 ve 1100'de 6 soru 6 PATCH.
+
+### Tur 3 sınırları
+- Gizleme anında uçuşta olan keepalive isteği sayfa kapanışında yanıtsız kalırsa kayıt yalnız sunucuya gitmişse sayılır; gerçek ağda denenmedi.
+- Esc ile işaretli karttan çıkışta bir sonraki kart henüz görülmeden "güncel" olur (history'ye girer); devamda o karttan sürer.
