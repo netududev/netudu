@@ -2,13 +2,13 @@
 
 | Görev | Tür | Aralık | Tur | Yazar modeli |
 |---|---|---|---|---|
-| Çözme isteğinden video araması ve konu geçmişi sorgusunu çıkar | mantık | 4d785c3..bu turun commit'i | 1 | sonnet |
+| Çözme isteğinden video araması ve konu geçmişi sorgusunu çıkar | mantık | 4d785c3..bu turun commit'i | 2 | sonnet |
 
 ## İddia
-- [ ] `solve/route.ts` artık `findVideos` çağırmıyor ve `SELECT id,subject,topic FROM questions WHERE user_id=?` atmıyor; `topicHistory`/`history` hesabı yok.
-- [ ] Kaydedilen analizde `videos` boş dizi, `videoNotice` ve `history` alanı yok; tüketiciler çökmüyor, eski kayıtlar bozulmuyor.
-- [ ] Aynı soru, aynı ders+konuyla yeniden çözülünce önceki `videos`/`videoNotice` korunuyor; konu değişince temizleniyor.
-- [ ] Tüm test paketi yeşil.
+- [x] `solve/route.ts` artık `findVideos` çağırmıyor ve `SELECT id,subject,topic FROM questions WHERE user_id=?` atmıyor; `topicHistory`/`history` hesabı yok.
+- [x] Kaydedilen analizde `videos` boş dizi, `videoNotice` ve `history` alanı yok; tüketiciler çökmüyor, eski kayıtlar bozulmuyor.
+- [x] Aynı soru, aynı ders+konuyla yeniden çözülünce önceki `videos`/`videoNotice` korunuyor; konu değişince temizleniyor.
+- [x] Tüm test paketi yeşil.
 
 ## Önce
 Rota kaynağında (4d785c3) `findVideos(...)` (readable ise, ağ: OpenAI web araması/YouTube) ve ek bir `SELECT ... FROM questions WHERE user_id=?` (kullanıcının tüm soruları) çözme isteğinin içindeydi. Yeni test `tests/solve-result.test.mjs` önce `lib/solve-result.ts` yokken kırmızıydı:
@@ -28,6 +28,7 @@ Tasarım kararları (tüketiciler okunarak):
 - Test, rota içeriğini gerçek OpenAI/DB olmadan çalıştırmak yerine saf fonksiyonu (`buildCombined`) davranış olarak sınar; rotada çağrıların yokluğu ise kaynak taramasıyla sınanır (rota `@/` ve bulut bağlarına bağlı, test düzeninde yüklenemiyor).
 
 ## Orkestratör doğrulaması
+- Tur 2 sonrası `npm test`: 135/135, çıkış 0 (orkestratör bağımsız koştu). Bileşen davranışı tarayıcıda denenmedi (saf yardımcı testi + kaynak taraması).
 - `npm test`: 134/134, çıkış 0 (orkestratör bağımsız koştu). Fark 3 satır ekleme/6 silme + 11 satırlık yardımcı okundu.
 - Gerçek OpenAI/YouTube/Vercel süresi ölçülemedi; yalnız çağrı sayısı azaldı.
 
@@ -38,6 +39,20 @@ Tasarım kararları (tüketiciler okunarak):
 - İlk çözümden sonra Videolar sekmesi açılınca video yüklemesi artık sekmede (AutoVideos) başlar; kullanıcı orada bekleyebilir (kasıtlı takas).
 - Başka tüketici (`/api/videos`) videoyu hâlâ `a.videos`/`a.videoNotice` üzerine yazar; değişmedi.
 - `tsc` çalıştırılamadı (tip paketleri yok); doğrulama test paketiyle.
+
+- Videolar sekmesi hiç açılmamış yeni çözülmüş sorularda yazdırma (`app/study-app.tsx` ~117) video satırı içermez (videolar henüz yüklenmedi).
+- Excel dışa aktarımında `videos[0].url` sütunu aynı nedenle boş kalır.
+- Kaydırma kartındaki "Konu videosu" (`solution-card.tsx` ~27) video yokken doğrudan açmak yerine dialog'a düşer.
+- "Konu belirlenmedi" çözümlerde eski "video aranmadı" bildirimi yerine AutoVideos "<Ders> Genel Tekrar" ile arar.
+- İstemci davranışı (toast/sayaç/tek seferlik yükleme) render testiyle değil, saf yardımcı testi + kaynak taramasıyla sınandı; tarayıcıda denenmedi.
+
+## Tur 2
+İnceleme SKOR 4 bulguları (yalnız istemci):
+- Metinler: "Çözüm hazırlanıyor ve konu belirleniyor." ve boş durumda "...konu ve çözüm birlikte gelir. Videolar Konu videosu sekmesinde yüklenir."; süre ifadesi kalktı.
+- Sahte toast/sayaç: yeni `lib/video-call.ts` `videoCallEffects`: hak/sayaç yalnız `refresh||reject` iken (sunucudaki `d.refresh||!!d.reject` ile birebir); otomatik `videos({})` çağrısı toast göstermez, `bumpUsage('video')` çağırmaz.
+- Toast döngüsü: `shouldAutoLoad` + diyalogda `autoTried` (useRef, soru kimliği kümesi) ile otomatik yükleme soru başına tek sefer; hata sonrası boş durumda "Yeniden ara" ipucu görünür. (Bayrak AutoVideos içinde değil üst bileşende: AutoVideos `videoBusy` ile söküldüğü için kendi ref'i sıfırlanırdı.)
+- `tests/solve-result.test.mjs` SELECT taraması tırnaktan bağımsız regex + `SELECT *` yakalar.
+- Önce: `tests/video-call.test.mjs` `lib/video-call.ts` yokken `ERR_MODULE_NOT_FOUND` ile kırmızıydı. Sonra: `ND_ZOD_PATH=... npm test` → 135 pass, 0 fail, çıkış 0.
 
 ## Yeniden üretme
 1. Bu turun commit'ini checkout et (SHA: REVIEW-<n>.md başlığı / PR head'i).
