@@ -1,9 +1,11 @@
 "use client";
 import {useMemo,useState} from 'react';
-import {Plus,Trash2,Check,Undo2,Minus,ExternalLink,Play,BookOpen,List,CalendarClock,Wand2,Flag,ArrowUpRight,Target} from '@/components/icons';
+import {Plus,Trash2,Check,Undo2,Minus,ExternalLink,Play,BookOpen,List,CalendarClock,Wand2,Flag,ArrowUpRight,Target,MoreHorizontal,FileText} from '@/components/icons';
+import {DropdownMenu,DropdownMenuTrigger,DropdownMenuContent,DropdownMenuItem,DropdownMenuSeparator} from '@/components/ui/dropdown-menu';
 import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
 import {buildDay,daysBetween,type DayPlan} from '@/lib/plan/scheduler';
 import {UNIT_TITLE,continueUrl,doneCount,finishEstimate,hasTodayLog,isFinished,isUnitDone,percentOf,resourceTasksForDay,resumeIndex,spanLabel,titleOf,unitsFor,upcoming,type ProgressOp,type Resource,type ResourceKind} from '@/lib/plan/resources';
+import {leadResourceId} from '@/lib/plan/resource-view';
 import {useStudy,Empty,StatStrip} from '../shared';
 import {shortDate,localToday,DoneMark} from './ui';
 import {ResourceDialog} from './resource-dialog';
@@ -13,8 +15,9 @@ const WEEKDAYS=['Pzt','Sal','Çar','Per','Cum'].join(),WEEKEND=['Cmt','Paz'].joi
 export const daysLabel=(d:string[])=>d.length===7?'Her gün':d.join()===WEEKDAYS?'Hafta içi':d.join()===WEEKEND?'Hafta sonu':d.join(', ');
 export const minutesLabel=(m:number)=>m>=60?`${Math.floor(m/60)} sa${m%60?` ${m%60} dk`:''}`:`${m} dk`;
 
-// Kaynak kartı: ilerleme, sıradaki iş / kaldığın yer, bugünkünü bitir, düzeltme, konum, düzenle, sil
-function ResourceCard({r,today,off,onEdit}:{r:Resource;today:string;off:boolean;onEdit:(r:Resource)=>void}){const s=useStudy();const [pos,setPos]=useState(false);const [vopen,setVopen]=useState(false);const [posVal,setPosVal]=useState('');const [del,setDel]=useState(false);
+// Kaynak kartı: ilerleme, sıradaki iş / kaldığın yer, devam et, bugünkünü bitir, düzeltme, konum; ⋯ menüsünde düzenle ve sil.
+// Kobalt birincil yalnız sayfadaki ilk aktif kaynakta (lead) olur; diğer kartların eylemleri ikincildir.
+function ResourceCard({r,today,off,lead,onEdit}:{r:Resource;today:string;off:boolean;lead:boolean;onEdit:(r:Resource)=>void}){const s=useStudy();const [pos,setPos]=useState(false);const [vopen,setVopen]=useState(false);const [posVal,setPosVal]=useState('');const [del,setDel]=useState(false);
  const done=doneCount(r),pct=percentOf(r),fin=isFinished(r),resume=resumeIndex(r),todayU=unitsFor(r,today,today,off),est=finishEstimate(r,today,off);const isList=r.kind==='playlist';
  // İşlem sürerken bu kartın düğmeleri kilitlenir: sabırsız ikinci tık ikinci işlem olarak kuyruğa girip işareti geri almasın / iki kez tamamlamasın
  const busy=!!s.resourceBusy[r.id];const canUndo=!!todayU?.done||(!todayU&&hasTodayLog(r,today));
@@ -22,31 +25,29 @@ function ResourceCard({r,today,off,onEdit}:{r:Resource;today:string;off:boolean;
  const posN=Math.min(r.total,Math.max(1,Math.trunc(Number(posVal))||1));
  const link=isList&&resume?continueUrl(r,resume):'';
  return <article className={'res-card'+(fin?' fin':'')} aria-label={r.name} aria-busy={busy?true:undefined}>
-  <header className="rc-top"><span className="rc-ico" aria-hidden="true">{isList?<Play size={20}/>:<BookOpen size={20}/>}</span><div className="rc-title"><h3>{r.name}</h3><small>{[r.subject,`Günde ${r.perDay} ${unitWord(r)}`,daysLabel(r.days)].filter(Boolean).join(' · ')}</small></div>{fin&&<span className="status good"><Check size={13} aria-hidden="true"/> Bitti</span>}</header>
-  <div className="rc-progress"><div><b>{done}/{r.total}</b> {unitWord(r)} <span className="muted">· %{pct}</span></div><i className="bar" role="progressbar" aria-label={`${r.name} ilerlemesi`} aria-valuemin={0} aria-valuemax={r.total} aria-valuenow={done}><b style={{width:pct+'%'}}/></i></div>
+  <header className="rc-top"><span className="rc-ico" aria-hidden="true">{isList?<Play size={20}/>:<BookOpen size={20}/>}</span><div className="rc-title"><h3>{r.name}</h3><small>{[r.subject,`Günde ${r.perDay} ${unitWord(r)}`,daysLabel(r.days)].filter(Boolean).join(' · ')}</small></div>{fin&&<span className="status good"><Check size={13} aria-hidden="true"/> Bitti</span>}<DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="icon-button more-button rc-more" aria-label={`${r.name}: diğer eylemler`}><MoreHorizontal size={20}/></button></DropdownMenuTrigger><DropdownMenuContent align="end" className="export-menu"><DropdownMenuItem onSelect={()=>onEdit(r)}><FileText size={16}/> Düzenle</DropdownMenuItem><DropdownMenuSeparator/><DropdownMenuItem variant="destructive" className="danger-item" onSelect={()=>setDel(true)}><Trash2 size={16}/> Sil</DropdownMenuItem></DropdownMenuContent></DropdownMenu></header>
+  <div className="rc-progress"><span className="rc-count"><b>{done}/{r.total}</b> {unitWord(r)}</span><i className="bar" role="progressbar" aria-label={`${r.name} ilerlemesi`} aria-valuemin={0} aria-valuemax={r.total} aria-valuenow={done}><b style={{width:pct+'%'}}/></i><span className="rc-pct muted">%{pct}</span></div>
   {fin?<p className="rc-next"><Flag size={15} aria-hidden="true"/> Hepsi tamam. Tebrikler.</p>
    :isList?<p className="rc-next"><Target size={15} aria-hidden="true"/> <span><b>Kaldığın yer:</b> {resume}. video{titleOf(r,resume!)?` — ${titleOf(r,resume!)}`:''}</span></p>
    :<p className="rc-next"><Target size={15} aria-hidden="true"/> <span><b>Sıradaki:</b> {spanLabel(r,upcoming(r))}</span></p>}
   <p className="rc-meta">{todayU?<>Bugün: {spanLabel(r,todayU.units)}{todayU.done?' · tamam':''}</>:fin?'':off?'Bugün dinlenme günü; payın yarına kalır':'Bugün seçili gün değil'}{est.date&&<> · Tahmini bitiş: <b>{shortDate(est.date)}</b> ({daysBetween(today,est.date)<=0?'bugün':`${daysBetween(today,est.date)} gün sonra`})</>}{!est.date&&!fin&&' · Tahmini bitiş yok'}</p>
   {!fin&&<div className="rc-actions">
+   {link&&<a className={lead?'primary':'secondary'} href={link} target="_blank" rel="noopener noreferrer" aria-label={`Devam et: ${resume}. video, YouTube'da açılır`}><ExternalLink size={16}/> Devam et</a>}
    {canUndo?<button className="secondary" disabled={busy} onClick={()=>void s.resourceOp({action:'undo-today',id:r.id,today},'Geri alındı.')}><Undo2 size={16}/> Geri al</button>
-    :<button className="primary" disabled={busy} onClick={()=>void s.resourceOp({action:'complete-today',id:r.id,today},'Tamamlandı. Eline sağlık.')}><Check size={16}/> {todayU?'Bugünkünü bitirdim':'Sıradakini bitirdim'}</button>}
-   {link&&<a className="secondary" href={link} target="_blank" rel="noopener noreferrer"><ExternalLink size={16}/> YouTube'da devam et</a>}
+    :<button className={lead&&!link?'primary':'secondary'} disabled={busy} onClick={()=>void s.resourceOp({action:'complete-today',id:r.id,today},'Tamamlandı. Eline sağlık.')}><Check size={16}/> {todayU?'Bugünkünü bitirdim':'Sıradakini bitirdim'}</button>}
   </div>}
   <div className="rc-tools">
    <div className="res-step" role="group" aria-label={`${r.name}: ilerlemeyi düzelt`}><button type="button" className="icon-button" aria-label={`Bir ${unitWord(r)} geri al`} disabled={busy||done<=0} onClick={()=>void op({mode:'delta',delta:-1})}><Minus size={16}/></button><output aria-live="polite">{done}/{r.total}</output><button type="button" className="icon-button" aria-label={`Bir ${unitWord(r)} ekle`} disabled={busy||fin} onClick={()=>void op({mode:'delta',delta:1})}><Plus size={16}/></button></div>
    <button type="button" className="text-button" aria-expanded={pos} onClick={()=>{setPos(!pos);setPosVal(String(Math.min(r.total,done+1)))}}>Şu an buradayım</button>
-   <button type="button" className="text-button" onClick={()=>onEdit(r)}>Düzenle</button>
-   <button type="button" className="icon-button" aria-label={`${r.name} kaynağını sil`} onClick={()=>setDel(true)}><Trash2 size={16}/></button>
   </div>
   {pos&&<form className="res-pos" onSubmit={e=>{e.preventDefault();void op({mode:'set',position:posN-1}).then(ok=>{if(ok)setPos(false)})}}><label>Şu anki {unitWord(r)} numaran<input type="number" inputMode="numeric" min={1} max={r.total} value={posVal} onChange={e=>setPosVal(e.target.value)}/></label><button type="submit" className="secondary" disabled={busy}><Check size={15}/> Konumu kaydet</button><small>Bundan önceki {posN-1} {unitWord(r)} tamamlandı sayılır.</small></form>}
   {isList&&<details className="res-videos" open={vopen} onToggle={e=>setVopen(e.currentTarget.open)}><summary>Videolar ({r.total})</summary>{vopen&&<ol>{Array.from({length:r.total},(_,k)=>k+1).map(i=>{const w=isUnitDone(r,i);const t=titleOf(r,i);return <li key={i} className={(w?'on ':'')+(i===resume?'here':'')}><label><input type="checkbox" checked={w} disabled={busy} onChange={()=>void op({mode:'toggle',index:i})}/><span className="rv-n">{i}.</span><span className="rv-t">{t||`${i}. video`}{i===resume&&<span className="status good">Kaldığın yer</span>}</span></label>{r.listId&&<a className="icon-button" aria-label={`${i}. videoyu YouTube'da aç`} href={continueUrl(r,i)} target="_blank" rel="noopener noreferrer"><ExternalLink size={15}/></a>}</li>})}</ol>}</details>}
-  <AlertDialog open={del} onOpenChange={setDel}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>“{r.name}” silinsin mi?</AlertDialogTitle><AlertDialogDescription>Kaynak ve ilerlemen silinir; programındaki blokları kalkar. Bu işlem geri alınamaz.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Vazgeç</AlertDialogCancel><AlertDialogAction onClick={()=>void s.resourceOp({action:'remove',id:r.id},'Kaynak silindi.')}>Sil</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+  <AlertDialog open={del} onOpenChange={setDel}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>“{r.name}” silinsin mi?</AlertDialogTitle><AlertDialogDescription>Kaynak ve ilerlemen silinir; programındaki blokları kalkar. Bu işlem geri alınamaz.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Vazgeç</AlertDialogCancel><AlertDialogAction className="danger-confirm" onClick={()=>void s.resourceOp({action:'remove',id:r.id},'Kaynak silindi.')}>Sil</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
  </article>}
 
-function Section({title,hint,kind,list,today,off,onAdd,onEdit}:{title:string;hint:string;kind:ResourceKind;list:Resource[];today:string;off:boolean;onAdd:(k:ResourceKind)=>void;onEdit:(r:Resource)=>void}){
+function Section({title,hint,kind,list,today,off,leadId,onAdd,onEdit}:{title:string;hint:string;kind:ResourceKind;list:Resource[];today:string;off:boolean;leadId:string|null;onAdd:(k:ResourceKind)=>void;onEdit:(r:Resource)=>void}){
  return <section className="res-section" aria-label={title}><div className="section-heading"><div><h2>{title}</h2><p className="muted">{hint}</p></div><button className="secondary" onClick={()=>onAdd(kind)}><Plus size={16}/> Ekle</button></div>
-  {list.length?<div className="res-grid">{list.map(r=><ResourceCard key={r.id} r={r} today={today} off={off} onEdit={onEdit}/>)}</div>
+  {list.length?<div className="res-grid">{list.map(r=><ResourceCard key={r.id} r={r} today={today} off={off} lead={r.id===leadId} onEdit={onEdit}/>)}</div>
    :<p className="res-none">{kind==='book'?'Henüz soru bankası ya da kitap eklemedin.':'Henüz oynatma listesi eklemedin.'}</p>}</section>}
 
 // Kaynaklar sayfası: özet şeridi + iki bölüm (soru bankaları, oynatma listeleri)
@@ -54,12 +55,12 @@ export function ResourcesView(){const s=useStudy();const plan=s.plan;const today
  const list=plan?.config.resources||[];const off=useMemo(()=>plan?buildDay(plan,today,today).isOff:false,[plan,today]);const tasks=useMemo(()=>resourceTasksForDay(list,today,today,off),[list,today,off]);
  if(!plan)return <Empty title="Önce programını kur." icon={<CalendarClock/>} action={<button className="primary" onClick={s.openWizard}><Wand2 size={18}/> Programı oluştur</button>} steps={['Okul ve sabit saatlerini gir.','Programın hazır olunca kaynak ekle.','Kaynakların günlük payı boş saatlerine yerleşir.']}>Kaynaklar, okul ve sabit saatlerinle çakışmadan programına yerleşir. Bunun için önce bir programın olmalı.</Empty>;
  const active=list.filter(r=>!isFinished(r)).length,minutes=tasks.reduce((a,t)=>a+t.minutes,0);
- const open=(kind:ResourceKind,edit:Resource|null=null)=>setDlg({kind,edit,n:Date.now()});
+ const leadId=leadResourceId(list,today,off);const open=(kind:ResourceKind,edit:Resource|null=null)=>setDlg({kind,edit,n:Date.now()});
  return <>
   <div className="res-stats"><StatStrip items={[{label:'Aktif kaynak',value:active,sub:`${list.length-active} bitti`},{label:'Bugünkü süre',value:minutesLabel(minutes),sub:tasks.length?`${tasks.length} kaynak görevi`:off?'Bugün dinlenme günü':'Bugün kaynak işi yok'},{label:'Bugünkü iş',value:`${tasks.filter(t=>t.done).length}/${tasks.length}`,sub:'tamamlanan'}]}/></div>
   {!list.length&&<Empty title="Henüz kaynağın yok." icon={<List/>} action={<div className="actions wrap"><button className="primary" onClick={()=>open('book')}><Plus size={18}/> Soru bankası ekle</button><button className="secondary" onClick={()=>open('playlist')}><Plus size={16}/> Oynatma listesi ekle</button></div>} steps={['Adını, toplamını ve günlük hedefini gir.','Bugünün payı programındaki boş saatlere yerleşir.','Bitirince işaretle; kaldığın yer kaydedilir.']}>Soru bankanı, kitabını ya da bir YouTube oynatma listesini ekle. Nerede kaldığını burada görürsün.</Empty>}
-  {list.length>0&&<><Section title="Soru bankaları" hint="Test ve sayfa bazlı kitaplar." kind="book" list={list.filter(r=>r.kind==='book')} today={today} off={off} onAdd={open} onEdit={r=>open(r.kind,r)}/>
-  <Section title="Oynatma listeleri" hint="YouTube listeleri; hangi videoda kaldığın saklanır." kind="playlist" list={list.filter(r=>r.kind==='playlist')} today={today} off={off} onAdd={open} onEdit={r=>open(r.kind,r)}/></>}
+  {list.length>0&&<><Section title="Soru bankaları" hint="Test ve sayfa bazlı kitaplar." kind="book" list={list.filter(r=>r.kind==='book')} today={today} off={off} leadId={leadId} onAdd={open} onEdit={r=>open(r.kind,r)}/>
+  <Section title="Oynatma listeleri" hint="YouTube listeleri; hangi videoda kaldığın saklanır." kind="playlist" list={list.filter(r=>r.kind==='playlist')} today={today} off={off} leadId={leadId} onAdd={open} onEdit={r=>open(r.kind,r)}/></>}
   {dlg&&<ResourceDialog key={dlg.edit?.id||dlg.kind+dlg.n} kind={dlg.kind} edit={dlg.edit} onClose={()=>setDlg(null)}/>}
  </>}
 

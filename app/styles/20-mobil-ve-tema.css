@@ -18,7 +18,7 @@
  .filter-bar{gap:8px}.filter-bar .search-field{flex:0 0 100%;min-width:100%}.filter-bar .choice,.filter-bar input[type=month]{flex:1 1 calc(50% - 4px);min-width:calc(50% - 4px)}
  .archive-toolbar{flex-direction:column;align-items:stretch;gap:10px}.archive-toolbar .actions{flex-wrap:wrap}.archive-toolbar .segmented{width:100%}.archive-toolbar .segmented button{flex:1;justify-content:center}
  .group>header{padding:12px 14px}.topic-head{padding:11px 14px}
- .report-toolbar{flex-wrap:wrap;gap:10px}.report-toolbar>.text-button{display:none}.report-layout,.settings-grid,.notes-layout{grid-template-columns:1fr;gap:14px}
+ .report-toolbar{flex-wrap:wrap;gap:10px}.report-layout,.notes-layout{grid-template-columns:1fr;gap:14px}
  .notification-strip{flex-wrap:wrap}.notification-strip .secondary{width:100%}
  .form-grid{grid-template-columns:1fr;gap:12px;margin:12px 0}.profile-panel .form-grid{grid-template-columns:1fr}
  input,select,textarea,.choice-native{font-size:16px!important}
