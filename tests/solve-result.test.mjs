@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const R=new URL('../lib/',import.meta.url).href;
+const {buildCombined}=await import(R+'solve-result.ts');
+let n=0;const t=(name,f)=>Promise.resolve().then(f).then(()=>{n++;console.log('ok  ',name)},e=>{console.log('FAIL',name,'\n',e.stack?.split('\n').slice(0,4).join('\n'));process.exitCode=1});
+const analysis={readable:true,subject:'Matematik',topic:'Türev',transcription:'x',answer:'A',steps:['1'],pitfall:'',note:'',confidence:'yüksek',answerKeyMatch:null,errorType:''};
+const vids=[{title:'T',url:'https://www.youtube.com/watch?v=abc',reason:'',source:'web-search'}];
+await t('ilk çözüm: video yok, bildirim yok, history alanı yok',()=>{const c=buildCombined(analysis,'Matematik','Türev','',null,null);assert.deepEqual(c.videos,[]);assert.equal('videoNotice' in c,false);assert.equal('history' in c,false);assert.equal(c.subject,'Matematik');assert.equal(c.topic,'Türev')});
+await t('verification ve classification taşınır',()=>{const cl={subtopic:'',difficulty:'',confidence:1,needsReview:false,source:'ai'};const c=buildCombined(analysis,'Matematik','Türev','V',cl,null);assert.equal(c.verification,'V');assert.deepEqual(c.classification,cl);assert.equal('classification' in buildCombined(analysis,'Matematik','Türev','',null,null),false)});
+await t('yeniden çözüm, konu aynı: önceki videolar ve bildirim korunur',()=>{const c=buildCombined(analysis,'Matematik','Türev','',null,{subject:'Matematik',topic:'Türev',videos:vids,videoNotice:'n'});assert.deepEqual(c.videos,vids);assert.equal(c.videoNotice,'n')});
+await t('yeniden çözüm, konu değişti: videolar temizlenir, bildirim silinir',()=>{const c=buildCombined(analysis,'Matematik','Limit','',null,{subject:'Matematik',topic:'Türev',videos:vids,videoNotice:'n'});assert.deepEqual(c.videos,[]);assert.equal('videoNotice' in c,false)});
+await t('önceki analizde subject/topic yoksa video korunmaz; bozuk prev çökmez',()=>{assert.deepEqual(buildCombined(analysis,'Matematik','Türev','',null,{videos:vids}).videos,[]);assert.deepEqual(buildCombined(analysis,'Matematik','Türev','',null,'x').videos,[]);assert.deepEqual(buildCombined(analysis,'Matematik','Türev','',null,{subject:'Matematik',topic:'Türev',videos:'bozuk'}).videos,[])});
+await t('okunamayan soruda video taşınmaz',()=>{const c=buildCombined({...analysis,readable:false},'Matematik','Türev','',null,{subject:'Matematik',topic:'Türev',videos:vids});assert.deepEqual(c.videos,[])});
+await t('solve rotası video araması ve konu geçmişi sorgusunu içermez',()=>{const s=readFileSync(new URL('../app/api/questions/[id]/solve/route.ts',import.meta.url),'utf8');assert.doesNotMatch(s,/findVideos|lib\/videos/);assert.doesNotMatch(s,/topicHistory/);assert.doesNotMatch(s,/FROM questions WHERE user_id=\?'\)/);assert.doesNotMatch(s,/SELECT id,subject,topic/);assert.match(s,/buildCombined/)});
+console.log(n+' test');
