@@ -62,3 +62,27 @@ await t('OpenAI hata günlüğü: gövde yoksa/bozuksa yine durumu yazar',()=>{
  const logs=capture();O.logOpenAiFailure(502,null);O.logOpenAiFailure(500,'<html>');
  assert.equal(logs.length,2);assert.match(logs[0],/502/);assert.match(logs[1],/500/)});
 console.log(`${n} test`);
+
+// --- Tur 2: hata nedenine göre ileti (anon/yayın anahtarı yetki hatası yanlış çözüme yönlendirmemeli) ---
+const PUB='sb_publishable_FAKEANONKEY123';
+const forbidden=()=>resp(403,{code:'42501',message:'permission denied for table sys_config'});
+await t('persistSysConfig: anon/publishable anahtar 403+42501 => {ok:false,status:403,code:42501}',async()=>{
+ Date.now=()=>4_000_000;capture();globalThis.fetch=async()=>forbidden();
+ const r=await S.persistSysConfig({url:'https://x.supabase.co',key:PUB,source:'runtime'},{openai_api_key:SECRET,openai_model:'gpt-4o'});
+ assert.deepEqual(r,{ok:false,status:403,code:'42501'})});
+await t('describeSysConfigFailure: üç dalı ayırır (tablo / servis rolü / genel)',()=>{
+ const a=S.describeSysConfigFailure({ok:false,status:404,code:'PGRST205'});
+ const a2=S.describeSysConfigFailure({ok:false,code:'42P01'});
+ const b=S.describeSysConfigFailure({ok:false,status:403,code:'42501'});
+ const b2=S.describeSysConfigFailure({ok:false,status:401});
+ const c=S.describeSysConfigFailure({ok:false});
+ const c2=S.describeSysConfigFailure({ok:false,status:500,code:'XX000'});
+ for(const m of [a,a2])assert.match(m,/tablo/);
+ for(const m of [b,b2])assert.match(m,/servis rolü/);
+ assert.ok(!/servis rolü/.test(a));assert.ok(!/tablosunu oluşturun/.test(b));
+ for(const m of [c,c2]){assert.match(m,/supabase_query_failed/);assert.ok(!/servis rolü/.test(m));assert.ok(!/tablosunu oluşturun/.test(m))}
+ for(const m of [a,a2,b,b2,c,c2])assert.match(m,/yeniden başlayınca/)});
+await t('describeSysConfigFailure: iletilerde anahtar/değer yok',()=>{
+ for(const r of [{ok:false,status:404,code:'PGRST205'},{ok:false,status:403,code:'42501'},{ok:false}]){
+  const m=S.describeSysConfigFailure(r);
+  assert.ok(!m.includes(SECRET));assert.ok(!m.includes(PUB));assert.ok(!m.includes('SECRETSIG'))}});
