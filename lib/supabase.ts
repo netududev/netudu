@@ -734,7 +734,7 @@ async function executeOnSupabase(cfg:SupabaseConfig,rawSql:string,params:unknown
    else if(/^'.*'$/.test(tok))body[cols[i]]=tok.slice(1,-1);
    else body[cols[i]]=params[pIdx++]??null;
   }
-  const onConflict=conflictCols?conflictCols.replace(/\s+/g,''):isIgnore?(table==='reports'?'user_id,month':table==='profiles'||table==='study_plans'?'user_id':table==='tenant_members'?'tenant_id,user_id':'id'):'';
+  const onConflict=conflictCols?conflictCols.replace(/\s+/g,''):isIgnore?(table==='reports'?'user_id,month':table==='profiles'||table==='study_plans'||table==='flex_plans'?'user_id':table==='tenant_members'?'tenant_id,user_id':'id'):'';
   const doNothing=isIgnore||(conflictAction&&/^NOTHING$/i.test(conflictAction.trim()));
   const query=onConflict?`${table}?on_conflict=${onConflict}`:table;
   const prefer=onConflict?(doNothing?'resolution=ignore-duplicates,return=minimal':'resolution=merge-duplicates,return=minimal'):'return=minimal';
@@ -1023,6 +1023,7 @@ export async function syncLocalToSupabase(localDb:D1Database,cfg:SupabaseConfig)
   {table:'tenant_members',conflict:'tenant_id,user_id'},
   {table:'profiles',conflict:'user_id'},
   {table:'study_plans',conflict:'user_id'},
+  {table:'flex_plans',conflict:'user_id'},
   {table:'questions',conflict:'id'},
   {table:'exams',conflict:'id'},
   {table:'reports',conflict:'user_id,month'},

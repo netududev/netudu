@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS public.ai_usage (user_id text NOT NULL,day text NOT N
 CREATE TABLE IF NOT EXISTS public.auth_attempts (key text PRIMARY KEY,count integer NOT NULL DEFAULT 0,reset_at text NOT NULL);
 CREATE TABLE IF NOT EXISTS public.password_resets (email text PRIMARY KEY,code_hash text NOT NULL,expires_at text NOT NULL,attempts integer NOT NULL DEFAULT 0,created_at text NOT NULL);
 CREATE TABLE IF NOT EXISTS public.study_plans (user_id text PRIMARY KEY,config text NOT NULL,done text NOT NULL DEFAULT '{}',off_days text NOT NULL DEFAULT '{}',created_at text NOT NULL,updated_at text NOT NULL);
+CREATE TABLE IF NOT EXISTS public.flex_plans (user_id text PRIMARY KEY,config text NOT NULL,tasks text NOT NULL DEFAULT '[]',horizon text NOT NULL DEFAULT '',created_at text NOT NULL,updated_at text NOT NULL);
 INSERT INTO storage.buckets (id, name, public) VALUES ('question-images', 'question-images', false) ON CONFLICT (id) DO NOTHING;`;
 
 type AiStatus={connected:boolean;source:'env'|'runtime'|'none';model:string;maskedKey:string;youtubeConnected:boolean;youtubeMaskedKey?:string;resendConnected?:boolean;resendMaskedKey?:string};

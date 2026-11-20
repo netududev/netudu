@@ -1,0 +1,57 @@
+/* Esnek görev planı (saatsiz): hafta başlığı, gün kartları, görev satırları ve kurulum sihirbazı. Renkler jetonlardan gelir. */
+.flex-head{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:var(--s4,16px) var(--s5,24px);align-items:center;margin-bottom:var(--s4,16px)}
+.flex-head h2{font-size:1.35rem;margin:4px 0 2px}
+.flex-head-bar>div{display:flex;justify-content:space-between;font-size:.85rem;color:var(--fg2);margin-bottom:6px}
+.flex-head-bar b{color:var(--fg)}
+.flex-head-actions{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.flex-week-nav{display:flex;align-items:center;gap:8px;margin:0 0 var(--s3,12px)}
+.flex-week-nav b{font-size:.95rem;min-width:9.5rem;text-align:center}
+.flex-days{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--s3,12px)}
+.flex-day{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card,16px);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.flex-day.today{border-color:var(--brand);box-shadow:var(--shadow-m)}
+.flex-day.past:not(.today){opacity:.82}
+.flex-day.rest{background:var(--inner);border-style:dashed}
+.flex-day header{display:flex;align-items:center;gap:8px}
+.flex-day header>div{flex:1;min-width:0}
+.flex-day header strong{display:block;font-size:.95rem}
+.flex-day header small{color:var(--fg3);font-size:.78rem}
+.flex-count{font-size:.8rem;font-weight:650;color:var(--fg2);background:var(--inner);border-radius:999px;padding:2px 9px}
+.flex-tasks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.flex-task{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface)}
+.flex-task.k-deneme{border-color:var(--champ-line);background:var(--champ-bg)}
+.flex-task.done{background:var(--inner)}
+.flex-task.done .flex-title{text-decoration:line-through;color:var(--fg3)}
+.flex-check{flex:none;width:24px;height:24px;margin-top:1px;border-radius:7px;border:1.5px solid var(--line2);background:var(--surface);color:var(--on-brand);display:inline-flex;align-items:center;justify-content:center;padding:0}
+.flex-check[aria-checked=true]{background:var(--brand);border-color:var(--brand)}
+.flex-check:focus-visible,.flex-body:focus-visible,.flex-chip:focus-visible,.flex-add-btn:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.flex-body{flex:1;min-width:0;text-align:left;background:none;border:0;padding:0;color:var(--fg);display:flex;flex-direction:column;gap:3px}
+.flex-title{font-size:.9rem;font-weight:620;line-height:1.35;overflow-wrap:anywhere}
+.flex-body small{color:var(--fg2);font-size:.78rem;line-height:1.4;overflow-wrap:anywhere}
+.flex-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+.flex-chips i{font-style:normal;font-size:.7rem;font-weight:600;color:var(--fg2);background:var(--inner);border-radius:999px;padding:1px 8px}
+.flex-chips i.weak{color:var(--champ-ink);background:var(--champ-bg)}
+.flex-task.editing{display:block}
+.flex-task.editing form{display:flex;flex-direction:column;gap:8px;width:100%}
+.flex-task.editing label{font-size:.78rem;font-weight:600;color:var(--fg2);display:flex;flex-direction:column;gap:4px}
+.flex-edit-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.flex-edit-actions .icon-button{margin-left:auto}
+.flex-add{display:flex;gap:6px;align-items:center}
+.flex-add input{flex:1;min-width:0}
+.flex-add-btn{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;background:none;border:0;color:var(--brand-ink);font-size:.85rem;font-weight:600;padding:6px 4px;border-radius:8px}
+/* Sihirbaz */
+.flex-chip-row{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 8px}
+.flex-chip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;border:1px solid var(--line2);background:var(--surface);color:var(--fg2);border-radius:10px;padding:9px 14px;min-height:42px;text-align:left}
+.flex-chip b{font-size:.88rem;font-weight:620;color:var(--fg)}
+.flex-chip small{font-size:.72rem;color:var(--fg3)}
+.flex-chip.on{border-color:var(--brand);background:var(--brand-soft);box-shadow:inset 0 0 0 1px var(--brand)}
+.flex-chip.on b{color:var(--brand-ink)}
+.flex-chip.small{padding:6px 11px;min-height:36px}
+.flex-chip.small b{font-size:.82rem}
+.flex-sub{margin-top:14px}
+.flex-topics{border:1px solid var(--line);border-radius:10px;margin:8px 0;background:var(--surface)}
+.flex-topics summary{cursor:pointer;padding:10px 12px;font-weight:620;font-size:.9rem;display:flex;justify-content:space-between;gap:8px}
+.flex-topics summary small{color:var(--fg3);font-weight:500}
+.flex-topics ul{list-style:none;margin:0;padding:4px 12px 10px;max-height:260px;overflow:auto}
+.flex-topics li .switch-line{margin:6px 0}
+@media(max-width:760px){.flex-head{grid-template-columns:1fr}.flex-days{grid-template-columns:1fr}.flex-week-nav b{min-width:0;flex:1}}
+@media(prefers-reduced-motion:reduce){.flex-day,.flex-chip{transition:none}}
