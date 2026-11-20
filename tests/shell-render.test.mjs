@@ -43,7 +43,7 @@ test('kenar çubuğu gezinmesinde "Programı oluştur" yok; Bugün boş durumund
 });
 test('ekran başına tek kobalt: üst çubuk "Yanlış ekle" yalnız Defter\'te birincil, diğer ekranlarda ikincil',{skip},async()=>{
   const m=await load();
-  for(const withPlan of [true,false])for(const v of ['home','program','resources','archive','report','exams','notes','settings','swipe']){
+  for(const withPlan of [true,false])for(const v of ['home','flex','program','resources','archive','report','exams','notes','settings','swipe']){
     const h=m.shell(v,{withPlan,dev:false});const top=h.slice(h.indexOf('<header class="topbar"'),h.indexOf('</header>'));
     assert.match(top,v==='archive'?/topbar-add primary/:/topbar-add secondary/,v+' plan='+withPlan);
   }

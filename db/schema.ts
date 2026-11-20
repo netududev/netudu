@@ -27,4 +27,6 @@ export const aiUsage=sqliteTable('ai_usage',{userId:text('user_id').notNull(),da
 // Giriş/kayıt deneme sınırı
 export const authAttempts=sqliteTable('auth_attempts',{key:text('key').primaryKey(),count:integer('count').notNull().default(0),resetAt:text('reset_at').notNull()});
 // Kişisel ders çalışma programı: kurulum ayarları (JSON), tamamlanan dersler {dersSırası: tarih}, kaydırılan günler {gün: {date,topic}}
+// Esnek (saatsiz) görev planı: ayarlar (JSON), görev listesi (JSON dizi), üretilen son gün
+export const flexPlans=sqliteTable('flex_plans',{userId:text('user_id').primaryKey(),config:text('config').notNull(),tasks:text('tasks').notNull().default('[]'),horizon:text('horizon').notNull().default(''),createdAt:text('created_at').notNull(),updatedAt:text('updated_at').notNull()});
 export const studyPlans=sqliteTable('study_plans',{userId:text('user_id').primaryKey(),config:text('config').notNull(),done:text('done').notNull().default('{}'),offDays:text('off_days').notNull().default('{}'),createdAt:text('created_at').notNull(),updatedAt:text('updated_at').notNull()});

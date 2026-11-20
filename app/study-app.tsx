@@ -10,6 +10,7 @@ import {makeQueue} from '@/lib/plan/queue';
 import {TodayView} from './study/plan/today';
 import {ProgramView} from './study/plan/program';
 import {PlanWizard} from './study/plan/wizard';
+import {FlexView} from './study/plan/flex';
 import {ResourcesView} from './study/plan/resources';
 import {AlarmCenter} from './study/plan/alarm';
 import {LessonVideoDialog} from './study/plan/ui';
@@ -99,6 +100,7 @@ export default function StudyApp(){
  return <StudyContext.Provider value={study}><Toaster position="top-center"/>
  <AppFrame view={view} setView={setView} plan={plan} due={due} rows={rows} loading={loading} profile={profile} user={user} examDays={examDays} error={error} onRetry={()=>void load()} openUpload={()=>openUpload()} openWizard={()=>setWizard(true)} onPrint={()=>print()} setSubject={setSubject} month={month} setMonth={setMonth} onAddExam={focusExamForm}>
  {view==='home'&&<TodayView/>}
+ {view==='flex'&&<FlexView/>}
  {view==='program'&&<ProgramView/>}
  {view==='resources'&&<ResourcesView/>}
  {view==='archive'&&<ArchiveView subject={subject} setSubject={setSubject} filteredRef={filteredRef} onPrint={()=>print()}/>}

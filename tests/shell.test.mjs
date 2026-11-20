@@ -18,7 +18,7 @@ test('headings: her ekranın yalnız başlığı ve tek satır açıklaması var
 test('kenar çubuğu gezinmesinde "Programı oluştur" yok',()=>{
   const labels=[...planNavEntries,...bookNavEntries,settingsEntry].map(e=>e.label);
   assert.ok(!labels.includes('Programı oluştur'));
-  assert.deepEqual(planNavEntries.map(e=>e.id),['home','program','resources']);
+  assert.deepEqual(planNavEntries.map(e=>e.id),['home','flex','program','resources']);
   assert.deepEqual(bookNavEntries.map(e=>e.id),['archive','swipe','report','exams','notes']);
   assert.equal(bookNavEntries.find(e=>e.id==='swipe').label,'Kaydır Çöz');
   assert.equal(bookNavEntries.findIndex(e=>e.id==='swipe'),bookNavEntries.findIndex(e=>e.id==='archive')+1,'Kaydır Çöz, Yanlış defteri\'nin hemen altında');

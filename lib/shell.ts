@@ -2,15 +2,16 @@
 // Bileşenler app/study/shell.tsx içinde; burada React ya da DOM yok (node:test ile sınanır).
 import type {View} from '@/app/study/shared';
 
-export const views:View[]=['home','program','resources','archive','report','exams','notes','settings','swipe'];
+export const views:View[]=['home','flex','program','resources','archive','report','exams','notes','settings','swipe'];
 export type NavEntry={id:View;label:string};
-export const planNavEntries:NavEntry[]=[{id:'home',label:'Bugün'},{id:'program',label:'Program'},{id:'resources',label:'Kaynaklar'}];
+export const planNavEntries:NavEntry[]=[{id:'home',label:'Bugün'},{id:'flex',label:'Görev planı'},{id:'program',label:'Program'},{id:'resources',label:'Kaynaklar'}];
 export const bookNavEntries:NavEntry[]=[{id:'archive',label:'Yanlış defteri'},{id:'swipe',label:'Kaydır Çöz'},{id:'report',label:'Aylık rapor'},{id:'exams',label:'Denemeler'},{id:'notes',label:'Ders notları'}];
 export const settingsEntry:NavEntry={id:'settings',label:'Ayarlar'};
 
 // Sayfa başlığı: yalnız h1 ve tek satır açıklama (kırıntı ve büyük harfli üst etiket yok)
 export const headings:Record<View,{title:string;description:string}>={
  home:{title:'Bugün.',description:'Günün işi, saatlik planın ve tekrarların tek ekranda.'},
+ flex:{title:'Görev planı.',description:'Saat yok: sınıfına, eksiklerine ve netlerine göre günlük yapılacaklar. İstediğin gibi düzenle.'},
  program:{title:'Program.',description:'Okul ve sabit saatlerinle çakışmayan haftalık çalışma planın.'},
  resources:{title:'Kaynaklar.',description:'Soru bankaların ve oynatma listelerin; ilerlemen programına yerleşir.'},
  archive:{title:'Yanlış defteri.',description:'Yanlışların ders ve konuya göre tek yerde.'},

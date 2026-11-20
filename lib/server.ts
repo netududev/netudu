@@ -105,7 +105,8 @@ export const accountDDL=[
  'CREATE TABLE IF NOT EXISTS password_resets (email text PRIMARY KEY NOT NULL,code_hash text NOT NULL,expires_at text NOT NULL,attempts integer DEFAULT 0 NOT NULL,created_at text NOT NULL)',
  'CREATE TABLE IF NOT EXISTS ai_usage (user_id text NOT NULL,day text NOT NULL,kind text NOT NULL,count integer DEFAULT 0 NOT NULL,PRIMARY KEY(user_id,day,kind))',
  'CREATE TABLE IF NOT EXISTS auth_attempts (key text PRIMARY KEY NOT NULL,count integer DEFAULT 0 NOT NULL,reset_at text NOT NULL)',
- 'CREATE TABLE IF NOT EXISTS study_plans (user_id text PRIMARY KEY NOT NULL,config text NOT NULL,done text DEFAULT \'{}\' NOT NULL,off_days text DEFAULT \'{}\' NOT NULL,created_at text NOT NULL,updated_at text NOT NULL)'
+ 'CREATE TABLE IF NOT EXISTS study_plans (user_id text PRIMARY KEY NOT NULL,config text NOT NULL,done text DEFAULT \'{}\' NOT NULL,off_days text DEFAULT \'{}\' NOT NULL,created_at text NOT NULL,updated_at text NOT NULL)',
+ 'CREATE TABLE IF NOT EXISTS flex_plans (user_id text PRIMARY KEY NOT NULL,config text NOT NULL,tasks text DEFAULT \'[]\' NOT NULL,horizon text DEFAULT \'\' NOT NULL,created_at text NOT NULL,updated_at text NOT NULL)'
 ];
 export const SESSION_COOKIE='nd_session';
 export const SESSION_DAYS=90;
