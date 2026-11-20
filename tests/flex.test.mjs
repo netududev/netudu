@@ -37,6 +37,10 @@ test('uzatma tekrarsızdır; yeniden üretim yapılan ve elle düzenlenen görev
   const mod={...cy,tasks:cy.tasks.map((t,i)=>i===0?{...t,done:true}:i===1?{...t,manual:true,title:'Benim'}:t)};
   const rg=regeneratePlan(mod,{...cy.config,topicsPerWeek:3},today);assert.ok(rg.tasks.some(t=>t.id===mod.tasks[0].id));assert.ok(rg.tasks.some(t=>t.id===mod.tasks[1].id&&t.title==='Benim'));
 });
+test('sınıf deneme neti kaydedilir ve sınırlanır',()=>{
+  assert.equal(normalizeFlexConfig({grade:'10',gradeNet:55.5},today).gradeNet,55.5);assert.equal(normalizeFlexConfig({grade:'10',gradeNet:999},today).gradeNet,120);
+  const lo=buildPlan({...defaultFlexConfig(today,'9'),gradeNet:20},today).tasks.find(t=>t.kind==='konu');assert.ok(lo.detail.includes('15 soru'));
+});
 test('normalizeFlexConfig: bozuk girişi sınırlar',()=>{
   const c=normalizeFlexConfig({grade:'12',track:'dil',days:['Pzt'],topicsPerWeek:99,dailyTasks:0,weakSubjects:['x','Matematik']},today);
   assert.equal(c.topicsPerWeek,21);assert.equal(c.dailyTasks,1);assert.deepEqual(c.weakSubjects,['Matematik']);
