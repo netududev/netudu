@@ -95,12 +95,52 @@ function headers(cfg:SupabaseConfig,extra?:Record<string,string>):Record<string,
  };
 }
 
+// Aynı günlük iletisini dakikada en çok bir kez yazar (tekrar yağmurunu önler).
+const LOG_WINDOW_MS=60_000;
+const lastLogAt=new Map<string,number>();
+function logOnce(key:string,...args:unknown[]){
+ const now=Date.now();
+ const prev=lastLogAt.get(key);
+ if(prev!==undefined&&now-prev<LOG_WINDOW_MS)return;
+ if(lastLogAt.size>200)lastLogAt.clear();
+ lastLogAt.set(key,now);
+ console.error(...args);
+}
+
+// PostgREST hata gövdesinden yalnız `code` alanını okur (örn. PGRST205); ileti/değer okunmaz.
+async function postgrestCode(res:Response):Promise<string>{
+ try{
+  const body=await res.clone().json() as {code?:unknown};
+  return typeof body?.code==='string'?body.code.replace(/[^\w.\-]/g,'').slice(0,40):'';
+ }catch{return ''}
+}
+
 async function restFetch(cfg:SupabaseConfig,path:string,init?:RequestInit){
- return fetch(`${cfg.url}/rest/v1/${path}`,{
+ const res=await fetch(`${cfg.url}/rest/v1/${path}`,{
   ...init,
   signal:init?.signal||AbortSignal.timeout(8000),
   headers:{...headers(cfg),...((init?.headers as Record<string,string>)||{})}
  });
+ if(!res.ok){
+  // Sorgu dizesi (değerler) günlüğe girmez: yalnız yöntem, tablo, HTTP durumu ve PostgREST kodu.
+  const table=path.split('?')[0];
+  const code=await postgrestCode(res);
+  logOnce(`http|${init?.method||'GET'}|${table}|${res.status}|${code}`,'supabase_query_failed',`${init?.method||'GET'} ${table}`,`status=${res.status}`,`code=${code||'-'}`);
+ }
+ return res;
+}
+
+// Ayarları (sys_config) Supabase'e GERÇEKTEN yazıldığını doğrular. Bellek yedeği başarıyı taklit
+// ettiği için yedeksiz, doğrudan PostgREST çağrısı yapar. Değerler günlüğe/sonuca girmez.
+export async function persistSysConfig(cfg:SupabaseConfig,entries:Record<string,string>):Promise<{ok:boolean;status?:number;code?:string}>{
+ try{
+  const rows=Object.entries(entries).map(([key,value])=>({key,value}));
+  const r=await restFetch(cfg,'sys_config?on_conflict=key',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(rows)});
+  if(r.ok)return {ok:true};
+  return {ok:false,status:r.status,code:await postgrestCode(r)};
+ }catch{
+  return {ok:false};
+ }
 }
 
 function encVal(v:unknown):string{
@@ -748,14 +788,20 @@ async function executeOnSupabase(cfg:SupabaseConfig,rawSql:string,params:unknown
  return null;
 }
 
-// Yerel D1 yedeği yoksa (Vercel) Supabase hataları maskelenmez; sunucu günlüğüne yazılır.
+// Supabase hataları yedek (bellek/yerel D1) olsa bile maskelenmez; sunucu günlüğüne yazılır (dakikada bir kez).
 function logSupabaseMiss(kind:string,sql:string,err?:unknown){
- console.error('supabase_query_failed',kind,sql.replace(/\s+/g,' ').slice(0,120),err instanceof Error?err.message:'(boş yanıt veya çevrilemeyen SQL)');
+ const q=sql.replace(/\s+/g,' ').slice(0,120);
+ const why=err instanceof Error?err.message:'(boş yanıt veya çevrilemeyen SQL)';
+ logOnce(`miss|${kind}|${q}|${why}`,'supabase_query_failed',kind,q,why);
 }
 
 class SupabasePreparedStatement{
  private params:unknown[]=[];
- constructor(private cfg:SupabaseConfig,private fallback:D1Database|null,private sql:string){}
+ private cfg:SupabaseConfig;
+ private fallback:D1Database|null;
+ private sql:string;
+ // Açık alan tanımı: Node 'strip-types' (testler) parametre özelliklerini desteklemez.
+ constructor(cfg:SupabaseConfig,fallback:D1Database|null,sql:string){this.cfg=cfg;this.fallback=fallback;this.sql=sql}
  bind(...values:unknown[]){
   const next=new SupabasePreparedStatement(this.cfg,this.fallback,this.sql);
   next.params=values;
@@ -768,10 +814,10 @@ class SupabasePreparedStatement{
    if(res){
     supaSucceeded=true;
     if(res.results[0])return res.results[0] as T;
-   }else if(!this.fallback)logSupabaseMiss('first',this.sql);
+   }else logSupabaseMiss('first',this.sql);
   }catch(e){
    if(/UNIQUE/i.test(String((e as Error)?.message)))throw e;
-   if(!this.fallback)logSupabaseMiss('first',this.sql,e);
+   logSupabaseMiss('first',this.sql,e);
   }
   if(!supaSucceeded&&this.fallback){
    try{
@@ -789,10 +835,10 @@ class SupabasePreparedStatement{
    if(res){
     supaSucceeded=true;
     if(res.results.length>0||!this.fallback)return {results:res.results as T[],success:true,meta:res.meta};
-   }else if(!this.fallback)logSupabaseMiss('all',this.sql);
+   }else logSupabaseMiss('all',this.sql);
   }catch(e){
    if(/UNIQUE/i.test(String((e as Error)?.message)))throw e;
-   if(!this.fallback)logSupabaseMiss('all',this.sql,e);
+   logSupabaseMiss('all',this.sql,e);
   }
   if(!supaSucceeded&&this.fallback){
    try{
@@ -813,7 +859,7 @@ class SupabasePreparedStatement{
    supaErr=e as Error;
   }
   if(supaErr&&/UNIQUE/i.test(supaErr.message))throw supaErr;
-  if(!this.fallback&&!supaRes)logSupabaseMiss('run',this.sql,supaErr);
+  if(!supaRes)logSupabaseMiss('run',this.sql,supaErr);
   // Yerel D1'e de yaz (çift yönlü yerel yedek)
   if(this.fallback){
    try{
