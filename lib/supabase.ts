@@ -143,6 +143,17 @@ export async function persistSysConfig(cfg:SupabaseConfig,entries:Record<string,
  }
 }
 
+// persistSysConfig başarısızlığını operatöre doğru çözümle anlatır (anahtar/değer içermez).
+// 404/PGRST205/42P01 => tablo yok; 401/403/42501 => yetki (anon/yayın anahtarı sys_config'e erişemez); diğer => genel.
+export function describeSysConfigFailure(r:{ok?:boolean;status?:number;code?:string}):string{
+ const ortak='bu oturumda etkin, ancak kalıcı olarak kaydedilemedi: sunucu yeniden başlayınca anahtar kaybolur.';
+ if(r.status===404||r.code==='PGRST205'||r.code==='42P01')
+  return `${ortak} Supabase SQL Editor'de supabase/schema.sql içindeki sys_config tablosunu oluşturup anahtarı yeniden kaydedin.`;
+ if(r.status===401||r.status===403||r.code==='42501')
+  return `${ortak} Supabase isteği yetki nedeniyle reddedildi: canlıda Supabase servis rolü anahtarı (SUPABASE_SERVICE_ROLE_KEY ya da sb_secret_…) tanımlı olmalı; yayın/anon (sb_publishable_…) anahtarı sys_config'e erişemez.`;
+ return `${ortak} Supabase'e ulaşılamadı ya da beklenmeyen bir hata oluştu; sunucu günlüğündeki supabase_query_failed satırına bakın.`;
+}
+
 function encVal(v:unknown):string{
  if(v===null||v===undefined)return 'null';
  return encodeURIComponent(String(v));
