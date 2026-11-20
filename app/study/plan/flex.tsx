@@ -13,7 +13,11 @@ import {shortDate,localToday} from './ui';
 
 type Res={plan:FlexPlan|null};
 const gradeLabel=(g:Grade)=>g==='Mezun'?'Mezun':`${g}. sınıf`;
-const num=(v:string)=>{const n=Number(v.replace(',','.'));return Number.isFinite(n)?n:0};
+// Netler yazılmaz, aralık düğmesiyle seçilir; her düğme bir temsilci değer saklar (0 = bilmiyorum)
+type Band={label:string;value:number;min:number};
+const TYT_BANDS:Band[]=[{label:'Bilmiyorum',value:0,min:0},{label:'0–40',value:30,min:0.01},{label:'40–60',value:50,min:40},{label:'60–80',value:70,min:60},{label:'80–100',value:90,min:80},{label:'100+',value:105,min:100}];
+const AYT_BANDS:Band[]=[{label:'Bilmiyorum',value:0,min:0},{label:'0–20',value:10,min:0.01},{label:'20–40',value:30,min:20},{label:'40–60',value:50,min:40},{label:'60+',value:70,min:60}];
+const bandOf=(bands:Band[],v:number)=>{if(!(v>0))return 0;let id=1;bands.forEach((b,k)=>{if(k>0&&v>=b.min)id=k});return id};
 
 // ---------- veri ----------
 // Tüm işlemler tek sırada çalışır: sunucu planı oku-değiştir-yaz yaptığı için eşzamanlı istekler birbirini ezerdi.
@@ -92,8 +96,10 @@ export function FlexWizard({open,onClose,plan,onSaved}:{open:boolean;onClose:()=
    <section className="wz-card"><h3>Hangi sınıftasın?</h3><Chips label="Sınıf" value={cfg.grade} onChange={setGrade} options={GRADES.map(g=>({id:g,label:gradeLabel(g)}))}/>
     <p className="muted small">{cfg.grade==='9'?'Yalnız 9. sınıf konuları gelir.':cfg.grade==='10'?'Ağırlık 10. sınıfta; 9. sınıftan arada tekrar gelir.':cfg.grade==='11'?'Yeni konular ağırlıklı; TYT tekrarı eskisinden sık gelir.':'15 Aralık\'a kadar TYT ağırlıklı, sonrasında AYT ağırlıklı ilerler.'}</p></section>
    {upper&&<section className="wz-card"><h3>Alanın <small>AYT dersleri buna göre seçilir</small></h3><Chips label="Alan" value={cfg.track} onChange={(v:Track)=>set('track',v)} options={TRACKS.map(t=>({id:t.id,label:t.label}))}/></section>}
-   <section className="wz-card"><h3>Şu anki netin <small>bilmiyorsan boş bırak</small></h3><div className="form-grid"><label>TYT neti<input inputMode="decimal" placeholder="Örn. 62" value={cfg.tytNet||''} onChange={e=>set('tytNet',num(e.target.value))}/></label><label>AYT neti<input inputMode="decimal" placeholder="Örn. 28" value={cfg.aytNet||''} onChange={e=>set('aytNet',num(e.target.value))}/></label>{cfg.grade!=='Mezun'&&<label>{gradeLabel(cfg.grade)} deneme neti<input inputMode="decimal" placeholder="Örn. 30" value={cfg.gradeNet||''} onChange={e=>set('gradeNet',num(e.target.value))}/></label>}</div>
-    <p className="muted small">{!plan&&(lastNet('TYT')||lastNet('AYT')||lastNet(`${cfg.grade}. Sınıf`))?'Son denemelerinden dolduruldu; değiştirebilirsin. ':''}Netin düşükse temel konulara daha çok yer ayrılır. Boş bırakabilirsin.</p></section></div>}
+   <section className="wz-card"><h3>Şu anki netin <small>düğmeye dokun, bilmiyorsan geç</small></h3><h3 className="flex-sub">TYT neti</h3><Chips label="TYT neti" value={bandOf(TYT_BANDS,cfg.tytNet)} onChange={i=>set('tytNet',TYT_BANDS[i].value)} options={TYT_BANDS.map((b,i)=>({id:i,label:b.label}))}/>
+    <h3 className="flex-sub">AYT neti</h3><Chips label="AYT neti" value={bandOf(AYT_BANDS,cfg.aytNet)} onChange={i=>set('aytNet',AYT_BANDS[i].value)} options={AYT_BANDS.map((b,i)=>({id:i,label:b.label}))}/>
+    {cfg.grade!=='Mezun'&&<><h3 className="flex-sub">{gradeLabel(cfg.grade)} deneme neti</h3><Chips label={`${gradeLabel(cfg.grade)} deneme neti`} value={bandOf(TYT_BANDS,cfg.gradeNet)} onChange={i=>set('gradeNet',TYT_BANDS[i].value)} options={TYT_BANDS.map((b,i)=>({id:i,label:b.label}))}/></>}
+    <p className="muted small">{!plan&&(lastNet('TYT')||lastNet('AYT')||lastNet(`${cfg.grade}. Sınıf`))?'Son denemelerinden seçildi; değiştirebilirsin. ':''}Netin düşükse temel konulara daha çok yer ayrılır. Emin değilsen "Bilmiyorum" de.</p></section></div>}
   {step===1&&<div className="wizard-body">
    <section className="wz-card"><h3>Hangi derslerde eksiğin var? <small>istediğin kadar seç, geçebilirsin</small></h3><div className="flex-chip-row wrap">{subjects.map(sub=><button type="button" key={sub} aria-pressed={cfg.weakSubjects.includes(sub)} className={'flex-chip small'+(cfg.weakSubjects.includes(sub)?' on':'')} onClick={()=>toggleSubject(sub)}><b>{sub}</b></button>)}</div>
     <p className="muted small">Seçtiğin derslere daha sık görev düşer. Hiçbirini seçmezsen plan derslere dengeli yayılır.</p></section>
