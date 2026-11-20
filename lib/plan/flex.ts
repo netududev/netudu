@@ -13,7 +13,7 @@ export type Spacing='sik'|'normal'|'seyrek';
 export type TaskKind='konu'|'tekrar'|'soru'|'paragraf'|'deneme'|'analiz'|'ozel';
 export type FlexTask={id:string;date:string;kind:TaskKind;exam:'TYT'|'AYT'|'';grade:string;subject:string;topic:string;title:string;detail:string;done:boolean;manual:boolean;pool?:string;from?:string;step?:number};
 export type FlexConfig={
- grade:Grade;track:Track;tytNet:number;aytNet:number;
+ grade:Grade;track:Track;tytNet:number;aytNet:number;gradeNet:number;
  weakSubjects:string[];weakTopics:{subject:string;topic:string}[];
  topicsPerWeek:number;dailyTasks:number;days:DayKey[];
  review:{enabled:boolean;spacing:Spacing};
@@ -43,7 +43,7 @@ export const weekStart=(date:string)=>{const i=ALL_DAYS.indexOf(dayKeyOf(date));
 
 export function defaultFlexConfig(today:string,grade:string='12'):FlexConfig{const g:Grade=isGrade(grade)?grade:'12';
  const preset={'9':[3,2],'10':[4,3],'11':[5,3],'12':[6,4],Mezun:[8,5]}[g];
- return {grade:g,track:'sayisal',tytNet:0,aytNet:0,weakSubjects:[],weakTopics:[],topicsPerWeek:preset[0],dailyTasks:preset[1],days:[...DEFAULT_DAYS],review:{enabled:true,spacing:'normal'},balance:'auto',startDate:today,examDate:''}}
+ return {grade:g,track:'sayisal',tytNet:0,aytNet:0,gradeNet:0,weakSubjects:[],weakTopics:[],topicsPerWeek:preset[0],dailyTasks:preset[1],days:[...DEFAULT_DAYS],review:{enabled:true,spacing:'normal'},balance:'auto',startDate:today,examDate:''}}
 
 export function normalizeFlexConfig(raw:unknown,today=new Date().toISOString().slice(0,10)):FlexConfig{
  const r=(raw&&typeof raw==='object'?raw:{}) as Record<string,any>;const def=defaultFlexConfig(today,r.grade);
@@ -51,7 +51,7 @@ export function normalizeFlexConfig(raw:unknown,today=new Date().toISOString().s
  const subj=(Array.isArray(r.weakSubjects)?r.weakSubjects:[]).filter((s:any)=>typeof s==='string'&&ALL_SUBJECTS.includes(s));
  const topics=(Array.isArray(r.weakTopics)?r.weakTopics:[]).filter((t:any)=>t&&typeof t.subject==='string'&&typeof t.topic==='string'&&topicOptions(t.subject).some(o=>o.value===t.topic)).slice(0,80).map((t:any)=>({subject:t.subject,topic:t.topic}));
  const rv=(r.review&&typeof r.review==='object'?r.review:{}) as Record<string,any>;
- return {grade:def.grade,track:TRACKS.some(t=>t.id===r.track)?r.track:def.track,tytNet:clamp(Number(r.tytNet),0,120),aytNet:clamp(Number(r.aytNet),0,160),
+ return {grade:def.grade,track:TRACKS.some(t=>t.id===r.track)?r.track:def.track,tytNet:clamp(Number(r.tytNet),0,120),aytNet:clamp(Number(r.aytNet),0,160),gradeNet:clamp(Number(r.gradeNet),0,120),
   weakSubjects:[...new Set<string>(subj)],weakTopics:topics,
   topicsPerWeek:Math.round(clamp(r.topicsPerWeek===undefined?def.topicsPerWeek:Number(r.topicsPerWeek),1,21)),dailyTasks:Math.round(clamp(r.dailyTasks===undefined?def.dailyTasks:Number(r.dailyTasks),1,8)),
   days:days.length?days:def.days,review:{enabled:rv.enabled===undefined?true:!!rv.enabled,spacing:(rv.spacing in SPACINGS?rv.spacing:'normal') as Spacing},
@@ -95,7 +95,7 @@ function candidates(cfg:FlexConfig,pool:Pool):Cand[]{const out:Cand[]=[];
  return out}
 const keyOf=(c:Cand)=>`${c.subject}|${c.topic}`;
 const baseWeight=(cfg:FlexConfig,subject:string)=>(TYT_WEIGHT[subject]??1)*(cfg.weakSubjects.includes(subject)?2.5:1);
-const questionCount=(cfg:FlexConfig)=>{const base={'9':20,'10':25,'11':30,'12':35,Mezun:40}[cfg.grade];return cfg.tytNet>0&&cfg.tytNet<40?Math.max(15,base-5):base};
+const questionCount=(cfg:FlexConfig)=>{const base={'9':20,'10':25,'11':30,'12':35,Mezun:40}[cfg.grade];const net=cfg.grade==='9'||cfg.grade==='10'?(cfg.gradeNet||cfg.tytNet):cfg.tytNet;return net>0&&net<40?Math.max(15,base-5):base};
 
 // ---------- görev oluşturma ----------
 const mk=(date:string,t:Partial<FlexTask>&Pick<FlexTask,'kind'|'title'>):FlexTask=>({id:uid(),date,exam:'',grade:'',subject:'',topic:'',detail:'',done:false,manual:false,...t});

@@ -55,3 +55,4 @@
 .flex-topics li .switch-line{margin:6px 0}
 @media(max-width:760px){.flex-head{grid-template-columns:1fr}.flex-days{grid-template-columns:1fr}.flex-week-nav b{min-width:0;flex:1}}
 @media(prefers-reduced-motion:reduce){.flex-day,.flex-chip{transition:none}}
+.flex-head-actions .danger{color:var(--bad-fg);border-color:var(--bad-line)}
