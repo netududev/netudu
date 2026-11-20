@@ -246,6 +246,15 @@ BEGIN
   END LOOP;
 END $$;
 
+-- 5b. SİSTEM AYARLARI (sys_config): API anahtarları (OpenAI vb.) tutar.
+-- Yalnız service_role (RLS'i aşar) erişir: RLS açık, politika YOK, anon/authenticated yetkisiz.
+CREATE TABLE IF NOT EXISTS public.sys_config (
+  key text PRIMARY KEY,
+  value text NOT NULL
+);
+ALTER TABLE public.sys_config ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON public.sys_config FROM anon, authenticated;
+
 -- 6. SUPABASE STORAGE KOVASI
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('question-images', 'question-images', false)
