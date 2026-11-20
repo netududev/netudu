@@ -1,6 +1,6 @@
 import {z} from 'zod';
 import {requireUser,rawBindings,bindings,db,localDb,isDeveloper,ensureSchema,setRuntimeAiConfig,getRuntimeAiConfig,aiReady,youtubeReady,failure,json,AppError} from '@/lib/server';
-import {getSupabaseConfig,setRuntimeSupabaseConfig,testSupabaseConnection,syncLocalToSupabase,detectSupabaseKeyType,maskSecretKey,normalizeSupabaseUrl,persistSysConfig} from '@/lib/supabase';
+import {getSupabaseConfig,setRuntimeSupabaseConfig,testSupabaseConnection,syncLocalToSupabase,detectSupabaseKeyType,maskSecretKey,normalizeSupabaseUrl,persistSysConfig,describeSysConfigFailure} from '@/lib/supabase';
 
 export type RegisteredUserItem={
  id:string;
@@ -221,12 +221,14 @@ export async function POST(req:Request){
    // Supabase yapılandırılmışken anahtarın GERÇEKTEN yazıldığını yedeksiz istemciyle doğrula
    // (bellek yedeği başarıyı taklit eder).
    let persisted=true;
+   let persistResult:Awaited<ReturnType<typeof persistSysConfig>>={ok:true};
    const supaCfg=getSupabaseConfig(rawBindings() as unknown as Record<string,unknown>);
    if(supaCfg){
     const entries:Record<string,string>={openai_api_key:cleanKey,openai_model:cleanModel};
     if(cleanYt)entries.youtube_api_key=cleanYt;
     if(cleanResend)entries.resend_api_key=cleanResend;
-    persisted=(await persistSysConfig(supaCfg,entries)).ok;
+    persistResult=await persistSysConfig(supaCfg,entries);
+    persisted=persistResult.ok;
    }
    const prev=getRuntimeAiConfig();
    setRuntimeAiConfig({
@@ -242,7 +244,7 @@ export async function POST(req:Request){
     ai,
     message:persisted
      ?`OpenAI API (${cleanModel} · ${ai.maskedKey}) başarıyla bağlandı ve tüm yapay zekâ özellikleri aktif edildi!`
-     :`OpenAI API (${cleanModel} · ${ai.maskedKey}) bu oturumda etkin, ancak kalıcı olarak kaydedilemedi: sunucu yeniden başlayınca anahtar kaybolur. Supabase SQL Editor'de supabase/schema.sql içindeki sys_config tablosunu oluşturup anahtarı yeniden kaydedin.`
+     :`OpenAI API (${cleanModel} · ${ai.maskedKey}) ${describeSysConfigFailure(persistResult)}`
    });
   }
 
