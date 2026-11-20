@@ -95,7 +95,7 @@ function candidates(cfg:FlexConfig,pool:Pool):Cand[]{const out:Cand[]=[];
  return out}
 const keyOf=(c:Cand)=>`${c.subject}|${c.topic}`;
 const baseWeight=(cfg:FlexConfig,subject:string)=>(TYT_WEIGHT[subject]??1)*(cfg.weakSubjects.includes(subject)?2.5:1);
-const questionCount=(cfg:FlexConfig)=>{const base={'9':20,'10':25,'11':30,'12':35,Mezun:40}[cfg.grade];const net=cfg.grade==='9'||cfg.grade==='10'?(cfg.gradeNet||cfg.tytNet):cfg.tytNet;return net>0&&net<40?Math.max(15,base-5):base};
+const questionCount=(cfg:FlexConfig)=>{const base={'9':20,'10':25,'11':30,'12':35,Mezun:40}[cfg.grade];const net=cfg.grade==='9'||cfg.grade==='10'||cfg.grade==='11'?(cfg.grade==='11'?cfg.tytNet:cfg.gradeNet):cfg.tytNet;return net>0&&net<40?Math.max(15,base-5):base};
 
 // ---------- görev oluşturma ----------
 const mk=(date:string,t:Partial<FlexTask>&Pick<FlexTask,'kind'|'title'>):FlexTask=>({id:uid(),date,exam:'',grade:'',subject:'',topic:'',detail:'',done:false,manual:false,...t});
